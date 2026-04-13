@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dhoond — Painting Services</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --cream:#F5F0E8;--warm-white:#FAF8F4;
+  --clay:#C4825A;--clay-dark:#9B5E3A;
+  --forest:#3A5143;--charcoal:#2B2B2B;
+  --dust:#8C8679;--gold:#D4A85A;--sage:#8FA882;
+  --border:rgba(60,50,40,0.12);
+}
+html{scroll-behavior:smooth;cursor:none}
+body{font-family:'DM Sans',sans-serif;background:var(--warm-white);color:var(--charcoal);overflow-x:hidden}
+
+/* CURSOR */
+#cursor{position:fixed;width:12px;height:12px;border-radius:50%;background:var(--clay);pointer-events:none;z-index:9999;transform:translate(-50%,-50%);mix-blend-mode:multiply;opacity:0}
+#cursor-follower{position:fixed;width:36px;height:36px;border-radius:50%;border:1.5px solid var(--clay);pointer-events:none;z-index:9998;transform:translate(-50%,-50%);opacity:0;transition:width .3s,height .3s}
+.cursor-hover #cursor{background:var(--charcoal)}
+.cursor-hover #cursor-follower{width:54px;height:54px;opacity:.2}
+
+/* SCROLL BAR */
+#scroll-progress{position:fixed;top:0;left:0;height:2px;background:var(--clay);z-index:200;width:0}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:0 5vw;height:68px;background:rgba(250,248,244,0.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--border)}
+.nav-logo{font-family:'Playfair Display',serif;font-size:22px;font-weight:700;color:var(--charcoal);text-decoration:none;letter-spacing:-.5px}
+.nav-logo span{color:var(--clay)}
+.nav-links{display:flex;gap:32px;list-style:none}
+.nav-links a{text-decoration:none;color:var(--dust);font-size:14px;transition:color .2s}
+.nav-links a:hover{color:var(--charcoal)}
+.nav-cta{background:var(--charcoal);color:#fff;padding:10px 22px;border-radius:100px;font-size:13px;font-weight:500;text-decoration:none;transition:background .25s}
+.nav-cta:hover{background:var(--clay)}
+
+/* HERO */
+.hero{min-height:100vh;padding:120px 5vw 80px;display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center;background:var(--cream);overflow:hidden;position:relative}
+.hero-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(196,130,90,0.12);border:1px solid rgba(196,130,90,0.3);border-radius:100px;padding:6px 14px;font-size:12px;font-weight:500;color:var(--clay-dark);margin-bottom:24px;letter-spacing:.5px;text-transform:uppercase;opacity:0;transform:translateY(14px)}
+.hero h1{font-family:'Playfair Display',serif;font-size:clamp(38px,5vw,62px);font-weight:700;line-height:1.1;letter-spacing:-1.5px;color:var(--charcoal);margin-bottom:20px}
+.hero h1 em{font-style:italic;color:var(--clay)}
+/* LINE REVEAL */
+.line-wrap{overflow:hidden;display:block}
+.line-inner{display:block;transform:translateY(110%)}
+.hero-sub{font-size:16px;color:var(--dust);line-height:1.7;max-width:420px;margin-bottom:36px;font-weight:300;opacity:0;transform:translateY(18px)}
+.hero-actions{display:flex;align-items:center;gap:16px;opacity:0;transform:translateY(18px)}
+.btn-primary{background:var(--charcoal);color:#fff;padding:14px 28px;border-radius:100px;font-size:14px;font-weight:500;text-decoration:none;display:inline-flex;align-items:center;gap:8px;position:relative;overflow:hidden}
+.btn-primary .btn-fill{position:absolute;inset:0;background:var(--clay);transform:scaleX(0);transform-origin:left;transition:transform .38s cubic-bezier(.76,0,.24,1);border-radius:inherit}
+.btn-primary:hover .btn-fill{transform:scaleX(1)}
+.btn-primary span,.btn-primary svg{position:relative;z-index:1}
+.btn-outline{color:var(--charcoal);padding:14px 24px;border-radius:100px;font-size:14px;text-decoration:none;border:1px solid var(--border);transition:border-color .2s}
+.btn-outline:hover{border-color:var(--charcoal)}
+.hero-rating{display:flex;align-items:center;gap:6px;margin-top:32px;opacity:0;transform:translateY(14px)}
+.stars{color:var(--gold);font-size:14px;letter-spacing:1px}
+.hero-media{position:relative;opacity:0;transform:scale(.96)}
+.hero-main-img{width:100%;aspect-ratio:4/5;border-radius:24px;overflow:hidden}
+.hero-parallax{width:100%;height:115%;margin-top:-5%}
+.paint-bg{width:100%;height:100%;background:linear-gradient(145deg,#C8A882 0%,#9A7055 40%,#6A4030 100%);display:flex;flex-direction:column;justify-content:flex-end;padding:32px}
+.hero-float-card{position:absolute;bottom:-20px;left:-30px;background:#fff;border-radius:16px;padding:16px 20px;border:1px solid var(--border);min-width:180px;opacity:0;transform:translateY(24px)}
+.hero-float-card .fl{font-size:11px;color:var(--dust);text-transform:uppercase;letter-spacing:.8px;margin-bottom:6px}
+.hero-float-card .fv{font-family:'Playfair Display',serif;font-size:28px;font-weight:700;color:var(--charcoal)}
+.hero-float-card .fs{font-size:12px;color:var(--dust);margin-top:2px}
+.hero-tag{position:absolute;top:20px;right:-10px;background:var(--forest);color:#fff;border-radius:100px;padding:8px 16px;font-size:12px;font-weight:500;opacity:0;transform:translateX(12px)}
+
+/* MARQUEE */
+.marquee-wrap{overflow:hidden;background:var(--charcoal);padding:18px 0}
+.marquee-track{display:flex;white-space:nowrap;will-change:transform}
+.marquee-item{display:inline-flex;align-items:center;gap:14px;padding:0 28px;font-size:12px;color:rgba(255,255,255,0.45);text-transform:uppercase;letter-spacing:2px;flex-shrink:0}
+.mdot{width:5px;height:5px;border-radius:50%;background:var(--clay);flex-shrink:0}
+
+/* SERVICES STRIP */
+.services-strip{padding:60px 5vw;background:var(--charcoal);display:flex}
+.service-item{flex:1;padding:0 32px;border-right:1px solid rgba(255,255,255,0.1);display:flex;align-items:center;gap:14px;opacity:0;transform:translateY(22px)}
+.service-item:last-child{border-right:none}
+.si-icon{width:44px;height:44px;border-radius:12px;background:rgba(255,255,255,0.08);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.si-icon svg{width:20px;height:20px;stroke:var(--clay);fill:none;stroke-width:1.5}
+.service-item h3{font-size:14px;font-weight:500;color:#fff;margin-bottom:2px}
+.service-item p{font-size:12px;color:rgba(255,255,255,0.4)}
+
+/* INTRO */
+.intro{padding:100px 5vw;display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center}
+.intro-imgs{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.intro-img{border-radius:16px;overflow:hidden;aspect-ratio:3/4;position:relative}
+.intro-img-inner{position:absolute;width:100%;height:115%;top:-5%}
+.eyebrow{font-size:12px;text-transform:uppercase;letter-spacing:1.5px;color:var(--clay);font-weight:500;display:block;margin-bottom:14px}
+.intro-text p{font-size:15px;color:var(--dust);line-height:1.8;margin-bottom:18px;font-weight:300}
+
+/* STATS */
+.stats{padding:80px 5vw;background:var(--forest);display:grid;grid-template-columns:repeat(3,1fr)}
+.stat{padding:40px;border-right:1px solid rgba(255,255,255,0.1);text-align:center;opacity:0;transform:translateY(22px)}
+.stat:last-child{border-right:none}
+.stat .num{font-family:'Playfair Display',serif;font-size:56px;font-weight:700;color:#fff;line-height:1;margin-bottom:8px}
+.stat .num .gold{color:var(--gold)}
+.stat .slabel{font-size:13px;color:rgba(255,255,255,0.5);text-transform:uppercase;letter-spacing:1px}
+
+/* PROCESS */
+.process{padding:100px 5vw;background:var(--cream)}
+.section-header{text-align:center;margin-bottom:60px}
+.section-header h2{font-family:'Playfair Display',serif;font-size:clamp(28px,3vw,44px);font-weight:700;letter-spacing:-1px;color:var(--charcoal)}
+.section-header p{font-size:15px;color:var(--dust);margin-top:12px;max-width:500px;margin:12px auto 0;line-height:1.7;font-weight:300}
+.brush-line{height:3px;background:linear-gradient(90deg,transparent,var(--clay),transparent);margin:14px auto 0;width:60px;border-radius:2px}
+.process-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:24px}
+.process-card{background:#fff;border-radius:20px;padding:32px 28px;border:1px solid var(--border);position:relative;overflow:hidden;opacity:0;transform:translateY(32px);transition:box-shadow .3s}
+.process-card:hover{transform:translateY(-6px)!important;box-shadow:0 24px 64px rgba(0,0,0,0.09)}
+.process-card::before{content:attr(data-num);position:absolute;right:14px;top:14px;font-family:'Playfair Display',serif;font-size:64px;font-weight:700;color:rgba(196,130,90,0.07);line-height:1}
+.picon{width:48px;height:48px;border-radius:14px;margin-bottom:20px;display:flex;align-items:center;justify-content:center;transition:transform .3s}
+.process-card:hover .picon{transform:rotate(-6deg) scale(1.1)}
+.picon svg{width:22px;height:22px;fill:none;stroke-width:1.5}
+.process-card h3{font-size:16px;font-weight:500;color:var(--charcoal);margin-bottom:8px}
+.process-card p{font-size:13px;color:var(--dust);line-height:1.7;font-weight:300}
+
+/* PALETTE */
+.palette{padding:100px 5vw;background:#fff}
+.palette-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:20px}
+.color-card{border-radius:20px;overflow:hidden;border:1px solid var(--border);opacity:0;transform:scale(.93);transition:box-shadow .3s}
+.color-card:hover{box-shadow:0 16px 48px rgba(0,0,0,0.1)}
+.cswatch{height:200px;overflow:hidden;position:relative}
+.cswatch-inner{position:absolute;width:100%;height:115%;top:-5%;transition:transform .7s cubic-bezier(.25,.46,.45,.94)}
+.color-card:hover .cswatch-inner{transform:scale(1.07)}
+.cinfo{padding:16px;background:#fff}
+.cinfo .cname{font-size:14px;font-weight:500;color:var(--charcoal);margin-bottom:3px}
+.cinfo .ccode{font-size:12px;color:var(--dust)}
+.cinfo .ctag{display:inline-block;font-size:10px;background:var(--cream);padding:3px 10px;border-radius:100px;color:var(--dust);margin-top:8px;text-transform:uppercase;letter-spacing:.5px}
+
+/* GALLERY */
+.gallery{padding:100px 5vw;background:var(--cream)}
+.gallery-grid{display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(2,260px);gap:16px;margin-top:40px}
+.gitem{border-radius:18px;overflow:hidden;position:relative;opacity:0}
+.gitem:first-child{grid-column:span 2}
+.gitem:nth-child(4){grid-column:span 2}
+.gbg{position:absolute;inset:0;margin-bottom:-10%;height:110%;top:-5%;transition:transform .8s cubic-bezier(.25,.46,.45,.94)}
+.gitem:hover .gbg{transform:scale(1.08) translateY(-1%)}
+.glabel{position:absolute;bottom:0;left:0;right:0;padding:20px 24px;background:linear-gradient(transparent,rgba(20,12,8,0.72));transform:translateY(102%);transition:transform .4s cubic-bezier(.25,.46,.45,.94)}
+.gitem:hover .glabel{transform:translateY(0)}
+.glabel span{color:#fff;font-size:14px;font-weight:500;display:block}
+.glabel p{color:rgba(255,255,255,0.6);font-size:12px;margin-top:3px}
+
+/* TESTIMONIALS */
+.testimonials{padding:100px 5vw;background:#fff}
+.tgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:48px}
+.tcard{background:var(--cream);border-radius:20px;padding:32px;border:1px solid var(--border);opacity:0;transform:translateY(28px)}
+.tstars{color:var(--gold);font-size:16px;letter-spacing:2px;margin-bottom:16px}
+.ttext{font-size:14px;color:var(--charcoal);line-height:1.8;margin-bottom:24px;font-weight:300;font-style:italic}
+.tauthor{display:flex;align-items:center;gap:12px}
+.tavatar{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:600;color:#fff;flex-shrink:0}
+.tname{font-size:14px;font-weight:500;color:var(--charcoal)}
+.trole{font-size:12px;color:var(--dust);margin-top:2px}
+
+/* WHY */
+.why{padding:100px 5vw;display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center;background:var(--cream)}
+.why-img-wrap{border-radius:24px;overflow:hidden;aspect-ratio:4/5;position:relative;opacity:0;transform:translateX(-32px)}
+.why-img-para{position:absolute;width:100%;height:115%;top:-5%;background:linear-gradient(145deg,#B8967A,#7A5540 50%,#4A3025)}
+.why-badge{position:absolute;bottom:32px;left:32px;background:rgba(255,255,255,0.14);backdrop-filter:blur(8px);border-radius:16px;padding:20px 24px;border:1px solid rgba(255,255,255,0.2)}
+.why-text{opacity:0;transform:translateX(32px)}
+.why-text h2{font-family:'Playfair Display',serif;font-size:clamp(28px,3vw,42px);font-weight:700;line-height:1.2;letter-spacing:-1px;color:var(--charcoal);margin-bottom:32px}
+.wlist{display:flex;flex-direction:column;gap:24px}
+.witem{display:flex;gap:18px;align-items:flex-start}
+.wdot{width:40px;height:40px;border-radius:12px;flex-shrink:0;background:rgba(196,130,90,0.12);display:flex;align-items:center;justify-content:center;transition:background .3s,transform .3s}
+.witem:hover .wdot{background:var(--clay);transform:scale(1.08)}
+.wdot svg{width:18px;height:18px;stroke:var(--clay);fill:none;stroke-width:1.5;transition:stroke .3s}
+.witem:hover .wdot svg{stroke:#fff}
+.wtext h4{font-size:15px;font-weight:500;color:var(--charcoal);margin-bottom:4px}
+.wtext p{font-size:13px;color:var(--dust);line-height:1.7;font-weight:300}
+
+/* CTA */
+.cta-wrap{padding:0 5vw 80px}
+.cta{border-radius:28px;background:var(--charcoal);padding:80px;display:flex;align-items:center;justify-content:space-between;position:relative;overflow:hidden;opacity:0;transform:translateY(32px)}
+.cta::before{content:'';position:absolute;right:-80px;top:-80px;width:360px;height:360px;border-radius:50%;background:radial-gradient(circle,rgba(196,130,90,0.18) 0%,transparent 70%)}
+.cta h2{font-family:'Playfair Display',serif;font-size:clamp(28px,3.5vw,44px);font-weight:700;color:#fff;line-height:1.2;margin-bottom:12px;letter-spacing:-1px}
+.cta h2 em{font-style:italic;color:var(--gold)}
+.cta p{font-size:15px;color:rgba(255,255,255,0.5);font-weight:300}
+.cta-right{display:flex;flex-direction:column;gap:12px;align-items:flex-end;flex-shrink:0}
+.btn-cta{background:var(--clay);color:#fff;padding:16px 36px;border-radius:100px;font-size:15px;font-weight:500;text-decoration:none;white-space:nowrap;display:inline-block;position:relative;overflow:hidden}
+.btn-cta .bcfill{position:absolute;inset:0;background:var(--clay-dark);transform:scaleX(0);transform-origin:left;transition:transform .38s cubic-bezier(.76,0,.24,1);border-radius:inherit}
+.btn-cta:hover .bcfill{transform:scaleX(1)}
+.btn-cta span{position:relative;z-index:1}
+.cta-phone{color:rgba(255,255,255,0.45);font-size:13px;text-align:right}
+.cta-phone a{color:rgba(255,255,255,0.75);text-decoration:none}
+
+/* FOOTER */
+footer{background:var(--charcoal);padding:60px 5vw 32px}
+.footer-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:60px;margin-bottom:48px}
+.flogo{font-family:'Playfair Display',serif;font-size:24px;font-weight:700;color:#fff}
+.flogo span{color:var(--clay)}
+.footer-brand p{font-size:13px;color:rgba(255,255,255,0.38);line-height:1.8;margin-top:14px;max-width:280px;font-weight:300}
+.footer-col h4{font-size:12px;text-transform:uppercase;letter-spacing:1.5px;color:rgba(255,255,255,0.3);margin-bottom:18px}
+.footer-col ul{list-style:none;display:flex;flex-direction:column;gap:10px}
+.footer-col a{font-size:13px;color:rgba(255,255,255,0.5);text-decoration:none;transition:color .2s}
+.footer-col a:hover{color:#fff}
+.footer-bottom{border-top:1px solid rgba(255,255,255,0.08);padding-top:24px;display:flex;justify-content:space-between;align-items:center}
+.footer-bottom p{font-size:12px;color:rgba(255,255,255,0.28)}
+.fsocial{display:flex;gap:12px}
+.slink{width:32px;height:32px;border-radius:8px;border:1px solid rgba(255,255,255,0.1);display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,0.38);text-decoration:none;font-size:12px;transition:all .2s}
+.slink:hover{border-color:var(--clay);color:var(--clay)}
+
+a,button{cursor:none}
+@media(max-width:900px){
+  html{cursor:auto}
+  a,button{cursor:pointer}
+  #cursor,#cursor-follower{display:none}
+  .hero,.intro,.why{grid-template-columns:1fr}
+  .hero-media{order:-1}
+  .stats,.process-grid,.palette-grid,.tgrid{grid-template-columns:1fr 1fr}
+  .stat{border-right:none;border-bottom:1px solid rgba(255,255,255,0.1)}
+  .gallery-grid{grid-template-columns:1fr 1fr;grid-template-rows:auto}
+  .gitem:first-child,.gitem:nth-child(4){grid-column:span 1}
+  .cta{flex-direction:column;gap:36px;padding:48px 36px}
+  .cta-right{align-items:flex-start}
+  .footer-grid{grid-template-columns:1fr 1fr;gap:36px}
+  .services-strip{flex-wrap:wrap}
+  .service-item{flex:1 1 40%;border-right:none;border-bottom:1px solid rgba(255,255,255,0.1);padding:20px}
+}
+</style>
+</head>
+<body>
+<div id="scroll-progress"></div>
+<div id="cursor"></div>
+<div id="cursor-follower"></div>
+
+<!-- NAV -->
+<nav>
+  <a href="#" class="nav-logo">Dhoond<span>.</span></a>
+  <ul class="nav-links">
+    <li><a href="#">Home</a></li>
+    <li><a href="#">About</a></li>
+    <li><a href="#">Services</a></li>
+    <li><a href="#">Portfolio</a></li>
+    <li><a href="#">Contact</a></li>
+  </ul>
+  <a href="tel:+919102740274" class="nav-cta">Book Now ↗</a>
+</nav>
+
+<!-- HERO -->
+<section class="hero" id="hero">
+  <div class="hero-content">
+    <div class="hero-badge">Professional Painting Services</div>
+    <h1>
+      <span class="line-wrap"><span class="line-inner">Colour Your</span></span>
+      <span class="line-wrap"><em><span class="line-inner">Dream Space</span></em></span>
+      <span class="line-wrap"><span class="line-inner">With Precision</span></span>
+    </h1>
+    <p class="hero-sub">Dhoond brings verified painting professionals to your doorstep — interior, exterior, and texture painting done right, in time.</p>
+    <div class="hero-actions">
+      <a href="tel:+919102740274" class="btn-primary">
+        <span class="btn-fill"></span>
+        <span>Book a Painter</span>
+        <svg viewBox="0 0 24 24" stroke="currentColor" fill="none" width="15" height="15"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2z"/></svg>
+      </a>
+      <a href="#gallery" class="btn-outline">View Our Work</a>
+    </div>
+    <div class="hero-rating">
+      <div class="stars">★★★★★</div>
+      <span style="font-size:13px;color:var(--dust)">4.9/5 · <strong style="color:var(--charcoal)">1,200+</strong> verified reviews</span>
+    </div>
+  </div>
+  <div class="hero-media">
+    <div class="hero-tag">✓ Verified Experts</div>
+    <div class="hero-main-img">
+      <div class="hero-parallax" id="heroP">
+        <div class="paint-bg">
+          <p style="color:#fff;font-family:'Playfair Display',serif;font-size:22px;font-style:italic;line-height:1.3">From bare walls<br>to breathtaking rooms</p>
+        </div>
+      </div>
+    </div>
+    <div class="hero-float-card" id="floatCard">
+      <div class="fl">Projects Done</div>
+      <div class="fv">5,200<span style="color:var(--clay)">+</span></div>
+      <div class="fs">Across India</div>
+    </div>
+  </div>
+</section>
+
+<!-- MARQUEE -->
+<div class="marquee-wrap">
+  <div class="marquee-track" id="mtrack">
+    <div class="marquee-item"><span class="mdot"></span>Interior Painting</div>
+    <div class="marquee-item"><span class="mdot"></span>Exterior Painting</div>
+    <div class="marquee-item"><span class="mdot"></span>Texture &amp; Design</div>
+    <div class="marquee-item"><span class="mdot"></span>Waterproofing</div>
+    <div class="marquee-item"><span class="mdot"></span>Wood Finish</div>
+    <div class="marquee-item"><span class="mdot"></span>Commercial Painting</div>
+    <div class="marquee-item"><span class="mdot"></span>Wallpaper Install</div>
+    <div class="marquee-item"><span class="mdot"></span>Stencil Art</div>
+    <div class="marquee-item"><span class="mdot"></span>Interior Painting</div>
+    <div class="marquee-item"><span class="mdot"></span>Exterior Painting</div>
+    <div class="marquee-item"><span class="mdot"></span>Texture &amp; Design</div>
+    <div class="marquee-item"><span class="mdot"></span>Waterproofing</div>
+    <div class="marquee-item"><span class="mdot"></span>Wood Finish</div>
+    <div class="marquee-item"><span class="mdot"></span>Commercial Painting</div>
+    <div class="marquee-item"><span class="mdot"></span>Wallpaper Install</div>
+    <div class="marquee-item"><span class="mdot"></span>Stencil Art</div>
+  </div>
+</div>
+
+<!-- SERVICES STRIP -->
+<div class="services-strip" id="sstrip">
+  <div class="service-item">
+    <div class="si-icon"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg></div>
+    <div><h3>Interior Painting</h3><p>Walls, ceilings &amp; trims</p></div>
+  </div>
+  <div class="service-item">
+    <div class="si-icon"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg></div>
+    <div><h3>Exterior Painting</h3><p>Weather-resistant finishes</p></div>
+  </div>
+  <div class="service-item">
+    <div class="si-icon"><svg viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8"/></svg></div>
+    <div><h3>Texture &amp; Design</h3><p>Unique wall textures</p></div>
+  </div>
+  <div class="service-item">
+    <div class="si-icon"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+    <div><h3>Waterproofing</h3><p>Damp &amp; leak protection</p></div>
+  </div>
+</div>
+
+<!-- INTRO -->
+<section class="intro" id="introSec">
+  <div class="intro-imgs">
+    <div class="intro-img" style="margin-top:40px" id="iimg1">
+      <div class="intro-img-inner" style="background:linear-gradient(145deg,#D4B090,#A87858)"></div>
+    </div>
+    <div class="intro-img" id="iimg2">
+      <div class="intro-img-inner" style="background:linear-gradient(145deg,#8FA882,#5A7060)"></div>
+    </div>
+  </div>
+  <div class="intro-text" id="introText" style="opacity:0;transform:translateX(32px)">
+    <span class="eyebrow">Our Story</span>
+    <h2 style="font-family:'Playfair Display',serif;font-size:clamp(30px,3.5vw,46px);font-weight:700;line-height:1.15;letter-spacing:-1px;color:var(--charcoal);margin-bottom:20px">We Make Every Wall Tell A <em style="color:var(--clay);font-style:italic">Beautiful</em> Story</h2>
+    <p>At Dhoond, we believe your home deserves more than just paint — it deserves craftsmanship. Founded in Nagpur, we've grown into India's fastest-growing home services network.</p>
+    <p>Every project is handled by background-checked, trained professionals using premium paints and proven techniques that last for years.</p>
+    <a href="#" class="btn-primary" style="width:fit-content;margin-top:12px;display:inline-flex">
+      <span class="btn-fill"></span>
+      <span>Explore Services</span>
+      <svg viewBox="0 0 24 24" stroke="currentColor" fill="none" width="15" height="15"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+    </a>
+  </div>
+</section>
+
+<!-- STATS -->
+<section class="stats" id="statsSec">
+  <div class="stat"><div class="num"><span class="cnum" data-target="5200">0</span><span class="gold">+</span></div><div class="slabel">Projects Completed</div></div>
+  <div class="stat"><div class="num"><span class="cnum" data-target="1200">0</span><span class="gold">+</span></div><div class="slabel">Happy Clients</div></div>
+  <div class="stat"><div class="num"><span class="cnum" data-target="50">0</span><span class="gold">+</span></div><div class="slabel">Expert Painters</div></div>
+</section>
+
+<!-- PROCESS -->
+<section class="process" id="processSec">
+  <div class="section-header">
+    <span class="eyebrow">How It Works</span>
+    <h2>Painting Made Simple</h2>
+    <div class="brush-line"></div>
+    <p>From booking to the final coat, we handle everything with care.</p>
+  </div>
+  <div class="process-grid">
+    <div class="process-card" data-num="01">
+      <div class="picon" style="background:rgba(196,130,90,0.1)"><svg viewBox="0 0 24 24" stroke="var(--clay)"><rect x="5" y="2" width="14" height="20" rx="2"/><path d="M9 7h6M9 11h6M9 15h4"/></svg></div>
+      <h3>Book Online</h3>
+      <p>Choose your service, pick a date, and confirm in under 2 minutes — anytime, anywhere.</p>
+    </div>
+    <div class="process-card" data-num="02">
+      <div class="picon" style="background:rgba(143,168,130,0.15)"><svg viewBox="0 0 24 24" stroke="var(--sage)"><circle cx="12" cy="8" r="5"/><path d="M3 21v-2a7 7 0 0 1 7-7h4a7 7 0 0 1 7 7v2"/></svg></div>
+      <h3>Expert Visit</h3>
+      <p>A verified painter visits, assesses the walls, and provides a transparent quote.</p>
+    </div>
+    <div class="process-card" data-num="03">
+      <div class="picon" style="background:rgba(58,81,67,0.1)"><svg viewBox="0 0 24 24" stroke="var(--forest)"><path d="M3 6l3 1m0 0l-3 9a5 5 0 0 0 6 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5 5 0 0 0 6 0M18 7l3 9m-3-9l-6-2"/></svg></div>
+      <h3>Painting Begins</h3>
+      <p>Our team arrives on schedule, protects your furniture, and applies premium paints.</p>
+    </div>
+    <div class="process-card" data-num="04">
+      <div class="picon" style="background:rgba(212,168,90,0.1)"><svg viewBox="0 0 24 24" stroke="var(--gold)"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>
+      <h3>Final Inspection</h3>
+      <p>We do a thorough walkthrough. 100% satisfaction guaranteed before we leave.</p>
+    </div>
+  </div>
+</section>
+
+<!-- PALETTE -->
+<section class="palette" id="palSec">
+  <div class="section-header">
+    <span class="eyebrow">Popular Shades</span>
+    <h2>Curated Colour Palette</h2>
+    <div class="brush-line"></div>
+    <p>Trending colours hand-picked by our design experts for Indian homes.</p>
+  </div>
+  <div class="palette-grid">
+    <div class="color-card"><div class="cswatch"><div class="cswatch-inner" style="background:linear-gradient(145deg,#C4825A,#9B5E3A)"></div></div><div class="cinfo"><div class="cname">Terracotta Bliss</div><div class="ccode">Asian Paints · Tractor Emulsion</div><div class="ctag">Living Room</div></div></div>
+    <div class="color-card"><div class="cswatch"><div class="cswatch-inner" style="background:linear-gradient(145deg,#8FA882,#5A7060)"></div></div><div class="cinfo"><div class="cname">Sage Garden</div><div class="ccode">Berger · Silk Glamour</div><div class="ctag">Bedroom</div></div></div>
+    <div class="color-card"><div class="cswatch"><div class="cswatch-inner" style="background:linear-gradient(145deg,#D4C4A0,#B0A080)"></div></div><div class="cinfo"><div class="cname">Champagne Mist</div><div class="ccode">Dulux · Velvet Touch</div><div class="ctag">All Rooms</div></div></div>
+    <div class="color-card"><div class="cswatch"><div class="cswatch-inner" style="background:linear-gradient(145deg,#3A5143,#253630)"></div></div><div class="cinfo"><div class="cname">Midnight Forest</div><div class="ccode">Nerolac · Excel Total</div><div class="ctag">Feature Wall</div></div></div>
+    <div class="color-card"><div class="cswatch"><div class="cswatch-inner" style="background:linear-gradient(145deg,#E8C4B0,#C8987A)"></div></div><div class="cinfo"><div class="cname">Blush Dune</div><div class="ccode">Asian Paints · Apex</div><div class="ctag">Nursery</div></div></div>
+    <div class="color-card"><div class="cswatch"><div class="cswatch-inner" style="background:linear-gradient(145deg,#B8C4D4,#8898AC)"></div></div><div class="cinfo"><div class="cname">Stormy Blue</div><div class="ccode">Berger · WeatherCoat</div><div class="ctag">Exterior</div></div></div>
+    <div class="color-card"><div class="cswatch"><div class="cswatch-inner" style="background:linear-gradient(145deg,#F5E8D0,#E0C8A0)"></div></div><div class="cinfo"><div class="cname">Ivory Regal</div><div class="ccode">Dulux · SuperCover</div><div class="ctag">Ceiling</div></div></div>
+    <div class="color-card"><div class="cswatch"><div class="cswatch-inner" style="background:linear-gradient(145deg,#8C6868,#5C4040)"></div></div><div class="cinfo"><div class="cname">Warm Mahogany</div><div class="ccode">Nerolac · Impressions</div><div class="ctag">Dining Room</div></div></div>
+  </div>
+  <div style="text-align:center;margin-top:40px"><a href="#" class="btn-outline" style="display:inline-block">View All 200+ Colours</a></div>
+</section>
+
+<!-- GALLERY -->
+<section id="gallery" class="gallery">
+  <div class="section-header">
+    <span class="eyebrow">Our Portfolio</span>
+    <h2>Spaces We've Transformed</h2>
+    <div class="brush-line"></div>
+  </div>
+  <div class="gallery-grid">
+    <div class="gitem"><div class="gbg" style="background:linear-gradient(145deg,#C4A080,#8A6040)"></div><div class="glabel"><span>Living Room Makeover</span><p>Sector 21, Nagpur</p></div></div>
+    <div class="gitem"><div class="gbg" style="background:linear-gradient(145deg,#8FA882,#3A5143)"></div><div class="glabel"><span>Bedroom Retreat</span><p>Banjara Hills, Hyderabad</p></div></div>
+    <div class="gitem"><div class="gbg" style="background:linear-gradient(145deg,#D4B8A0,#9A7858)"></div><div class="glabel"><span>Full Home Painting</span><p>Koramangala, Bengaluru</p></div></div>
+    <div class="gitem"><div class="gbg" style="background:linear-gradient(145deg,#B8C4D4,#607080)"></div><div class="glabel"><span>Exterior Excellence</span><p>Vile Parle, Mumbai</p></div></div>
+    <div class="gitem"><div class="gbg" style="background:linear-gradient(145deg,#D4A85A,#8A6820)"></div><div class="glabel"><span>Texture Feature Wall</span><p>South Delhi</p></div></div>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section class="testimonials" id="testSec">
+  <div class="section-header">
+    <span class="eyebrow">Client Love</span>
+    <h2>Loved by Thousands</h2>
+    <div class="brush-line"></div>
+  </div>
+  <div class="tgrid">
+    <div class="tcard"><div class="tstars">★★★★★</div><p class="ttext">"The painting team arrived exactly on time, covered all furniture, and the finish is just flawless. Our living room looks like a magazine spread now!"</p><div class="tauthor"><div class="tavatar" style="background:var(--clay)">PS</div><div><div class="tname">Priya Sharma</div><div class="trole">Homeowner, Nagpur</div></div></div></div>
+    <div class="tcard"><div class="tstars">★★★★★</div><p class="ttext">"Booked a full house painting. The team was clean, fast, and the finish is just premium. The terracotta accent wall they suggested is stunning!"</p><div class="tauthor"><div class="tavatar" style="background:var(--forest)">RM</div><div><div class="tname">Rahul Mehta</div><div class="trole">Business Owner</div></div></div></div>
+    <div class="tcard"><div class="tstars">★★★★★</div><p class="ttext">"Waterproofing issue for 2 years — Dhoond's painter came in 15 minutes, diagnosed it instantly, and fixed it permanently. Lifesaver!"</p><div class="tauthor"><div class="tavatar" style="background:var(--dust)">SK</div><div><div class="tname">Sunita Kapoor</div><div class="trole">Resident, Bengaluru</div></div></div></div>
+  </div>
+</section>
+
+<!-- WHY -->
+<section class="why" id="whySec">
+  <div class="why-img-wrap">
+    <div class="why-img-para" id="whyImgP"></div>
+    <div class="why-badge">
+      <p style="color:#fff;font-size:13px;opacity:.65;margin-bottom:4px">Satisfaction Rate</p>
+      <p style="color:#fff;font-family:'Playfair Display',serif;font-size:32px;font-weight:700">98.4%</p>
+    </div>
+  </div>
+  <div class="why-text">
+    <span class="eyebrow">Why Dhoond</span>
+    <h2>Affordable Painting Without Compromising Quality</h2>
+    <div class="wlist">
+      <div class="witem"><div class="wdot"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78L12 21.23l7.78-7.78a5.5 5.5 0 0 0 0-7.78z"/></svg></div><div class="wtext"><h4>Verified &amp; Trained Professionals</h4><p>Every painter undergoes background checks and skills training before joining Dhoond.</p></div></div>
+      <div class="witem"><div class="wdot"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg></div><div class="wtext"><h4>On-Time Guarantee</h4><p>We show up at the scheduled time, every time. No delays, ever.</p></div></div>
+      <div class="witem"><div class="wdot"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div><div class="wtext"><h4>Transparent Pricing</h4><p>No hidden charges. Get a detailed quote upfront — what you see is what you pay.</p></div></div>
+      <div class="witem"><div class="wdot"><svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div><div class="wtext"><h4>Post-Work Clean-Up</h4><p>Drop cloths, covers, and full post-job cleanup — always included, always standard.</p></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<div class="cta-wrap"><div class="cta" id="ctaEl">
+  <div>
+    <h2>Book Trusted Painting<br><em>In Seconds.</em></h2>
+    <p>Join the quickest growing home services network today.</p>
+  </div>
+  <div class="cta-right">
+    <a href="tel:+919102740274" class="btn-cta"><span class="bcfill"></span><span>Book a Painter Now ↗</span></a>
+    <div class="cta-phone">Call us: <a href="tel:+919102740274">+91 91027 40274</a></div>
+  </div>
+</div></div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-grid">
+    <div class="footer-brand"><div class="flogo">Dhoond<span>.</span></div><p>Nagpur's fastest home services marketplace. Quality at your doorstep in 15 minutes.</p></div>
+    <div class="footer-col"><h4>Services</h4><ul><li><a href="#">Interior Painting</a></li><li><a href="#">Exterior Painting</a></li><li><a href="#">Texture Painting</a></li><li><a href="#">Waterproofing</a></li><li><a href="#">Pest Control</a></li></ul></div>
+    <div class="footer-col"><h4>Support</h4><ul><li><a href="#">Help Center</a></li><li><a href="#">Privacy Policy</a></li><li><a href="#">Terms of Service</a></li><li><a href="#">Refund Policy</a></li></ul></div>
+    <div class="footer-col"><h4>For Professionals</h4><ul><li><a href="#">Join as Expert</a></li><li><a href="#">Partner with Us</a></li><li><a href="#">Training &amp; Safety</a></li></ul></div>
+  </div>
+  <div class="footer-bottom">
+    <p>© 2026 DhoondApp. All rights reserved.</p>
+    <div class="fsocial">
+      <a href="#" class="slink">W</a><a href="#" class="slink">f</a><a href="#" class="slink">in</a><a href="#" class="slink">X</a>
+    </div>
+  </div>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script>
+gsap.registerPlugin(ScrollTrigger);
+
+/* ──────────────────────────────
+   CUSTOM CURSOR
+────────────────────────────── */
+const cur = document.getElementById('cursor');
+const fol = document.getElementById('cursor-follower');
+let mx=0, my=0, fx=0, fy=0, active=false;
+document.addEventListener('mousemove', e => {
+  if(!active){ gsap.to([cur,fol],{opacity:1,duration:.3}); active=true; }
+  mx=e.clientX; my=e.clientY;
+  gsap.to(cur,{x:mx,y:my,duration:.1,ease:'power2.out'});
+});
+(function raf(){
+  fx += (mx-fx)*.09;
+  fy += (my-fy)*.09;
+  gsap.set(fol,{x:fx,y:fy});
+  requestAnimationFrame(raf);
+})();
+document.querySelectorAll('a,button,.color-card,.gitem,.process-card,.witem').forEach(el=>{
+  el.addEventListener('mouseenter',()=>{ document.body.classList.add('cursor-hover'); gsap.to(cur,{scale:.5,duration:.2}); });
+  el.addEventListener('mouseleave',()=>{ document.body.classList.remove('cursor-hover'); gsap.to(cur,{scale:1,duration:.2}); });
+});
+
+/* ──────────────────────────────
+   SCROLL PROGRESS BAR
+────────────────────────────── */
+window.addEventListener('scroll',()=>{
+  const p = (window.scrollY/(document.documentElement.scrollHeight-innerHeight))*100;
+  document.getElementById('scroll-progress').style.width = p+'%';
+},{passive:true});
+
+/* ──────────────────────────────
+   INFINITE MARQUEE
+────────────────────────────── */
+const mtrack = document.getElementById('mtrack');
+let mpos = 0;
+(function mraf(){
+  mpos -= 0.6;
+  const half = mtrack.scrollWidth / 2;
+  if(Math.abs(mpos) >= half) mpos = 0;
+  mtrack.style.transform = `translateX(${mpos}px)`;
+  requestAnimationFrame(mraf);
+})();
+
+/* ──────────────────────────────
+   HERO — staggered entrance
+────────────────────────────── */
+const heroTL = gsap.timeline({delay:.25});
+heroTL
+  .to('.hero-badge',   {opacity:1, y:0,     duration:.65, ease:'power3.out'})
+  .to('.line-inner',   {y:'0%',             duration:.9,  ease:'power4.out', stagger:.14}, '-=.3')
+  .to('.hero-sub',     {opacity:1, y:0,     duration:.7,  ease:'power3.out'}, '-=.45')
+  .to('.hero-actions', {opacity:1, y:0,     duration:.6,  ease:'power3.out'}, '-=.4')
+  .to('.hero-rating',  {opacity:1, y:0,     duration:.5,  ease:'power3.out'}, '-=.3')
+  .to('.hero-media',   {opacity:1, scale:1, duration:.95, ease:'power3.out'}, '-=.85')
+  .to('.hero-tag',     {opacity:1, x:0,     duration:.5,  ease:'back.out(2)'}, '-=.4')
+  .to('#floatCard',    {opacity:1, y:0,     duration:.7,  ease:'back.out(1.8)'}, '-=.25');
+
+/* ──────────────────────────────
+   HERO IMAGE PARALLAX (scroll)
+────────────────────────────── */
+gsap.to('#heroP',{
+  y:'-12%', ease:'none',
+  scrollTrigger:{trigger:'.hero',start:'top top',end:'bottom top',scrub:1.2}
+});
+
+/* ──────────────────────────────
+   FLOATING CARD BOB
+────────────────────────────── */
+gsap.to('#floatCard',{y:-10,duration:2.4,ease:'sine.inOut',yoyo:true,repeat:-1,delay:1.5});
+
+/* ──────────────────────────────
+   SERVICES ITEMS
+────────────────────────────── */
+ScrollTrigger.create({
+  trigger:'#sstrip', start:'top 85%',
+  onEnter:()=>gsap.to('.service-item',{opacity:1,y:0,stagger:.1,duration:.75,ease:'power3.out'})
+});
+
+/* ──────────────────────────────
+   INTRO — slide + parallax
+────────────────────────────── */
+gsap.to('#iimg1 .intro-img-inner',{
+  y:'-12%', ease:'none',
+  scrollTrigger:{trigger:'#introSec',start:'top bottom',end:'bottom top',scrub:1.5}
+});
+gsap.to('#iimg2 .intro-img-inner',{
+  y:'-7%', ease:'none',
+  scrollTrigger:{trigger:'#introSec',start:'top bottom',end:'bottom top',scrub:1}
+});
+ScrollTrigger.create({
+  trigger:'#introSec', start:'top 78%',
+  onEnter:()=>{
+    gsap.fromTo('#iimg1',{opacity:0,x:-36},{opacity:1,x:0,duration:.95,ease:'power3.out'});
+    gsap.fromTo('#iimg2',{opacity:0,x:-24},{opacity:1,x:0,duration:.95,delay:.12,ease:'power3.out'});
+    gsap.to('#introText',{opacity:1,x:0,duration:.95,delay:.08,ease:'power3.out'});
+  }
+});
+
+/* ──────────────────────────────
+   COUNTERS — count-up
+────────────────────────────── */
+let counted = false;
+ScrollTrigger.create({
+  trigger:'#statsSec', start:'top 82%',
+  onEnter:()=>{
+    if(counted) return; counted=true;
+    gsap.to('.stat',{opacity:1,y:0,stagger:.15,duration:.7,ease:'power3.out'});
+    document.querySelectorAll('.cnum').forEach(el=>{
+      const target = +el.dataset.target;
+      const obj = {val:0};
+      gsap.to(obj,{
+        val:target, duration:2.2, ease:'power2.out',
+        onUpdate(){ el.textContent = Math.round(obj.val).toLocaleString('en-IN'); }
+      });
+    });
+  }
+});
+
+/* ──────────────────────────────
+   PROCESS CARDS — stagger rise
+────────────────────────────── */
+ScrollTrigger.create({
+  trigger:'#processSec', start:'top 78%',
+  onEnter:()=>gsap.to('.process-card',{opacity:1,y:0,stagger:.13,duration:.85,ease:'power3.out'})
+});
+
+/* ──────────────────────────────
+   PALETTE — scale pop
+────────────────────────────── */
+ScrollTrigger.create({
+  trigger:'#palSec', start:'top 78%',
+  onEnter:()=>gsap.to('.color-card',{opacity:1,scale:1,stagger:.07,duration:.65,ease:'back.out(1.5)'})
+});
+
+/* ──────────────────────────────
+   GALLERY — fade in stagger
+────────────────────────────── */
+ScrollTrigger.create({
+  trigger:'#gallery', start:'top 82%',
+  onEnter:()=>gsap.to('.gitem',{opacity:1,stagger:.1,duration:.75,ease:'power3.out'})
+});
+
+/* ──────────────────────────────
+   TESTIMONIALS
+────────────────────────────── */
+ScrollTrigger.create({
+  trigger:'#testSec', start:'top 80%',
+  onEnter:()=>gsap.to('.tcard',{opacity:1,y:0,stagger:.13,duration:.8,ease:'power3.out'})
+});
+
+/* ──────────────────────────────
+   WHY SECTION — slide from sides + parallax
+────────────────────────────── */
+gsap.to('#whyImgP',{
+  y:'-10%', ease:'none',
+  scrollTrigger:{trigger:'#whySec',start:'top bottom',end:'bottom top',scrub:1.3}
+});
+ScrollTrigger.create({
+  trigger:'#whySec', start:'top 78%',
+  onEnter:()=>{
+    gsap.to('.why-img-wrap',{opacity:1,x:0,duration:.95,ease:'power3.out'});
+    gsap.to('.why-text',{opacity:1,x:0,duration:.95,delay:.15,ease:'power3.out'});
+  }
+});
+
+/* ──────────────────────────────
+   CTA
+────────────────────────────── */
+ScrollTrigger.create({
+  trigger:'#ctaEl', start:'top 88%',
+  onEnter:()=>gsap.to('.cta',{opacity:1,y:0,duration:.95,ease:'power3.out'})
+});
+
+/* ──────────────────────────────
+   SECTION HEADINGS — subtle fade-up
+────────────────────────────── */
+document.querySelectorAll('.section-header,.intro-text h2,.why-text h2,.cta h2').forEach(el=>{
+  ScrollTrigger.create({
+    trigger:el, start:'top 90%',
+    onEnter:()=>gsap.fromTo(el,{opacity:0,y:22},{opacity:1,y:0,duration:.8,ease:'power3.out'})
+  });
+});
+</script>
+</body>
+</html>
