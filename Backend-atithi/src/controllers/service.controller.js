@@ -36,4 +36,15 @@ const deleteServiceController = async (req, res) => {
   } catch (error) { res.status(500).json({ success: false, message: error.message }); }
 };
 
-module.exports = { getServicesController, getServiceByIdController, createServiceController, deleteServiceController };
+const updateServiceController = async (req, res) => {
+  try {
+    const { title, category, original_price, discount_price, discount_tag, description, image } = req.body;
+    const service = await serviceModel.updateService(req.params.id, {
+      title, category, original_price, discount_price, discount_tag, description, image
+    });
+    if (!service) return res.status(404).json({ success: false, message: 'Service not found' });
+    res.status(200).json({ success: true, data: service });
+  } catch (error) { res.status(500).json({ success: false, message: error.message }); }
+};
+
+module.exports = { getServicesController, getServiceByIdController, createServiceController, deleteServiceController, updateServiceController };

@@ -9,15 +9,25 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     const savedUser = localStorage.getItem('dhoond_user');
     if (savedUser) {
-      setUser(JSON.parse(savedUser));
+      try { setUser(JSON.parse(savedUser)); } catch {}
     }
     setLoading(false);
   }, []);
 
-  const login = (mobileNumber) => {
-    const newUser = { mobile: mobileNumber };
+  // Call after OTP verify — pass full user object from backend
+  const login = (name, mobileNumber, extras = {}) => {
+    const newUser = { name, mobile: mobileNumber, ...extras };
     setUser(newUser);
     localStorage.setItem('dhoond_user', JSON.stringify(newUser));
+  };
+
+  // Update user profile fields without full re-login
+  const updateUser = (fields) => {
+    setUser(prev => {
+      const updated = { ...prev, ...fields };
+      localStorage.setItem('dhoond_user', JSON.stringify(updated));
+      return updated;
+    });
   };
 
   const logout = () => {
@@ -26,7 +36,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, isAuthenticated: !!user, loading }}>
+    <AuthContext.Provider value={{ user, login, logout, updateUser, isAuthenticated: !!user, loading }}>
       {children}
     </AuthContext.Provider>
   );

@@ -7,3 +7,22 @@ build/
 backend/node_modules/
 frontend/node_modules/
 frontend/dist/
+
+# SQL backup files - never commit these
+Backend-atithi/*.sql
+
+# Large asset folders not needed in repo
+Painting/
+social media/
+files/
+
+# Office documents
+*.docx
+*.xlsx
+*.pptx
+
+# Temp/test scripts
+Backend-atithi/test-*.js
+Backend-atithi/inspect_db.js
+Backend-atithi/update-price.js
+Backend-atithi/migrate_*.js

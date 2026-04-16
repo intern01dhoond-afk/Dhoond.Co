@@ -27,8 +27,18 @@ const deletePartnerController = async (req, res) => {
   }
 };
 
+const updatePartnerDocsController = async (req, res) => {
+  try {
+    const partner = await partnerModel.updatePartnerDocs(req.params.id, req.body.partner_docs);
+    res.json({ success: true, data: partner });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
 module.exports = {
   createPartnerController,
   getPartnersController,
-  deletePartnerController
+  deletePartnerController,
+  updatePartnerDocsController
 };

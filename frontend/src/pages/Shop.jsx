@@ -104,7 +104,7 @@ const Shop = () => {
   useEffect(() => {
     // Don't fetch from API when in a painting sub-view
     if (category === 'painter') return;
-    const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+    const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5001';
     fetch(`${apiUrl}/api/services?category=${category}&search=${search}`)
       .then(res => res.json())
       .then(data => {

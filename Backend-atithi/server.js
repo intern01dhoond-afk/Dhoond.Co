@@ -2,7 +2,7 @@ require("dotenv").config();
 const app = require("./src/app");
 const pool = require("./src/db/db");
 
-const PORT = 5001; // Forced to 5001 to handle ghost process on 5000
+const PORT = process.env.PORT || 5001;
 
 
 

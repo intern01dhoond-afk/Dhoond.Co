@@ -2,13 +2,16 @@ import React, { useEffect, useState, useRef } from 'react';
 import { ArrowUpRight, Clock, ShieldCheck, Star, ChevronRight, ChevronLeft } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
-
-
+import { useUI } from '../context/UIContext';
+import ComingSoonModal from '../components/ComingSoonModal';
 
 const Home = () => {
   const navigate = useNavigate();
   const { addToCart } = useCart();
   const [featuredServices, setFeaturedServices] = useState([]);
+  const { openComingSoon, closeComingSoon, showComingSoon } = useUI();
+  const [currentCity, setCurrentCity] = useState('your area');
+  const [shakingId, setShakingId] = useState(null);
   const scrollContainerRef = useRef(null);
 
   const scrollLeft = () => {
@@ -22,15 +25,51 @@ const Home = () => {
       scrollContainerRef.current.scrollBy({ left: 320, behavior: 'smooth' });
     }
   };
-
   useEffect(() => {
-    const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+    // Detect Location for Service Availability
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(async (pos) => {
+        try {
+          const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${pos.coords.latitude}&lon=${pos.coords.longitude}`);
+          const data = await res.json();
+          const city = data.address.city || data.address.town || data.address.village || 'your area';
+          setCurrentCity(city);
+        } catch(e) {}
+      });
+    }
+
+    const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5001';
     fetch(`${apiUrl}/api/services`)
       .then(res => res.json())
-      .then(data => setFeaturedServices(data.slice(0, 6)))
-      .catch(() => {});
+      .then(result => {
+        // Handle wrapped vs direct response
+        const data = Array.isArray(result) ? result : (result.services || result.data || []);
+        
+        // Filter for painting services only, or use a curated list if none found
+        const paintingServices = data.filter(s => s.title && s.title.toLowerCase().includes('paint'));
+        
+        if (paintingServices.length > 0) {
+          setFeaturedServices(paintingServices.slice(0, 6));
+        } else {
+          // Fallback curated list of painting services for the launch
+          setFeaturedServices([
+            { id: 'f1', title: 'Full Home Painting (1BHK)', discountPrice: 5999, originalPrice: 8999, image: '/bedroom_painting.png' },
+            { id: 'f2', title: 'Kitchen & Bathroom Painting', discountPrice: 1999, originalPrice: 2999, image: '/wall2.jpg' },
+            { id: 'f3', title: 'Exterior Weatherproof Coating', discountPrice: 12999, originalPrice: 18999, image: '/exterior.jpg' },
+            { id: 'f4', title: 'Specialty Texture Wall', discountPrice: 2499, originalPrice: 3999, image: '/interior.jpg' }
+          ]);
+        }
+      })
+      .catch(() => {
+         // Fallback on error
+         setFeaturedServices([
+            { id: 'f1', title: 'Full Home Painting (1BHK)', discountPrice: 5999, originalPrice: 8999, image: '/bedroom_painting.png' },
+            { id: 'f2', title: 'Kitchen & Bathroom Painting', discountPrice: 1999, originalPrice: 2999, image: '/wall2.jpg' },
+            { id: 'f3', title: 'Exterior Weatherproof Coating', discountPrice: 12999, originalPrice: 18999, image: '/exterior.jpg' },
+            { id: 'f4', title: 'Specialty Texture Wall', discountPrice: 2499, originalPrice: 3999, image: '/interior.jpg' }
+          ]);
+      });
 
-    // Scroll animation observer
     const observer = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
         if (entry.isIntersecting) {
@@ -50,7 +89,6 @@ const Home = () => {
   return (
     <div style={{ minHeight: '100vh', position: 'relative', overflow: 'hidden', background: '#f9fafb', fontFamily: 'Inter, sans-serif', color: '#1a1a1a' }}>
       
-      {/* Styles for dynamic layout features */}
       <style>{`
         .card-hover-lift { transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease, margin 0.3s ease; }
         .card-hover-lift:hover { transform: translateY(-10px); box-shadow: 0 16px 40px rgba(0,0,0,0.12) !important; }
@@ -66,7 +104,7 @@ const Home = () => {
         .parallax-bg { background-image: url('data:image/svg+xml;utf8,<svg width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path d="M0,50 Q25,25 50,50 T100,50" stroke="rgba(217, 119, 6, 0.05)" stroke-width="2" fill="none"/></svg>'); }
 
         .cta-glow { position: relative; }
-        .cta-glow::after { content: ''; position: absolute; inset: -4px; background: rgba(250, 204, 21, 0.5); opacity: 0; filter: blur(12px); border-radius: inherit; transition: opacity 0.3s; zIndex: -1; }
+        .cta-glow::after { content: ''; position: absolute; inset: -4px; background: rgba(250, 204, 21, 0.5); opacity: 0; filter: blur(12px); border-radius: inherit; transition: opacity 0.3s; z-index: -1; }
         .cta-glow:hover::after { opacity: 1; }
 
         .service-scroll::-webkit-scrollbar, .testi-scroll::-webkit-scrollbar { display: none; }
@@ -82,237 +120,371 @@ const Home = () => {
         .video-container { border-radius: 32px; overflow: hidden; box-shadow: 0 30px 60px rgba(0,0,0,0.15); }
 
         @media(max-width: 768px) {
-           .desktop-flex { flex-direction: column; gap: 1.5rem !important; }
+           .desktop-flex { flex-direction: column; gap: 1rem !important; }
            .mobile-only { display: block; }
            .desktop-only { display: none !important; }
-           .hero-text { order: 2; flex: none; width: 100%; padding-top: 0; }
-           .hero-video { order: 1; flex: none; width: 100vw !important; margin-left: calc(-50vw + 50%) !important; position: relative; display: block; }
-           .video-container { border-radius: 0 !important; box-shadow: none !important; }
-           .hero-video video { max-height: 260px; object-fit: cover; border-radius: 0 !important; width: 100%; }
-           .hero-section { padding: 0 5% 1.5rem !important; }
-           .section-pad { padding: 2rem 5% !important; }
-           .service-scroll { gap: 0.75rem !important; }
-           .trust-inner { padding: 1.5rem !important; border-radius: 24px !important; }
-           .trust-heading { font-size: 1.75rem !important; margin-bottom: 1.5rem !important; }
-           .trust-icon-box { width: 44px !important; height: 44px !important; border-radius: 12px !important; }
-           .trust-icon-box svg { width: 18px !important; height: 18px !important; }
-           .trust-item-title { font-size: 1rem !important; }
-           .trust-item-desc { font-size: 0.85rem !important; }
-           .trust-image { max-width: 260px !important; transform: scale(1) !important; margin: 1rem auto 0 !important; display: block !important; }
-           .service-card-img-container { height: 140px !important; }
+           .hero-text { order: 2; flex: none; width: 100%; text-align: center; padding: 0 1rem; }
+           .hero-text p { margin-left: auto; margin-right: auto; }
+           .hero-video { order: 1; flex: none; width: 100vw !important; margin-left: calc(-50vw + 50%) !important; position: relative; display: block; overflow: visible !important; }
+           .video-container { border-radius: 0 !important; box-shadow: none !important; margin-bottom: 2rem; }
+           .floating-rating { bottom: -10px !important; left: 50% !important; transform: translateX(-50%) !important; width: 85% !important; padding: 0.75rem 1rem !important; border-radius: 16px !important; box-shadow: 0 12px 36px rgba(0,0,0,0.15) !important; border: 1px solid rgba(255,255,255,0.2); }
            
-           .floating-rating { bottom: 12px !important; left: 5vw !important; padding: 0.4rem 0.65rem !important; border-radius: 10px !important; gap: 0 !important; box-shadow: 0 8px 20px rgba(0,0,0,0.15) !important; }
-           .floating-rating .rating-row { font-size: 0.95rem !important; gap: 0.25rem !important; }
-           .floating-rating .rating-row svg { width: 14px !important; height: 14px !important; }
-           .floating-rating .rating-text { font-size: 0.65rem !important; }
+           .service-grid-mobile { display: grid !important; grid-template-columns: repeat(4, 1fr) !important; gap: 0.4rem !important; padding: 0 !important; }
+           .service-grid-mobile > div { width: 100% !important; min-height: 105px !important; padding: 0.8rem 0.2rem !important; border-radius: 18px !important; border: 1.5px solid #f1f5f9 !important; }
+           .service-grid-mobile img { width: 40px !important; height: 40px !important; margin-bottom: 4px !important; }
+           .service-grid-mobile span { font-size: 0.65rem !important; line-height: 1.1 !important; }
+           
+           .availability-tag { font-size: 6.5px !important; padding: 2px 4px !important; border-radius: 3px !important; margin-top: 3px !important; }
+           .painting-highlight { border: 2.5px solid #facc15 !important; background: #fffcf0 !important; }
+           
+           .section-pad { padding: 3rem 5% !important; }
+           .section-pad h2 { font-size: 1.75rem !important; line-height: 1.2 !important; }
+           .section-pad p { font-size: 0.85rem !important; }
+           .pop-scroll-mobile { padding-left: 5% !important; padding-right: 5% !important; scroll-snap-type: x mandatory; }
+           .pop-scroll-mobile > div { flex: 0 0 78vw !important; scroll-snap-align: center; }
+           
+           .stat-number { font-size: 1.75rem !important; }
+           .stat-label { font-size: 0.65rem !important; }
+           .feature-title { font-size: 0.95rem !important; }
+           .feature-desc { font-size: 0.8rem !important; }
         }
         @media(min-width: 769px) {
-           .service-grid { display: grid !important; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)) !important; overflow-x: visible !important; }
-           .pop-grid { display: grid !important; grid-template-columns: repeat(4, 1fr) !important; overflow-x: visible !important; align-items: start; }
-           .testi-grid { display: grid !important; grid-template-columns: repeat(3, 1fr) !important; overflow-x: visible !important; align-items: start; }
-           
-           /* BREAK THE PERFECT GRID safely without clipping */
+           .service-grid { display: grid !important; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)) !important; }
+           .pop-grid { display: grid !important; grid-template-columns: repeat(4, 1fr) !important; }
+           .testi-grid { display: grid !important; grid-template-columns: repeat(3, 1fr) !important; }
            .stagger-card:nth-child(even) { margin-top: 32px; }
-           
-           .section-pad { padding: 5rem 5%; }
-           .hero-section { padding: 5rem 5% 4rem; }
         }
+
+        @keyframes shake {
+          0%, 100% { transform: translateX(0); }
+          25% { transform: translateX(-4px); }
+          50% { transform: translateX(4px); }
+          75% { transform: translateX(-4px); }
+        }
+        .shake-anim { animation: shake 0.3s cubic-bezier(.36,.07,.19,.97) both; }
+
+        .service-card-unavailable { opacity: 0.7; filter: grayscale(0.65); }
+        .availability-tag { font-size: 9px; font-weight: 800; padding: 2px 6px; border-radius: 4px; margin-top: 5px; text-transform: uppercase; letter-spacing: 0.02em; }
+        .tag-available { background: #fefce8; color: #854d0e; border: 1px solid #fef08a; display: flex; align-items: center; gap: 3px; }
+        .tag-unavailable { background: #f8fafc; color: #94a3b8; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; border: 1px solid #f1f5f9; }
+        
+        .painting-highlight { border: 2px solid #facc15 !important; box-shadow: 0 0 20px rgba(250, 204, 21, 0.2) !important; transform: scale(1.03); z-index: 5; }
+        .painting-highlight:hover { transform: scale(1.08) translateY(-5px) !important; }
       `}</style>
       
       <div style={{ position: 'relative', zIndex: 1 }}>
-        {/* HERO SECTION */}
-        <section className="hero-section" style={{ background: 'linear-gradient(180deg, #f8fafc 0%, #ffffff 100%)', borderBottom: '1px solid #f1f5f9' }}>
+        <section className="hero-section" style={{ background: 'linear-gradient(180deg, #f8fafc 0%, #ffffff 100%)', borderBottom: '1px solid #f1f5f9', padding: '1.5rem 5% 4rem' }}>
           <div style={{ maxWidth: '1280px', margin: '0 auto' }}>
             <div className="desktop-flex">
-              
-              {/* Left Side Content */}
               <div className="hero-text">
-                <span style={{ display: 'inline-block', padding: '0.4rem 1rem', background: '#fef3c7', color: '#d97706', borderRadius: '99px', fontWeight: 800, fontSize: '0.8rem', marginBottom: '1rem', letterSpacing: '0.02em', boxShadow: '0 2px 10px rgba(253, 230, 138, 0.4)' }}>
-                  #1 Rated Home Services
+                <span style={{ display: 'inline-block', padding: '0.4rem 1rem', background: '#fef3c7', color: '#d97706', borderRadius: '99px', fontWeight: 800, fontSize: '0.8rem', marginBottom: '1rem' }}>
+                  #1 Rated Commercial & Home Services
                 </span>
-                <h1 style={{ fontSize: 'clamp(2rem, 6vw, 4.2rem)', fontWeight: 900, color: '#1a1a1a', lineHeight: 1.1, marginBottom: '1rem', letterSpacing: '-0.03em' }}>
-                  Home Services<br/>
+                <h1 style={{ fontSize: 'clamp(2rem, 6vw, 4.2rem)', fontWeight: 900, color: '#1a1a1a', lineHeight: 1.1, marginBottom: '1rem' }}>
+                  Commercial & Home Services<br/>
                   <span style={{ color: '#2563eb' }}>At Your Doorstep</span>
                 </h1>
                 <p style={{ fontSize: '1rem', color: '#4b5563', marginBottom: '1.5rem', lineHeight: 1.6, maxWidth: '500px', fontWeight: 500 }}>
-                  Get trusted professionals for all your household needs — delivered instantly to your home, from routine fixes to major updates.
+                  Get trusted professionals for all your commercial & household needs — delivered instantly to your space, from routine fixes to major updates.
                 </p>
                 
-                {/* CTAs */}
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem', marginBottom: '1.5rem' }}>
-                  <button onClick={() => navigate('/shop')} style={{ background: '#facc15', color: '#111', padding: '1.1rem 2rem', borderRadius: '99px', fontWeight: 800, fontSize: '1.05rem', border: 'none', cursor: 'pointer', boxShadow: '0 8px 24px rgba(250, 204, 21, 0.3)', display: 'flex', alignItems: 'center', gap: '0.5rem' }} className="btn-hover cta-glow">
-                    Book Service <ArrowUpRight size={20} strokeWidth={3} />
+                  <button onClick={() => navigate('/painting')} style={{ background: '#facc15', color: '#111', padding: '1.1rem 2rem', borderRadius: '99px', fontWeight: 800, fontSize: '1.05rem', border: 'none', cursor: 'pointer' }} className="btn-hover cta-glow">
+                    Book a Service <ArrowUpRight size={20} strokeWidth={3} />
                   </button>
-                  <button onClick={() => navigate('/shop')} style={{ background: '#fff', color: '#111', padding: '1.1rem 2rem', borderRadius: '99px', fontWeight: 700, fontSize: '1.05rem', border: '2px solid #e5e7eb', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.5rem' }} className="btn-hover">
-                    Explore Services
+                  <button onClick={() => navigate('/painting')} style={{ background: '#fff', color: '#111', padding: '1.1rem 2rem', borderRadius: '99px', fontWeight: 700, fontSize: '1.05rem', border: '2px solid #e5e7eb', cursor: 'pointer' }} className="btn-hover">
+                    Explore Painting
                   </button>
                 </div>
 
-                {/* Trustpilot */}
-                <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', padding: '1rem', background: '#f8fafc', borderRadius: '16px', display: 'inline-flex' }}>
+                <div style={{ display: 'inline-flex', alignItems: 'center', gap: '1rem', padding: '1rem', background: '#f8fafc', borderRadius: '16px' }}>
                   <div style={{ display: 'flex', gap: '2px' }}>
                     {[1, 2, 3, 4, 5].map(i => <div key={i} style={{ background: '#00b67a', color: '#fff', padding: '4px', borderRadius: '4px' }}><Star size={16} fill="currentColor" /></div>)}
                   </div>
-                  <span style={{ fontWeight: 600, fontSize: '0.9rem', color: '#4b5563' }}>100+ Verified Reviews on <strong style={{color:'#111', fontWeight: 900}}>Trustpilot</strong></span>
+                  <span style={{ fontWeight: 600, fontSize: '0.9rem', color: '#4b5563' }}>100+ Verified Reviews on <strong>Trustpilot</strong></span>
                 </div>
               </div>
 
-              {/* Right Side Video */}
               <div className="hero-video fade-up" style={{ position: 'relative' }}>
                  <div className="video-container">
-                    <video autoPlay loop muted playsInline style={{ width: '100%', display: 'block', objectFit: 'cover' }}>
+                    <video autoPlay loop muted playsInline style={{ width: '100%', display: 'block' }}>
                       <source src="/hero_video.mp4" type="video/mp4" />
                     </video>
                  </div>
-                 {/* FLOATING OVERLAP CARD */}
-                 <div className="floating-rating" style={{ position: 'absolute', background: 'rgba(255,255,255,0.95)', backdropFilter: 'blur(10px)', boxShadow: '0 20px 50px rgba(0,0,0,0.18)', border: '1px solid rgba(255,255,255,0.6)', display: 'flex', flexDirection: 'column', zIndex: 10 }}>
+                 <div className="floating-rating" style={{ position: 'absolute', background: 'rgba(255,255,255,0.95)', backdropFilter: 'blur(10px)', boxShadow: '0 20px 50px rgba(0,0,0,0.18)', display: 'flex', flexDirection: 'column', zIndex: 10 }}>
                     <div className="rating-row" style={{ display: 'flex', alignItems: 'center', fontWeight: 900, color: '#111' }}>
                       <Star size={24} fill="#facc15" color="#facc15" /> 4.9 Rating
                     </div>
                     <span className="rating-text" style={{ color: '#4b5563', fontWeight: 600 }}>1 Lakh+ active bookings</span>
                  </div>
               </div>
-
             </div>
             
-            {/* Service Shortcuts */}
             <div style={{ marginTop: '2rem' }}>
-              <h3 style={{ fontSize: '1.1rem', fontWeight: 800, marginBottom: '1rem', color: '#111' }}>Trusted Home Care Services</h3>
-              <div className="service-scroll service-grid" style={{ display: 'flex', gap: '1.25rem', overflowX: 'auto', paddingBottom: '1rem' }}>
+              <h3 style={{ fontSize: '1.1rem', fontWeight: 800, marginBottom: '1rem' }}>Trusted Commercial & Home Care Services</h3>
+              <div className="service-scroll service-grid service-grid-mobile" style={{ display: 'flex', gap: '1.25rem', overflowX: 'auto', paddingBottom: '1rem' }}>
                 {[
-                  { label: 'Painting', img: '/icons/painter.png', color: '#fef3c7', cat: 'painter' },
-                  { label: 'AC Tech', img: '/icons/ac_technician.png', color: '#e0f2fe', cat: 'technician' },
-                  { label: 'RO Tech', img: '/icons/ro_technician.png', color: '#e0f2fe', cat: 'technician' },
-                  { label: 'Plumber', img: '/icons/plumber.png', color: '#ffedd5', cat: 'plumber' },
-                  { label: 'Electrician', img: '/icons/electrician.png', color: '#fef08a', cat: 'electrician' },
-                  { label: 'Washing Mach.', img: '/icons/washing_machine.png', color: '#f3f4f6', cat: 'technician' },
-                  { label: 'Refrigerator', img: '/icons/refrigerator.png', color: '#f0fdf4', cat: 'technician' }
-                ].map((item, idx) => (
-                  <div 
-                    key={item.label} 
-                    onClick={() => {
-                      if (item.cat === 'painter') {
-                        navigate('/painting');
-                      } else {
-                        navigate(item.cat ? '/shop?cat=' + item.cat : '/shop');
-                      }
-                    }}
-                    style={{ 
-                      flex: '0 0 auto', width: '120px', background: '#fff', padding: '1rem 0.75rem', borderRadius: '20px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.75rem', cursor: 'pointer', border: '1px solid #f1f5f9', boxShadow: '0 4px 12px rgba(0,0,0,0.02)'
-                    }} 
-                    className="card-hover-lift"
-                  >
-                    <img src={item.img} alt={item.label} style={{ width: '56px', height: '56px', objectFit: 'contain' }} />
-                    <span style={{ fontSize: '0.9rem', fontWeight: 800, color: '#334155', textAlign: 'center', lineHeight: 1.2 }}>{item.label}</span>
-                  </div>
-                ))}
+                  { label: 'Painting', img: '/icons/painter.png', cat: 'painter' },
+                  { label: 'AC Tech', img: '/icons/ac_technician.png', cat: 'technician' },
+                  { label: 'RO Tech', img: '/icons/ro_technician.png', cat: 'technician' },
+                  { label: 'Plumber', img: '/icons/plumber.png', cat: 'plumber' },
+                  { label: 'Electrician', img: '/icons/electrician.png', cat: 'electrician' },
+                  { label: 'Washing Mach.', img: '/icons/washing_machine.png', cat: 'technician' },
+                  { label: 'Refrigerator', img: '/icons/refrigerator.png', cat: 'technician' }
+                ].map((item) => {
+                  const isAvailable = item.label === 'Painting';
+                  return (
+                    <div 
+                      key={item.label} 
+                      onClick={() => {
+                        if (isAvailable) { navigate('/painting'); }
+                        else { 
+                          setShakingId(item.label);
+                          setTimeout(() => {
+                            setShakingId(null);
+                            openComingSoon();
+                          }, 400);
+                        }
+                      }}
+                      style={{ 
+                        flex: '0 0 auto', width: '120px', background: '#fff', padding: '1.25rem 0.5rem', borderRadius: '24px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.6rem', cursor: 'pointer', border: '1px solid #f1f5f9',
+                        position: 'relative', transition: 'all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)'
+                      }} 
+                      className={`card-hover-lift ${!isAvailable ? 'service-card-unavailable' : 'painting-highlight'} ${shakingId === item.label ? 'shake-anim' : ''}`}
+                    >
+                      <img src={item.img} alt={item.label} style={{ width: '50px', height: '50px', objectFit: 'contain', filter: isAvailable ? 'drop-shadow(0 4px 8px rgba(0,0,0,0.1))' : 'none' }} />
+                      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%', gap: '1px' }}>
+                        <span style={{ fontSize: '0.8rem', fontWeight: 800, color: isAvailable ? '#1a1a1a' : '#64748b', textAlign: 'center', lineHeight: 1.2 }}>{item.label}</span>
+                        {isAvailable ? (
+                          <div className="availability-tag tag-available">🔥 Available</div>
+                        ) : (
+                          <div className="availability-tag tag-unavailable" style={{ fontSize: '7px' }}>Not in {currentCity}</div>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
             </div>
           </div>
         </section>
 
-        {/* POPULAR SERVICES */}
-        <section className="section-pad fade-up parallax-bg" style={{ background: '#f9fafb' }}>
+        <section className="section-pad fade-up parallax-bg" style={{ background: 'linear-gradient(180deg, #f8fafc 0%, #fff 100%)', padding: '5rem 5%' }}>
           <div style={{ maxWidth: '1280px', margin: '0 auto' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '1.5rem' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '2.5rem' }}>
               <div>
-                <p style={{ fontSize: '0.85rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.15em', color: '#2563eb', marginBottom: '0.5rem' }}>Popular Choices</p>
-                <h2 style={{ fontSize: 'clamp(2rem, 5vw, 2.75rem)', fontWeight: 900, color: '#111', letterSpacing: '-0.02em' }}>Top Demanding Services</h2>
+                <span style={{ display: 'inline-block', background: '#dbeafe', color: '#2563eb', fontSize: '0.75rem', fontWeight: 800, padding: '4px 12px', borderRadius: '99px', letterSpacing: '0.06em', textTransform: 'uppercase', marginBottom: '0.75rem' }}>Popular Choices</span>
+                <h2 style={{ fontSize: 'clamp(1.75rem, 4vw, 2.5rem)', fontWeight: 900, color: '#0f172a', margin: 0, lineHeight: 1.15 }}>Top Demanding Services</h2>
+                <p style={{ color: '#64748b', fontWeight: 500, fontSize: '0.95rem', margin: '0.5rem 0 0' }}>Book a consultation — our expert visits and gives exact pricing</p>
               </div>
               <div className="desktop-only" style={{ display: 'flex', gap: '0.5rem' }}>
-                 <button onClick={scrollLeft} style={{ width: '48px', height: '48px', borderRadius: '50%', background: '#fff', border: '1px solid #e5e7eb', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}><ChevronLeft size={24} /></button>
-                 <button onClick={scrollRight} style={{ width: '48px', height: '48px', borderRadius: '50%', background: '#fff', border: '1px solid #e5e7eb', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}><ChevronRight size={24} /></button>
+                <button onClick={scrollLeft} style={{ width: '48px', height: '48px', borderRadius: '50%', background: '#fff', border: '1.5px solid #e2e8f0', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 8px rgba(0,0,0,0.06)' }}><ChevronLeft size={22} /></button>
+                <button onClick={scrollRight} style={{ width: '48px', height: '48px', borderRadius: '50%', background: '#fff', border: '1.5px solid #e2e8f0', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 8px rgba(0,0,0,0.06)' }}><ChevronRight size={22} /></button>
               </div>
             </div>
 
-            <div ref={scrollContainerRef} className="service-scroll pop-grid fade-up" style={{ display: 'flex', gap: '1.5rem', overflowX: 'auto', paddingBottom: '3.5rem' }}>
-              {featuredServices.slice(0,4).map(s => (
-                <div key={s.id} onClick={() => navigate('/service/' + s.id)} style={{ flex: '0 0 auto', width: '280px', background: '#fff', border: '1px solid #f1f5f9', borderRadius: '24px', padding: '1.25rem', position: 'relative', cursor: 'pointer', boxShadow: '0 12px 30px rgba(0,0,0,0.1)' }} className="card-hover-lift stagger-card">
-                   {/* Badges */}
-                   <div style={{ position: 'absolute', top: '2rem', left: '2rem', background: 'rgba(255,255,255,0.95)', backdropFilter: 'blur(4px)', padding: '0.4rem 0.85rem', borderRadius: '99px', fontSize: '0.8rem', fontWeight: 800, color: '#111', zIndex: 2, display: 'flex', alignItems: 'center', gap: '0.3rem', boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}>
-                      <Star size={14} fill="#facc15" color="#facc15" /> 4.9
-                   </div>
-                   <div style={{ position: 'absolute', top: '2rem', right: '2rem', background: '#10b981', color: '#fff', padding: '0.4rem 0.85rem', borderRadius: '99px', fontSize: '0.75rem', fontWeight: 800, zIndex: 2, display: 'flex', alignItems: 'center', gap: '0.3rem', boxShadow: '0 4px 12px rgba(16,185,129,0.3)' }}>
-                      <ShieldCheck size={12} fill="currentColor" /> VERIFIED
-                   </div>
-                   
-                   <div className="service-card-img-container" style={{ width: '100%', height: '200px', borderRadius: '16px', overflow: 'hidden', marginBottom: '1.25rem', background: '#f8fafc' }}>
-                      <img loading="lazy" src={s.image} alt={s.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                   </div>
-                   
-                   <div style={{ padding: '0 0.5rem' }}>
-                      <h3 style={{ fontSize: '1.2rem', fontWeight: 800, color: '#111', marginBottom: '0.75rem', lineHeight: 1.3, height: '2.6em', overflow: 'hidden' }}>{s.title}</h3>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1.5rem' }}>
-                         <span style={{ fontWeight: 900, color: '#111', fontSize: '1.4rem' }}>₹{Number(s.discountPrice).toFixed(0)}</span>
-                         <span style={{ color: '#9ca3af', textDecoration: 'line-through', fontSize: '0.95rem' }}>₹{Number(s.originalPrice).toFixed(0)}</span>
+            <div ref={scrollContainerRef} className="service-scroll pop-scroll-mobile" style={{ display: 'flex', gap: '1.25rem', overflowX: 'auto', paddingBottom: '2rem' }}>
+              {featuredServices.map(s => {
+                const discountPrice = s.discount_price ?? s.discountPrice;
+                const originalPrice = s.original_price ?? s.originalPrice;
+                const isConsult = s.title?.toLowerCase().includes('consultation');
+                const discount = originalPrice > 0 ? Math.round((1 - discountPrice / originalPrice) * 100) : 0;
+                return (
+                  <div
+                    key={s.id}
+                    onClick={() => navigate('/painting')}
+                    style={{
+                      flex: '0 0 auto', width: '260px',
+                      background: '#fff',
+                      borderRadius: '24px',
+                      overflow: 'hidden',
+                      border: '1px solid #e2e8f0',
+                      cursor: 'pointer',
+                      boxShadow: '0 4px 16px rgba(0,0,0,0.05)',
+                      transition: 'all 0.3s cubic-bezier(0.34,1.56,0.64,1)',
+                    }}
+                    className="card-hover-lift"
+                  >
+                    {/* Image */}
+                    <div style={{ position: 'relative', width: '100%', height: '175px', overflow: 'hidden', background: '#e2e8f0' }}>
+                      <img
+                        loading="lazy"
+                        src={s.image}
+                        alt={s.title}
+                        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                        onError={e => { e.target.style.display = 'none'; }}
+                      />
+                      {/* Star badge */}
+                      <div style={{ position: 'absolute', top: '12px', left: '12px', background: 'rgba(255,255,255,0.95)', backdropFilter: 'blur(6px)', padding: '4px 10px', borderRadius: '99px', fontSize: '0.75rem', fontWeight: 800, display: 'flex', alignItems: 'center', gap: '4px', boxShadow: '0 2px 8px rgba(0,0,0,0.12)' }}>
+                        <Star size={12} fill="#facc15" color="#facc15" /> 4.9
                       </div>
-                      <button style={{ width: '100%', background: '#fff', border: '2px solid #111', padding: '1rem', borderRadius: '14px', fontWeight: 800, fontSize: '1rem', color: '#111', cursor: 'pointer' }} className="btn-hover">
-                        Book Now
+                      {/* Discount badge */}
+                      {discount > 0 && (
+                        <div style={{ position: 'absolute', top: '12px', right: '12px', background: '#22c55e', color: '#fff', padding: '4px 8px', borderRadius: '99px', fontSize: '0.7rem', fontWeight: 800 }}>
+                          {discount}% OFF
+                        </div>
+                      )}
+                      {/* Consultation overlay label */}
+                      {isConsult && (
+                        <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, background: 'linear-gradient(to top, rgba(0,0,0,0.7) 0%, transparent 100%)', padding: '1rem 1rem 0.75rem', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                          <ShieldCheck size={14} color="#86efac" />
+                          <span style={{ color: '#86efac', fontSize: '0.72rem', fontWeight: 800 }}>Expert Consultation Included</span>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Body */}
+                    <div style={{ padding: '1rem 1.1rem 1.1rem' }}>
+                      <h3 style={{ fontSize: '0.95rem', fontWeight: 800, color: '#0f172a', margin: '0 0 0.4rem', lineHeight: 1.3, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+                        {s.title}
+                      </h3>
+
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.9rem' }}>
+                        {isConsult ? (
+                          <>
+                            <span style={{ fontWeight: 900, color: '#0f172a', fontSize: '1.15rem' }}>{'₹'}{Number(discountPrice).toLocaleString('en-IN')}</span>
+                            {originalPrice > discountPrice && (
+                              <span style={{ color: '#94a3b8', textDecoration: 'line-through', fontSize: '0.85rem', fontWeight: 600 }}>{'₹'}{Number(originalPrice).toLocaleString('en-IN')}</span>
+                            )}
+                          </>
+                        ) : (
+                          <>
+                            <span style={{ fontWeight: 900, color: '#0f172a', fontSize: '1rem' }}>Starting {'₹'}{Number(discountPrice).toLocaleString('en-IN')}</span>
+                            <span style={{ background: '#fef9c3', color: '#854d0e', fontSize: '0.65rem', fontWeight: 800, padding: '2px 7px', borderRadius: '99px' }}>After Consultation</span>
+                          </>
+                        )}
+                      </div>
+
+                      <button style={{
+                        width: '100%',
+                        background: isConsult ? 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)' : '#0f172a',
+                        color: '#fff', border: 'none',
+                        padding: '0.7rem 1rem',
+                        borderRadius: '12px', fontWeight: 800, fontSize: '0.875rem', cursor: 'pointer',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px',
+                        transition: 'opacity 0.2s',
+                      }}>
+                        {isConsult ? 'Book Consultation' : 'Book Free Visit'}
+                        <ChevronRight size={15} />
                       </button>
-                   </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </section>
+
+        <section className="fade-up" style={{
+          background: 'linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #0f172a 100%)',
+          padding: '6rem 5%', position: 'relative', overflow: 'hidden',
+        }}>
+          {/* Decorative glow orbs */}
+          <div style={{ position: 'absolute', top: '-120px', left: '-80px', width: '500px', height: '500px', borderRadius: '50%', background: 'radial-gradient(circle, rgba(99,102,241,0.2) 0%, transparent 65%)', pointerEvents: 'none' }} />
+          <div style={{ position: 'absolute', bottom: '-120px', right: '-80px', width: '500px', height: '500px', borderRadius: '50%', background: 'radial-gradient(circle, rgba(59,130,246,0.18) 0%, transparent 65%)', pointerEvents: 'none' }} />
+          {/* Grid texture */}
+          <div style={{ position: 'absolute', inset: 0, backgroundImage: 'linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px)', backgroundSize: '60px 60px', pointerEvents: 'none' }} />
+
+          <div style={{ maxWidth: '1280px', margin: '0 auto', position: 'relative', zIndex: 2 }}>
+            {/* Header */}
+            <div style={{ textAlign: 'center', marginBottom: '4rem' }}>
+              <span style={{ display: 'inline-block', background: 'rgba(99,102,241,0.2)', border: '1px solid rgba(99,102,241,0.35)', color: '#a5b4fc', fontSize: '0.72rem', fontWeight: 800, padding: '5px 16px', borderRadius: '99px', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '1.25rem' }}>
+                Why Dhoond?
+              </span>
+              <h2 style={{ fontSize: 'clamp(2.25rem, 5vw, 3.5rem)', fontWeight: 900, color: '#fff', margin: '0 0 1rem', lineHeight: 1.1 }}>
+                Join{' '}
+                <span style={{ background: 'linear-gradient(90deg, #818cf8 0%, #38bdf8 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+                  1 Lakh+
+                </span>{' '}Happy Customers
+              </h2>
+              <p style={{ color: '#94a3b8', fontSize: '1.05rem', fontWeight: 500, maxWidth: '500px', margin: '0 auto', lineHeight: 1.6 }}>
+                India's most trusted home &amp; commercial services platform — professional, verified, on-demand.
+              </p>
+            </div>
+
+            {/* Stats strip */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', borderTop: '1px solid rgba(255,255,255,0.08)', borderBottom: '1px solid rgba(255,255,255,0.08)', marginBottom: '5rem' }}>
+              {[
+                { number: '1L+',   label: 'Happy Customers', color: '#818cf8' },
+                { number: '4.9★',  label: 'Average Rating',  color: '#fbbf24' },
+                { number: '500+',  label: 'Verified Experts', color: '#34d399' },
+              ].map((stat, i) => (
+                <div key={i} style={{ padding: '2.5rem 1rem', textAlign: 'center', borderLeft: i > 0 ? '1px solid rgba(255,255,255,0.08)' : 'none' }}>
+                  <div className="stat-number" style={{ fontSize: 'clamp(2rem, 4vw, 2.75rem)', fontWeight: 900, color: stat.color, lineHeight: 1, marginBottom: '0.5rem' }}>{stat.number}</div>
+                  <div className="stat-label" style={{ fontSize: '0.82rem', fontWeight: 700, color: '#64748b', letterSpacing: '0.04em', textTransform: 'uppercase' }}>{stat.label}</div>
                 </div>
               ))}
             </div>
+
+            {/* Two-col content */}
+            <div className="desktop-flex" style={{ gap: '5rem', alignItems: 'center' }}>
+              {/* Left: features */}
+              <div style={{ flex: '1 1 440px' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '2.5rem', marginBottom: '2.5rem' }}>
+                  {[
+                    { icon: <Clock size={22}/>, title: '15 Min Response Time', desc: 'Experts assigned instantly after booking — no waiting, no delays.', color: '#818cf8' },
+                    { icon: <ShieldCheck size={22}/>, title: 'Verified & Insured Experts', desc: 'Every pro is background-checked, trained, and insured.', color: '#38bdf8' },
+                    { icon: <Star size={22}/>, title: '4.9/5 Consistent Rating', desc: 'Quality guaranteed — or we redo the job, free of charge.', color: '#fbbf24' },
+                  ].map((item, i) => (
+                    <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: '1.25rem' }}>
+                      <div style={{ width: '44px', height: '44px', borderRadius: '12px', background: `rgba(${item.color === '#818cf8' ? '99,102,241' : item.color === '#38bdf8' ? '56,189,248' : '251,191,36'},0.15)`, color: item.color, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: '2px' }}>
+                        {item.icon}
+                      </div>
+                      <div>
+                        <div className="feature-title" style={{ fontWeight: 800, fontSize: '1.05rem', color: '#f1f5f9', marginBottom: '0.3rem' }}>{item.title}</div>
+                        <div className="feature-desc" style={{ color: '#64748b', fontSize: '0.9rem', lineHeight: 1.6 }}>{item.desc}</div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem', marginBottom: '2rem' }}>
+                  {['No Hidden Charges', 'On-Time Guarantee', 'Easy Rescheduling', 'Post-Service Support'].map(b => (
+                    <span key={b} style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', background: 'rgba(52,211,153,0.1)', border: '1px solid rgba(52,211,153,0.25)', color: '#6ee7b7', fontSize: '0.78rem', fontWeight: 700, padding: '5px 13px', borderRadius: '99px' }}>
+                      <span style={{ fontSize: '0.7rem' }}>✓</span> {b}
+                    </span>
+                  ))}
+                </div>
+
+                <button
+                  onClick={() => navigate('/painting')}
+                  style={{ background: 'linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)', color: '#fff', border: 'none', padding: '1.1rem 2.5rem', borderRadius: '14px', fontWeight: 800, fontSize: '1rem', cursor: 'pointer', boxShadow: '0 8px 32px rgba(99,102,241,0.35)', display: 'inline-flex', alignItems: 'center', gap: '0.5rem', transition: 'all 0.2s' }}
+                  className="btn-hover"
+                >
+                  Book a Service Now <ChevronRight size={18} />
+                </button>
+              </div>
+
+              {/* Right: image */}
+              <div style={{ flex: '1 1 360px', textAlign: 'center' }}>
+                <img
+                  loading="lazy"
+                  src="/website_ui.webp"
+                  alt="Dhoond App"
+                  style={{ width: '100%', maxWidth: '380px', filter: 'drop-shadow(0 32px 64px rgba(0,0,0,0.6))' }}
+                />
+              </div>
+            </div>
           </div>
         </section>
 
-        {/* TRUST SECTION */}
-        <section className="section-pad fade-up" style={{ background: '#fff', position: 'relative', overflow: 'hidden' }}>
-          <div style={{ maxWidth: '1280px', margin: '0 auto', background: 'linear-gradient(135deg, #e0f2fe 0%, #1e3a8a 100%)', borderRadius: '48px', padding: '5rem 5%', position: 'relative' }} className="trust-inner">
-             {/* Art accent */}
-             <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', background: 'url("data:image/svg+xml;utf8,<svg width=\'100%\' height=\'100%\' xmlns=\'http://www.w3.org/2000/svg\'><path d=\'M0 0 C 100 200, 300 100, 500 300\' stroke=\'rgba(255,255,255,0.05)\' stroke-width=\'40\' fill=\'none\'/></svg>")', pointerEvents: 'none' }} />
-             
-             <div className="desktop-flex" style={{ alignItems: 'center', position: 'relative', zIndex: 2 }}>
-               <div style={{ flex: '1 1 400px' }}>
-                  <h2 className="trust-heading" style={{ fontSize: 'clamp(2rem, 5vw, 3.5rem)', fontWeight: 900, color: '#fff', marginBottom: '2.5rem', lineHeight: 1.1, letterSpacing: '-0.02em' }}>
-                    Join 1 Lakh+ <br/>Happy Customers!
-                  </h2>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-                     {[
-                       { icon: <Clock size={24}/>, title: '15 Min Response', desc: 'Instant assigning of experts.' },
-                       { icon: <ShieldCheck size={24}/>, title: 'Verified Experts', desc: 'Background checked professionals.' },
-                       { icon: <Star size={24}/>, title: '4.9/5 Average Rating', desc: 'Consistent top-quality work.' },
-                     ].map(item => (
-                       <div key={item.title} style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                          <div className="trust-icon-box" style={{ width: '56px', height: '56px', borderRadius: '16px', background: 'rgba(255,255,255,0.1)', color: '#60a5fa', display: 'flex', alignItems: 'center', justifyContent: 'center', backdropFilter: 'blur(8px)', flexShrink: 0 }}>
-                             {item.icon}
-                          </div>
-                          <div>
-                             <h4 className="trust-item-title" style={{ fontWeight: 800, fontSize: '1.15rem', color: '#f8fafc', margin: '0 0 0.25rem 0' }}>{item.title}</h4>
-                             <p className="trust-item-desc" style={{ color: '#bae6fd', fontSize: '0.95rem', margin: 0, fontWeight: 500 }}>{item.desc}</p>
-                          </div>
-                       </div>
-                     ))}
-                  </div>
-               </div>
-                <div style={{ flex: '1 1 400px', textAlign: 'center', position: 'relative' }}>
-                  {/* Break symmetry phone image */}
-                  <img className="trust-image" loading="lazy" src="/website_ui.webp" alt="App UI" style={{ width: '100%', maxWidth: '400px', filter: 'drop-shadow(0 40px 50px rgba(0,0,0,0.4))', transform: 'scale(1.1) translateX(5%) translateY(-5%)' }} />
-               </div>
-             </div>
-          </div>
-        </section>
 
-        {/* TESTIMONIALS */}
-        <section className="section-pad fade-up" style={{ background: '#f9fafb' }}>
+        <section className="section-pad fade-up" style={{ background: '#f9fafb', padding: '5rem 5%' }}>
           <div style={{ maxWidth: '1280px', margin: '0 auto' }}>
-            <h2 style={{ fontSize: 'clamp(1.75rem, 5vw, 2.75rem)', fontWeight: 900, color: '#111', textAlign: 'center', marginBottom: '2rem', letterSpacing: '-0.02em' }}>Loved by Thousands</h2>
+            <h2 style={{ fontSize: 'clamp(1.75rem, 5vw, 2.75rem)', fontWeight: 900, textAlign: 'center', marginBottom: '2rem' }}>Loved by Thousands</h2>
             <div className="testi-scroll testi-grid fade-up" style={{ display: 'flex', gap: '2rem', overflowX: 'auto', paddingBottom: '3.5rem' }}>
                {[
-                  { name: 'Priya Sharma', role: 'Homeowner', text: 'The AC technician arrived exactly on time. Fixed the issue in 30 minutes. Extremely professional service.', img: 'https://i.pravatar.cc/150?u=a042581f4e29026704d' },
-                  { name: 'Rahul Mehta', role: 'Business Owner', text: 'I booked a full house painting. The team was clean, fast, and the finish is just premium. Highly recommended!', img: 'https://i.pravatar.cc/150?u=a04258a2462d826712d' },
-                  { name: 'Sunita Kapoor', role: 'Resident', text: 'Plumbing leak was driving me crazy. Booked via Dhoond, guy came in 15 mins. Lifesaver!', img: 'https://i.pravatar.cc/150?u=a042581f4e29026024d' },
+                  { name: 'Priya Sharma', role: 'Homeowner', text: 'The AC technician arrived exactly on time. Fixed the issue in 30 minutes.', img: 'https://i.pravatar.cc/150?u=a042581f4e29026704d' },
+                  { name: 'Rahul Mehta', role: 'Business Owner', text: 'I booked a full house painting. The team was clean and fast.', img: 'https://i.pravatar.cc/150?u=a04258a2462d826712d' },
+                  { name: 'Sunita Kapoor', role: 'Resident', text: 'Plumbing leak was driving me crazy. Dhoond guy came in 15 mins.', img: 'https://i.pravatar.cc/150?u=a042581f4e29026024d' },
                ].map(r => (
-                  <div key={r.name} style={{ flex: '0 0 320px', background: '#fff', padding: '2.5rem', borderRadius: '24px', boxShadow: '0 10px 30px rgba(0,0,0,0.06)', border: '1px solid #f1f5f9' }} className="card-hover-lift stagger-card">
-                    <div style={{ display: 'flex', gap: '3px', color: '#facc15', marginBottom: '1.5rem' }}>
-                      <Star size={18} fill="currentColor" /><Star size={18} fill="currentColor" /><Star size={18} fill="currentColor" /><Star size={18} fill="currentColor" /><Star size={18} fill="currentColor" />
-                    </div>
-                    <p style={{ color: '#4b5563', fontSize: '1.05rem', lineHeight: 1.6, marginBottom: '2rem', fontWeight: 500, fontStyle: 'italic' }}>"{r.text}"</p>
+                  <div key={r.name} style={{ flex: '0 0 320px', background: '#fff', padding: '2.5rem', borderRadius: '24px', border: '1px solid #f1f5f9' }} className="card-hover-lift stagger-card">
+                    <p style={{ color: '#4b5563', fontSize: '1.05rem', lineHeight: 1.6, marginBottom: '2rem', fontStyle: 'italic' }}>"{r.text}"</p>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
                       <img loading="lazy" src={r.img} alt={r.name} style={{ width: '56px', height: '56px', borderRadius: '50%' }} />
                       <div>
-                        <h4 style={{ fontWeight: 800, color: '#111', margin: '0 0 0.2rem 0', fontSize: '1rem' }}>{r.name}</h4>
-                        <p style={{ color: '#6b7280', margin: 0, fontSize: '0.9rem', fontWeight: 500 }}>{r.role}</p>
+                        <h4 style={{ fontWeight: 800, color: '#111', margin: 0 }}>{r.name}</h4>
+                        <p style={{ color: '#6b7280', margin: 0, fontSize: '0.9rem' }}>{r.role}</p>
                       </div>
                     </div>
                   </div>
@@ -321,33 +493,16 @@ const Home = () => {
           </div>
         </section>
 
-        {/* FINAL CTA */}
-        <section className="cta-section fade-up" style={{ background: '#fff', padding: '4rem 5% 6rem' }}>
-          <div style={{ maxWidth: '1000px', margin: '0 auto', textAlign: 'center', background: '#111', borderRadius: '48px', padding: '5rem 2rem', position: 'relative', overflow: 'hidden' }} className="final-cta">
-             <div style={{ position: 'absolute', top: '-50%', left: '-20%', width: '140%', height: '200%', background: 'radial-gradient(circle, rgba(250, 204, 21, 0.15) 0%, transparent 60%)', zIndex: 0 }} />
-             <div style={{ position: 'relative', zIndex: 1 }}>
-               <h2 style={{ fontSize: 'clamp(2.5rem, 6vw, 3.5rem)', fontWeight: 900, color: '#fff', marginBottom: '1.5rem', letterSpacing: '-0.02em', lineHeight: 1.1 }}>
-                 Book trusted home<br/>services in seconds.
-               </h2>
-               <p style={{ color: '#9ca3af', fontSize: '1.15rem', marginBottom: '3rem', fontWeight: 500 }}>Join the quickest growing home services network today.</p>
-               <button onClick={() => navigate('/shop')} style={{ background: '#facc15', color: '#111', padding: '1.25rem 3.5rem', borderRadius: '99px', fontWeight: 800, fontSize: '1.15rem', border: 'none', cursor: 'pointer', boxShadow: '0 12px 40px rgba(250, 204, 21, 0.4)' }} className="btn-hover cta-glow">
-                 Book Service Now
-               </button>
-             </div>
-          </div>
-        </section>
 
-        {/* Mobile Sticky CTA */}
-        <div className="mobile-only fade-up" style={{ position: 'fixed', bottom: 0, left: 0, right: 0, padding: '1rem', background: '#fff', borderTop: '1px solid #e5e7eb', zIndex: 50, paddingBottom: 'calc(1rem + env(safe-area-inset-bottom))' }}>
-          <button onClick={() => navigate('/shop')} style={{ width: '100%', background: '#facc15', color: '#111', padding: '1.25rem 1.5rem', borderRadius: '16px', border: 'none', display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer', boxShadow: '0 8px 30px rgba(250, 204, 21, 0.5)' }} className="btn-hover cta-glow">
-            <span style={{ fontWeight: 900, fontSize: '1.15rem' }}>Book Service</span>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-               <span style={{ fontSize: '0.9rem', fontWeight: 700, opacity: 0.8 }}>Starting</span>
-               <span style={{ fontSize: '1.1rem', fontWeight: 900 }}>₹99</span>
-            </div>
+
+        <div className="mobile-only fade-up" style={{ position: 'fixed', bottom: 0, left: 0, right: 0, padding: '1rem', background: '#fff', borderTop: '1px solid #e5e7eb', zIndex: 50 }}>
+          <button onClick={() => navigate('/painting')} style={{ width: '100%', background: '#facc15', color: '#111', padding: '1.25rem 1.5rem', borderRadius: '16px', border: 'none', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }} className="btn-hover cta-glow">
+            <span style={{ fontWeight: 900, fontSize: '1.15rem' }}>Book a Service</span>
+            <span style={{ fontSize: '1.1rem', fontWeight: 900 }}>₹99</span>
           </button>
         </div>
 
+        {/* Global modal handled by MainLayout, but keeping this for legacy routes if any */}
       </div>
     </div>
   );

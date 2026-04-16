@@ -10,7 +10,7 @@ const sendOtpController = async (req, res) => {
   const otp = Math.floor(1000 + Math.random() * 9000).toString();
   otpStore.set(digits, { otp, expiry: Date.now() + 10*60*1000, attempts: 0 });
   
-  console.log(`[OTP] Generated ${otp} for ${digits}`);
+  // [SECURITY] OTP is NOT logged to prevent exposure in server logs
 
   // Real BulkSMS Integration (yourbulksms.com)
   const { BULKSMS_AUTH_KEY, BULKSMS_SENDER, BULKSMS_ROUTE, BULKSMS_DLT_TE_ID } = process.env;
@@ -28,12 +28,12 @@ const sendOtpController = async (req, res) => {
       
       const response = await fetch(url);
       const result = await response.text();
-      console.log(`[BulkSMS] Status: ${response.status}, Response: ${result.substring(0, 100)}`);
+      console.log(`[BulkSMS] Sent to ${mobileWithPrefix} — HTTP ${response.status}`);
     } catch (error) {
       console.error('[BulkSMS Error]', error.message);
     }
   } else {
-    console.log(`[OTP Mock] Sent ${otp} to ${digits} (No BulkSMS key in .env)`);
+    console.log(`[OTP Dev] OTP dispatched to ${digits} (mock — no BulkSMS key)`);
   }
   
   res.json({ success: true, message: `OTP sent to +91 ${digits}` });

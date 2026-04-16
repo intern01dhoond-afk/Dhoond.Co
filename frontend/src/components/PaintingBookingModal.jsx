@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, CheckCircle, ChevronRight, AlertTriangle } from 'lucide-react';
+import { X, CheckCircle, ChevronRight, AlertTriangle, CheckCircle2, ShieldCheck, ArrowRight } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { useNavigate } from 'react-router-dom';
 
@@ -20,7 +20,7 @@ const DAMAGE_OPTIONS = [
   { id: 'none', label: 'No issues — fresh paint only', icon: '✅' },
 ];
 
-const CONSULTATION_FEE = 499;
+const CONSULTATION_FEE = 99; // Updated to match the service list price
 
 const PaintingBookingModal = ({ service, onClose }) => {
   const [step, setStep] = useState(1); // 1 = paint, 2 = damage, 3 = confirm
@@ -43,14 +43,14 @@ const PaintingBookingModal = ({ service, onClose }) => {
 
   const handleBook = () => {
     const consultItem = {
-      id: `paint-consult-${Date.now()}`,
-      title: `Painting Consultation — ${service.title}`,
-      description: `Brand: ${selectedBrand} | Notes: ${selectedDamages.join(', ')}`,
-      discountPrice: CONSULTATION_FEE,
-      originalPrice: 799,
-      discountTag: '38% OFF',
-      image: service.image || '/ac_tech.png',
-      category: 'painter',
+      id: service.id,  // Use the real numeric DB ID so the backend can look it up
+      title: `Painting Consultation — ${selectedBrand || service.title}`,
+      description: `Brand: ${selectedBrand} | Wall Condition: ${selectedDamages.join(', ')}`,
+      discountPrice: service.discountPrice ?? CONSULTATION_FEE,
+      originalPrice: service.originalPrice ?? 499,
+      image: service.image || '/website_ui.webp',
+      category: service.category || 'painter',
+      quantity: 1
     };
     addToCart(consultItem);
     navigate('/shop/cart');
@@ -60,153 +60,184 @@ const PaintingBookingModal = ({ service, onClose }) => {
   const hasIssues = selectedDamages.length > 0 && !selectedDamages.includes('none');
 
   return (
-    <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' }} onClick={onClose}>
-      <div style={{ background: '#fff', borderRadius: '16px', width: '100%', maxWidth: '560px', maxHeight: '90vh', overflow: 'auto', boxShadow: '0 25px 50px rgba(0,0,0,0.2)' }} onClick={e => e.stopPropagation()}>
+    <div style={{ position: 'fixed', inset: 0, background: 'rgba(15, 23, 42, 0.8)', backdropFilter: 'blur(12px)', zIndex: 3500, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1.5rem', fontFamily: 'Inter, sans-serif' }} onClick={onClose}>
+      <div 
+        style={{ 
+          background: '#fff', borderRadius: '32px', width: '100%', maxWidth: '580px', maxHeight: '90vh', 
+          overflow: 'hidden', boxShadow: '0 40px 100px rgba(0,0,0,0.4)',
+          position: 'relative', display: 'flex', flexDirection: 'column'
+        }} 
+        onClick={e => e.stopPropagation()}
+      >
 
         {/* Header */}
-        <div style={{ padding: '1.5rem 1.5rem 1rem', borderBottom: '1px solid #f0f0f0', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+        <div style={{ padding: '2rem 2rem 1.25rem', borderBottom: '1.5px solid #f1f5f9', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', background: '#fff' }}>
           <div>
-            <h2 style={{ fontWeight: 700, fontSize: '1.15rem', color: '#111', margin: '0 0 0.25rem 0' }}>{service.title}</h2>
-            <p style={{ color: '#888', fontSize: '0.82rem', margin: 0 }}>
-              Step {step} of 3 — {step === 1 ? 'Choose Paint Brand' : step === 2 ? 'Wall Condition' : 'Confirm Booking'}
-            </p>
+            <h2 style={{ fontWeight: 900, fontSize: '1.5rem', color: '#0f172a', margin: '0 0 0.4rem 0', letterSpacing: '-0.02em' }}>{service.title}</h2>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
+              <div style={{ display: 'flex', gap: '4px' }}>
+                {[1, 2, 3].map(s => (
+                  <div key={s} style={{ width: '20px', height: '6px', borderRadius: '10px', background: s <= step ? '#2563eb' : '#e2e8f0', transition: 'all 0.4s ease' }} />
+                ))}
+              </div>
+              <span style={{ color: '#64748b', fontSize: '0.85rem', fontWeight: 700 }}>
+                {step === 1 ? 'Choose Brand' : step === 2 ? 'Wall Condition' : 'Booking Summary'}
+              </span>
+            </div>
           </div>
-          <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '0.25rem', borderRadius: '50%' }}>
-            <X size={20} color="#666" />
+          <button onClick={onClose} style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '50%', width: '42px', height: '42px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', transition: 'all 0.2s' }}>
+            <X size={22} color="#475569" />
           </button>
         </div>
 
-        {/* Progress Bar */}
-        <div style={{ height: '4px', background: '#f0f0f0' }}>
-          <div style={{ height: '100%', background: '#2a70b2', width: `${(step / 3) * 100}%`, transition: 'width 0.4s ease', borderRadius: '99px' }} />
-        </div>
+        <div style={{ padding: '2rem', flex: 1, overflowY: 'auto' }}>
 
-        <div style={{ padding: '1.5rem' }}>
-
-          {/* ── Step 1: Paint Brand ─────────────────────────────────── */}
+          {/* ── Step 1: Paint Brand ── */}
           {step === 1 && (
-            <>
-              <h3 style={{ fontWeight: 600, fontSize: '1rem', color: '#111', marginBottom: '0.4rem' }}>🎨 Select Paint Brand</h3>
-              <p style={{ color: '#777', fontSize: '0.82rem', marginBottom: '1.25rem' }}>We source directly from the brand of your choice</p>
+            <div style={{ animation: 'fadeIn 0.4s ease' }}>
+              <h3 style={{ fontWeight: 800, fontSize: '1.15rem', color: '#1e293b', marginBottom: '0.5rem' }}>🎨 Which brand do you prefer?</h3>
+              <p style={{ color: '#64748b', fontSize: '0.9rem', marginBottom: '1.5rem', fontWeight: 500 }}>Direct sourcing from top brands for the best quality.</p>
               <div style={{ 
                 display: 'grid', 
-                gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', 
-                gap: '0.75rem', 
-                marginBottom: '1.5rem' 
+                gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', 
+                gap: '1rem', 
+                marginBottom: '2rem' 
               }}>
                 {PAINT_BRANDS.map(brand => (
                   <div key={brand.name} onClick={() => setSelectedBrand(brand.name)} style={{ 
-                    border: selectedBrand === brand.name ? `2px solid ${brand.color}` : '1px solid #e5e7eb', 
-                    borderRadius: '10px', 
-                    padding: '0.85rem 1rem', 
+                    border: selectedBrand === brand.name ? `2.5px solid ${brand.color}` : '1.5px solid #f1f5f9', 
+                    borderRadius: '20px', 
+                    padding: '1.25rem', 
                     cursor: 'pointer', 
                     display: 'flex', 
                     alignItems: 'center', 
-                    gap: '0.75rem', 
-                    transition: 'all 0.15s', 
-                    background: selectedBrand === brand.name ? `${brand.color}08` : '#fff' 
+                    gap: '1rem', 
+                    transition: 'all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275)', 
+                    background: selectedBrand === brand.name ? `${brand.color}05` : '#fff',
+                    transform: selectedBrand === brand.name ? 'scale(1.02)' : 'scale(1)',
+                    boxShadow: selectedBrand === brand.name ? `0 12px 24px ${brand.color}15` : 'none'
                   }}>
-                    <div style={{ width: '36px', height: '36px', borderRadius: '8px', background: brand.color + '18', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.25rem', flexShrink: 0 }}>{brand.logo}</div>
+                    <div style={{ width: '48px', height: '48px', borderRadius: '14px', background: brand.color + '15', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.6rem', flexShrink: 0 }}>{brand.logo}</div>
                     <div style={{ minWidth: 0, flex: 1 }}>
-                      <p style={{ fontWeight: 600, fontSize: '0.82rem', color: '#111', margin: 0, lineHeight: 1.2 }}>{brand.name}</p>
-                      <p style={{ fontSize: '0.7rem', color: '#888', margin: 0, lineHeight: 1.3 }}>{brand.tagline}</p>
+                      <p style={{ fontWeight: 800, fontSize: '0.95rem', color: '#0f172a', margin: 0, lineHeight: 1.2 }}>{brand.name}</p>
+                      <p style={{ fontSize: '0.75rem', color: '#64748b', margin: 0, lineHeight: 1.3, fontWeight: 500 }}>{brand.tagline}</p>
                     </div>
-                    {selectedBrand === brand.name && <CheckCircle size={16} color={brand.color} style={{ flexShrink: 0 }} />}
+                    {selectedBrand === brand.name && <CheckCircle2 size={20} color={brand.color} style={{ flexShrink: 0 }} />}
                   </div>
                 ))}
               </div>
-              <button onClick={() => setStep(2)} disabled={!selectedBrand} style={{ width: '100%', background: selectedBrand ? '#2a70b2' : '#d1d5db', color: '#fff', border: 'none', padding: '0.85rem', borderRadius: '8px', fontWeight: 600, fontSize: '0.95rem', cursor: selectedBrand ? 'pointer' : 'not-allowed', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}>
-                Continue <ChevronRight size={18} />
+              <button 
+                onClick={() => setStep(2)} 
+                disabled={!selectedBrand} 
+                style={{ width: '100%', background: selectedBrand ? '#2563eb' : '#cbd5e1', color: '#fff', border: 'none', padding: '1.1rem', borderRadius: '16px', fontWeight: 900, fontSize: '1.1rem', cursor: selectedBrand ? 'pointer' : 'not-allowed', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.75rem', boxShadow: selectedBrand ? '0 10px 30px rgba(37,99,235,0.3)' : 'none', transition: 'all 0.3s' }}
+              >
+                Continue <ArrowRight size={20} />
               </button>
-            </>
+            </div>
           )}
 
-          {/* ── Step 2: Damage / Seepage ───────────────────────────── */}
+          {/* ── Step 2: Wall Condition ── */}
           {step === 2 && (
-            <>
-              <h3 style={{ fontWeight: 600, fontSize: '1rem', color: '#111', marginBottom: '0.4rem' }}>🔍 Any Seepages or Damages?</h3>
-              <p style={{ color: '#777', fontSize: '0.82rem', marginBottom: '1.25rem' }}>Select all that apply — our expert will inspect on-site</p>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem', marginBottom: '1.5rem' }}>
+            <div style={{ animation: 'fadeIn 0.4s ease' }}>
+              <h3 style={{ fontWeight: 800, fontSize: '1.15rem', color: '#1e293b', marginBottom: '0.5rem' }}>🔍 Wall Condition Check</h3>
+              <p style={{ color: '#64748b', fontSize: '0.9rem', marginBottom: '1.5rem', fontWeight: 500 }}>This helps our expert carry the right inspection tools.</p>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '0.85rem', marginBottom: '2rem' }}>
                 {DAMAGE_OPTIONS.map(opt => {
                   const isActive = selectedDamages.includes(opt.id);
                   return (
-                    <div key={opt.id} onClick={() => toggleDamage(opt.id)} style={{ border: isActive ? '2px solid #2a70b2' : '1px solid #e5e7eb', borderRadius: '10px', padding: '0.85rem 1rem', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.85rem', background: isActive ? '#eff6ff' : '#fff', transition: 'all 0.15s' }}>
-                      <span style={{ fontSize: '1.3rem' }}>{opt.icon}</span>
-                      <span style={{ fontWeight: 500, fontSize: '0.88rem', color: '#222' }}>{opt.label}</span>
-                      {isActive && <CheckCircle size={18} color="#2a70b2" style={{ marginLeft: 'auto' }} />}
+                    <div key={opt.id} onClick={() => toggleDamage(opt.id)} style={{ border: isActive ? '2.5px solid #2563eb' : '1.5px solid #f1f5f9', borderRadius: '18px', padding: '1.1rem', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '1rem', background: isActive ? '#eff6ff' : '#fff', transition: 'all 0.15s' }}>
+                      <span style={{ fontSize: '1.5rem' }}>{opt.icon}</span>
+                      <span style={{ fontWeight: 700, fontSize: '0.95rem', color: '#1e293b' }}>{opt.label}</span>
+                      {isActive && <CheckCircle2 size={20} color="#2563eb" style={{ marginLeft: 'auto' }} />}
                     </div>
                   );
                 })}
               </div>
 
               {hasIssues && (
-                <div style={{ background: '#fffbeb', border: '1px solid #fbbf24', borderRadius: '8px', padding: '0.75rem 1rem', marginBottom: '1rem', display: 'flex', gap: '0.5rem', alignItems: 'flex-start' }}>
-                  <AlertTriangle size={16} color="#f59e0b" style={{ flexShrink: 0, marginTop: '2px' }} />
-                  <p style={{ fontSize: '0.8rem', color: '#78350f', margin: 0 }}>Our expert will assess the damage and recommend repairs before painting.</p>
+                <div style={{ background: '#fffbeb', border: '1.5px solid #fde68a', borderRadius: '16px', padding: '1rem 1.25rem', marginBottom: '2rem', display: 'flex', gap: '0.85rem', alignItems: 'flex-start' }}>
+                  <AlertTriangle size={20} color="#f59e0b" style={{ flexShrink: 0, marginTop: '2px' }} />
+                  <p style={{ fontSize: '0.85rem', color: '#92400e', margin: 0, fontWeight: 600, lineHeight: 1.5 }}>
+                    Our expert uses digital dampness meters. Seepage issues will be assessed for deep-waterproofing before painting.
+                  </p>
                 </div>
               )}
 
-              <div style={{ display: 'flex', gap: '0.75rem' }}>
-                <button onClick={() => setStep(1)} style={{ flex: 1, background: '#f3f4f6', color: '#444', border: 'none', padding: '0.85rem', borderRadius: '8px', fontWeight: 600, fontSize: '0.9rem', cursor: 'pointer' }}>Back</button>
-                <button onClick={() => setStep(3)} disabled={selectedDamages.length === 0} style={{ flex: 2, background: selectedDamages.length > 0 ? '#2a70b2' : '#d1d5db', color: '#fff', border: 'none', padding: '0.85rem', borderRadius: '8px', fontWeight: 600, fontSize: '0.9rem', cursor: selectedDamages.length > 0 ? 'pointer' : 'not-allowed', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}>
-                  Continue <ChevronRight size={18} />
+              <div style={{ display: 'flex', gap: '1rem' }}>
+                <button onClick={() => setStep(1)} style={{ flex: 1, background: '#f1f5f9', color: '#475569', border: 'none', padding: '1.1rem', borderRadius: '16px', fontWeight: 800, fontSize: '1rem', cursor: 'pointer' }}>Back</button>
+                <button onClick={() => setStep(3)} disabled={selectedDamages.length === 0} style={{ flex: 2, background: selectedDamages.length > 0 ? '#2563eb' : '#cbd5e1', color: '#fff', border: 'none', padding: '1.1rem', borderRadius: '16px', fontWeight: 900, fontSize: '1rem', cursor: selectedDamages.length > 0 ? 'pointer' : 'not-allowed', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.75rem', boxShadow: selectedDamages.length > 0 ? '0 10px 30px rgba(37,99,235,0.3)' : 'none' }}>
+                  Continue Summary <ArrowRight size={20} />
                 </button>
               </div>
-            </>
+            </div>
           )}
 
-          {/* ── Step 3: Confirm ────────────────────────────────────── */}
+          {/* ── Step 3: Confirm ── */}
           {step === 3 && (
-            <>
-              <h3 style={{ fontWeight: 600, fontSize: '1rem', color: '#111', marginBottom: '1rem' }}>📋 Booking Summary</h3>
-
-              {/* Summary Cards */}
-              <div style={{ background: '#f8fafc', borderRadius: '10px', padding: '1rem', marginBottom: '1rem' }}>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '1rem' }}>
+            <div style={{ animation: 'fadeIn 0.4s ease' }}>
+              <div style={{ 
+                background: '#f8fafc', borderRadius: '24px', padding: '1.75rem', 
+                marginBottom: '1.5rem', border: '1.5px solid #f1f5f9' 
+              }}>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
                   <div>
-                    <p style={{ fontSize: '0.72rem', color: '#888', margin: '0 0 0.2rem 0', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Service</p>
-                    <p style={{ fontSize: '0.88rem', fontWeight: 600, color: '#111', margin: 0 }}>{service.title}</p>
+                    <label style={{ fontSize: '0.7rem', color: '#94a3b8', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.08em', display: 'block', marginBottom: '0.4rem' }}>Selected Brand</label>
+                    <p style={{ fontSize: '1.1rem', fontWeight: 900, color: '#0f172a', margin: 0 }}>{selectedBrand}</p>
                   </div>
                   <div>
-                    <p style={{ fontSize: '0.72rem', color: '#888', margin: '0 0 0.2rem 0', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Paint Brand</p>
-                    <p style={{ fontSize: '0.88rem', fontWeight: 600, color: '#111', margin: 0 }}>{selectedBrand}</p>
+                    <label style={{ fontSize: '0.7rem', color: '#94a3b8', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.08em', display: 'block', marginBottom: '0.4rem' }}>Service Type</label>
+                    <p style={{ fontSize: '1.1rem', fontWeight: 900, color: '#0f172a', margin: 0 }}>Consultation</p>
                   </div>
                 </div>
-                <div style={{ marginTop: '0.75rem', paddingTop: '0.75rem', borderTop: '1px solid #e5e7eb' }}>
-                  <p style={{ fontSize: '0.72rem', color: '#888', margin: '0 0 0.4rem 0', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Wall Conditions Noted</p>
-                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.4rem' }}>
+                <div style={{ marginTop: '1.5rem', paddingTop: '1.5rem', borderTop: '1.5px solid #e2e8f0' }}>
+                  <label style={{ fontSize: '0.7rem', color: '#94a3b8', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.08em', display: 'block', marginBottom: '0.6rem' }}>Identified Conditions</label>
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.6rem' }}>
                     {selectedDamages.map(d => {
                       const opt = DAMAGE_OPTIONS.find(o => o.id === d);
-                      return <span key={d} style={{ background: '#e0f2fe', color: '#075985', padding: '0.2rem 0.6rem', borderRadius: '99px', fontSize: '0.75rem', fontWeight: 500 }}>{opt?.icon} {opt?.label}</span>;
+                      return <span key={d} style={{ background: '#fff', border: '1px solid #e2e8f0', color: '#1e293b', padding: '0.4rem 0.9rem', borderRadius: '12px', fontSize: '0.85rem', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '0.4rem' }}>{opt?.icon} {opt?.label}</span>;
                     })}
                   </div>
                 </div>
               </div>
 
-              {/* Price */}
-              <div style={{ background: 'linear-gradient(135deg, #2a70b2, #1e5799)', borderRadius: '10px', padding: '1.25rem 1.5rem', marginBottom: '1.25rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <div>
-                  <p style={{ color: 'rgba(255,255,255,0.75)', fontSize: '0.8rem', margin: '0 0 0.25rem 0' }}>Book Consultation</p>
-                  <p style={{ color: '#fff', fontSize: '0.82rem', margin: 0, maxWidth: '220px' }}>Expert visit, site inspection &amp; painting estimate included</p>
+              {/* Price Banner */}
+              <div style={{ background: 'linear-gradient(135deg, #1e293b 0%, #0f172a 100%)', borderRadius: '24px', padding: '1.75rem', marginBottom: '2rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', boxShadow: '0 20px 48px rgba(0,0,0,0.15)', position: 'relative', overflow: 'hidden' }}>
+                <div style={{ position: 'relative', zIndex: 1 }}>
+                  <p style={{ color: '#94a3b8', fontSize: '0.85rem', margin: '0 0 0.35rem 0', fontWeight: 700 }}>Total Booking Fee</p>
+                  <p style={{ color: '#fff', fontSize: '0.95rem', margin: 0, fontWeight: 500, maxWidth: '240px', lineHeight: 1.4 }}>Full expert inspection & digital measurement</p>
                 </div>
-                <div style={{ textAlign: 'right' }}>
-                  <p style={{ color: 'rgba(255,255,255,0.6)', textDecoration: 'line-through', fontSize: '0.8rem', margin: '0 0 0.1rem 0' }}>₹799</p>
-                  <p style={{ color: '#fff', fontWeight: 800, fontSize: '1.4rem', margin: 0 }}>₹{CONSULTATION_FEE}</p>
+                <div style={{ textAlign: 'right', position: 'relative', zIndex: 1 }}>
+                  <div style={{ background: '#ef4444', color: '#fff', fontSize: '0.65rem', fontWeight: 900, padding: '2px 6px', borderRadius: '4px', display: 'inline-block', marginBottom: '4px' }}>SAVE 80%</div>
+                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
+                    <span style={{ color: '#64748b', textDecoration: 'line-through', fontSize: '0.9rem', fontWeight: 600 }}>₹499</span>
+                    <span style={{ color: '#fff', fontWeight: 900, fontSize: '2.2rem', lineHeight: 1 }}>₹{CONSULTATION_FEE}</span>
+                  </div>
                 </div>
+                {/* Decorative glow */}
+                <div style={{ position: 'absolute', top: '-50%', right: '-20%', width: '150px', height: '150px', background: 'rgba(37, 99, 235, 0.2)', filter: 'blur(40px)', borderRadius: '50%' }} />
               </div>
 
-              <div style={{ display: 'flex', gap: '0.75rem' }}>
-                <button onClick={() => setStep(2)} style={{ flex: 1, background: '#f3f4f6', color: '#444', border: 'none', padding: '0.85rem', borderRadius: '8px', fontWeight: 600, fontSize: '0.9rem', cursor: 'pointer' }}>Back</button>
-                <button onClick={handleBook} style={{ flex: 2, background: 'linear-gradient(135deg, #2a70b2, #1e5799)', color: '#fff', border: 'none', padding: '0.85rem', borderRadius: '8px', fontWeight: 700, fontSize: '0.95rem', cursor: 'pointer', boxShadow: '0 4px 12px rgba(42,112,178,0.35)' }}>
-                  Book Consultation at ₹{CONSULTATION_FEE} →
+              <div style={{ display: 'flex', gap: '1rem' }}>
+                <button onClick={() => setStep(2)} style={{ flex: 1, background: '#f1f5f9', color: '#475569', border: 'none', padding: '1.1rem', borderRadius: '16px', fontWeight: 800, fontSize: '1rem', cursor: 'pointer' }}>Back</button>
+                <button onClick={handleBook} style={{ flex: 2, background: '#2563eb', color: '#fff', border: 'none', padding: '1.1rem', borderRadius: '16px', fontWeight: 900, fontSize: '1.1rem', cursor: 'pointer', boxShadow: '0 12px 30px rgba(37,99,235,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.75rem' }}>
+                  Secure My Visit <ArrowRight size={20} />
                 </button>
               </div>
-              <p style={{ textAlign: 'center', color: '#aaa', fontSize: '0.75rem', marginTop: '0.75rem', marginBottom: 0 }}>Refundable if service is cancelled 24 hrs before visit</p>
-            </>
+              <p style={{ textAlign: 'center', color: '#94a3b8', fontSize: '0.75rem', marginTop: '1.25rem', fontWeight: 600 }}>
+                100% Secure Payment • Instant Confirmation
+              </p>
+            </div>
           )}
 
         </div>
       </div>
+
+      <style>{`
+        @keyframes fadeIn {
+          from { opacity: 0; transform: translateY(10px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+      `}</style>
     </div>
   );
 };

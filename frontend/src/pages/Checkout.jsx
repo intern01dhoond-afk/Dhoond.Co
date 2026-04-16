@@ -1,13 +1,31 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
-import { MapPin, Clock, CreditCard, Tag, Percent, Phone, SquareCheck, Square, Info, X, Calendar, Edit2, CheckCircle2, ShieldCheck, Lock, Smartphone, ChevronRight, CheckCircle } from 'lucide-react';
+import { MapPin, Clock, CreditCard, Tag, Percent, Phone, SquareCheck, Info, X, Calendar, Edit2, CheckCircle2, ShieldCheck, Lock, Smartphone, Building2, ChevronRight, CheckCircle } from 'lucide-react';
 
 const Checkout = () => {
-  const { cartItems, totalAmount, clearCart, updateQuantity } = useCart();
+  const { cartItems: allCartItems, clearCart, clearCategoryFromCart, updateQuantity } = useCart();
   const { user, login, isAuthenticated } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+
+  // Read which category this checkout is for
+  const searchParams = new URLSearchParams(location.search);
+  const checkoutCategory = searchParams.get('category');
+
+  // Only show items for this category (or all if no category param)
+  const cartItems = checkoutCategory
+    ? allCartItems.filter(item => (item.category || 'other') === checkoutCategory)
+    : allCartItems;
+
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 1024);
+
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 1024);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
   
   // Data States
   const [formData, setFormData] = useState({
@@ -15,14 +33,22 @@ const Checkout = () => {
     address: 'Home - 78, 25th Main Rd, near Kamataka Ban...'
   });
 
+  // Keep phone in sync when user changes (e.g. after auth modal)
+  useEffect(() => {
+    if (user?.mobile && !formData.phone) {
+      setFormData(prev => ({ ...prev, phone: user.mobile }));
+    }
+  }, [user]);
+
   // Flow Modals
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
-  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
   const [authStep, setAuthStep] = useState('phone'); // phone, otp
   const [tempPhone, setTempPhone] = useState('');
   const [otpValue, setOtpValue] = useState(['', '', '', '']);
-  const [isPayLoading, setIsPayLoading] = useState(false);
   const [startOtp, setStartOtp] = useState('');
+  const [otpLoading, setOtpLoading] = useState(false);
+  const [otpError, setOtpError] = useState('');
+  const [resendTimer, setResendTimer] = useState(0);
   
   // Edit States
   const [isEditingPhone, setIsEditingPhone] = useState(false);
@@ -36,22 +62,62 @@ const Checkout = () => {
   const [tempTime, setTempTime] = useState('');
 
   // Payment State
-  const [selectedPayment, setSelectedPayment] = useState('pay_after'); // pay_after, upi, card
+  const [selectedPayment, setSelectedPayment] = useState('upi'); // upi, card, netbanking
+  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
   const [avoidCalling, setAvoidCalling] = useState(true);
   const [status, setStatus] = useState('idle'); // idle, booking, payment, success
   const [showBreakup, setShowBreakup] = useState(false);
+  const [paymentError, setPaymentError] = useState('');
   
   // Tip State
   const [tipAmount, setTipAmount] = useState(0);
   const [customTip, setCustomTip] = useState('');
   const [isCustomTipping, setIsCustomTipping] = useState(false);
 
+  // Dynamic Date Generation
+  const dates = [];
+  const now = new Date();
+  for (let i = 0; i < 7; i++) {
+    const d = new Date();
+    d.setDate(now.getDate() + i);
+    let dayLabel = "";
+    if (i === 0) dayLabel = "Today";
+    else if (i === 1) dayLabel = "Tomorrow";
+    else dayLabel = d.toLocaleDateString('en-US', { weekday: 'short' });
+    
+    dates.push({
+      id: d.toDateString(),
+      label: dayLabel,
+      date: `${d.getDate()} ${d.toLocaleDateString('en-US', { month: 'short' })}`,
+      display: `${dayLabel}, ${d.getDate()} ${d.toLocaleDateString('en-US', { month: 'short' })}`
+    });
+  }
+
+  // Dynamic Time Slots
+  const allTimeSlots = [
+    { label: 'Morning', time: '09:00 AM', hour: 9 },
+    { label: 'Midday', time: '11:30 AM', hour: 11.5 },
+    { label: 'Afternoon', time: '02:00 PM', hour: 14 },
+    { label: 'Evening', time: '04:30 PM', hour: 16.5 },
+    { label: 'Late', time: '07:00 PM', hour: 19 }
+  ];
+
+  const getAvailableSlots = (dateDisplay) => {
+    if (!dateDisplay.startsWith("Today")) return allTimeSlots;
+    const currentHour = now.getHours() + (now.getMinutes() / 60);
+    return allTimeSlots.filter(slot => slot.hour > (currentHour + 2)); // 2 hour buffer
+  };
+
   // Financial Math
   const subtotal = cartItems.reduce((acc, item) => acc + (Number(item.originalPrice || item.discountPrice || 0) * (item.quantity || 1)), 0);
   const totalDiscount = cartItems.reduce((acc, item) => acc + ((Number(item.originalPrice || item.discountPrice || 0) - Number(item.discountPrice || 0)) * (item.quantity || 1)), 0);
   const itemTotal = subtotal - totalDiscount;
-  const taxesAndFee = 129; 
-  const finalAmountToPay = itemTotal + taxesAndFee + tipAmount;
+  const total = itemTotal; // Alias for JSX consistency
+  const inclusiveTax = total - (total / 1.18);
+  const netPrice = total - inclusiveTax;
+  const finalAmountToPay = total + tipAmount;
+
+  // ─── SUCCESS SCREEN ────────────────────────────────────────────────────────
   if (status === 'success') {
     return (
       <div style={{ padding: '6rem 5%', textAlign: 'center', background: '#f9f9f9', minHeight: '80vh' }}>
@@ -82,93 +148,223 @@ const Checkout = () => {
     );
   }
 
-  const handleBook = () => {
-    if (!selectedDate || !selectedTime) {
-      alert("Please select a date and time slot first.");
+  // ─── RAZORPAY CHECKOUT ─────────────────────────────────────────────────────
+  const processFinalBooking = async (paymentId) => {
+    try {
+      const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5001';
+      
+      console.log("[Checkout] Starting backend sync for payment:", paymentId);
+
+      // 1. Create Order
+      const orderResponse = await fetch(`${apiUrl}/api/V1/orders/create`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          user_id: user?.id || null,
+          address: formData.address,
+          price: finalAmountToPay,
+          platform_fee: 0, // Placeholder
+          category_id: null, // Optional for now
+          partner_id: null,
+          items: cartItems.map(i => ({
+            id: i.id,
+            title: i.title,
+            quantity: i.quantity,
+            price: i.discountPrice
+          }))
+        })
+      });
+
+      const orderResult = await orderResponse.json();
+      if (!orderResult.success) throw new Error(orderResult.message || "Failed to create order");
+      
+      const newOrderId = orderResult.data.id;
+      console.log("[Checkout] Order created:", newOrderId);
+
+      // 2. Create Payment Record
+      const paymentResponse = await fetch(`${apiUrl}/api/V1/payments/create`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          order_id: newOrderId,
+          amount: finalAmountToPay,
+          payment_method: selectedPayment,
+          payment_status: 'success',
+          transaction_id: paymentId
+        })
+      });
+
+      const paymentResult = await paymentResponse.json();
+      if (!paymentResult.success) {
+        console.warn("[Checkout] Payment record failed but order exists:", paymentResult.message);
+      }
+
+      // 3. Update UI
+      const mockOtp = Math.floor(1000 + Math.random() * 9000).toString();
+      setStartOtp(mockOtp);
+      setStatus('success');
+      
+      if (checkoutCategory) {
+        clearCategoryFromCart(checkoutCategory);
+      } else {
+        clearCart();
+      }
+
+      console.log("[Checkout] Sync complete.");
+
+    } catch (err) {
+      console.error("[Checkout Error]", err);
+      setPaymentError(err.message || 'Something went wrong processing your booking.');
+      setStatus('idle');
+      setIsPaymentModalOpen(false);
+    }
+  };
+
+  const openRazorpayCheckout = async () => {
+    if (!window.Razorpay) {
+      setPaymentError('Razorpay SDK failed to load. Please check your connection.');
+      setStatus('idle');
       return;
     }
 
+    const options = {
+      key: import.meta.env.VITE_RAZORPAY_KEY_ID || "rzp_test_Sdh2WaT4aYxo9E", // Use real key from .env
+      amount: Math.round(finalAmountToPay * 100), // Amount is in currency subunits. Default currency is INR.
+      currency: "INR",
+      name: "Dhoond Services",
+      description: "Service Booking Transaction",
+      image: "/vite.svg", 
+      handler: function (response) {
+        // Payment Success Handler
+        processFinalBooking(response.razorpay_payment_id);
+      },
+      prefill: {
+        name: user?.name || "Customer",
+        email: user?.email || "customer@example.com",
+        contact: user?.mobile || formData.phone || tempPhone
+      },
+      theme: {
+        color: "#6e42e5"
+      },
+      config: {
+        display: {
+          blocks: {
+            banks: {
+              name: 'Pay via UPI / QR',
+              instruments: [
+                {
+                  method: 'upi'
+                }
+              ]
+            }
+          },
+          sequence: ['block.banks', 'method.card', 'method.netbanking'],
+          preferences: {
+            show_default_blocks: true // Restored to true to prevent "No method found" error
+          }
+        }
+      }
+    };
+
+    const rzp = new window.Razorpay(options);
+    
+    rzp.on('payment.failed', function (response){
+       setPaymentError(response.error.description || 'Payment Failed');
+       setStatus('idle');
+    });
+
+    rzp.open();
+  };
+
+  const handleBook = () => {
+    if (!selectedDate || !selectedTime) {
+      alert('Please select a date and time slot first.');
+      return;
+    }
+    
+    // If user is not logged in, we should handle that too, but assuming they are for now
     if (!isAuthenticated) {
+      setAuthStep('phone');
       setIsAuthModalOpen(true);
       return;
     }
 
-    if (selectedPayment !== 'pay_after') {
-      setIsPaymentModalOpen(true);
-      return;
-    }
-
-    processFinalBooking();
+    setStatus('payment');
+    setPaymentError('');
+    console.log("Launching Razorpay for amount:", finalAmountToPay);
+    
+    // Ensure modal is closed if it was open
+    setIsPaymentModalOpen(false);
+    
+    // Open Razorpay immediately
+    openRazorpayCheckout();
   };
-
-  const processFinalBooking = async () => {
-    setStatus('booking');
-    
-    const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
-    
-    try {
-      const response = await fetch(`${apiUrl}/api/bookings`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          customerName: user?.name || 'Customer', // Fallback if no name
-          phone: formData.phone,
-          address: formData.address,
-          items: cartItems.map(item => ({
-            id: item.id,
-            quantity: item.quantity
-          }))
-        }),
+  const startResendTimer = () => {
+    setResendTimer(60);
+    const interval = setInterval(() => {
+      setResendTimer(prev => {
+        if (prev <= 1) { clearInterval(interval); return 0; }
+        return prev - 1;
       });
-
-      if (!response.ok) {
-        throw new Error('Failed to create booking');
-      }
-
-      const result = await response.json();
-      setStartOtp(result.startOtp);
-      setStatus('success');
-      setTimeout(() => clearCart(), 1000);
-    } catch (error) {
-      console.error('Booking Error:', error);
-      alert('Failed to place booking. Please try again.');
-      setStatus('idle');
-    }
+    }, 1000);
   };
 
-  const handleSendOtp = () => {
+  const handleSendOtp = async () => {
     if (tempPhone.length < 10) {
-      alert("Please enter a valid 10-digit mobile number");
+      setOtpError('Please enter a valid 10-digit mobile number');
       return;
     }
-    setAuthStep('otp');
-  };
-
-  const handleVerifyOtp = () => {
-    if (otpValue.join('').length < 4) return;
-    
-    // Simulate verification
-    login(tempPhone);
-    setFormData(prev => ({ ...prev, phone: tempPhone }));
-    setIsAuthModalOpen(false);
-    
-    // Resume flow: if payment is online, show payment, else booking
-    if (selectedPayment !== 'pay_after') {
-      setIsPaymentModalOpen(true);
-    } else {
-      processFinalBooking();
+    setOtpLoading(true);
+    setOtpError('');
+    const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5001';
+    try {
+      const res = await fetch(`${apiUrl}/api/auth/send-otp`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phone: tempPhone }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Failed to send OTP');
+      setOtpValue(['', '', '', '']);
+      setAuthStep('otp');
+      startResendTimer();
+    } catch (err) {
+      setOtpError(err.message || 'Could not send OTP. Please try again.');
+    } finally {
+      setOtpLoading(false);
     }
   };
 
-  const handlePaymentSubmit = () => {
-    setIsPayLoading(true);
-    setTimeout(() => {
-      setIsPayLoading(false);
-      setIsPaymentModalOpen(false);
-      processFinalBooking();
-    }, 2000);
+  const handleVerifyOtp = async () => {
+    const otp = otpValue.join('');
+    if (otp.length < 4) return;
+    setOtpLoading(true);
+    setOtpError('');
+    const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5001';
+    try {
+      const res = await fetch(`${apiUrl}/api/auth/verify-otp`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phone: tempPhone, otp, name: 'Customer' }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Verification failed');
+      // Success — log user in
+      login(data.user?.name || 'Customer', tempPhone, {
+        id: data.user?.id,
+        email: data.user?.email || '',
+        role: data.user?.role || 'user',
+        created_at: data.user?.created_at || new Date().toISOString(),
+      });
+      setFormData(prev => ({ ...prev, phone: tempPhone }));
+      setIsAuthModalOpen(false);
+      setOtpError('');
+      setTimeout(() => processFinalBooking(), 100);
+    } catch (err) {
+      setOtpError(err.message || 'Incorrect OTP. Please try again.');
+    } finally {
+      setOtpLoading(false);
+    }
   };
 
   const handleApplyCustomTip = () => {
@@ -192,286 +388,282 @@ const Checkout = () => {
       {/* Header */}
       <div style={{ background: '#fff', borderBottom: '1px solid #eee', padding: '1.25rem 5%', display: 'flex', alignItems: 'center', position: 'sticky', top: 0, zIndex: 100 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', fontWeight: 800, fontSize: '1.2rem', color: '#111', maxWidth: '1200px', margin: '0 auto', width: '100%' }}>
-          <div style={{ background: '#111', color: '#fff', padding: '0.25rem 0.5rem', borderRadius: '4px', fontSize: '1rem' }}>DC</div> Checkout
+          Checkout
         </div>
       </div>
 
-      <div className="checkout-grid" style={{ maxWidth: '1100px', margin: '2rem auto', padding: '0 5%', display: 'grid', gridTemplateColumns: '1.4fr 1fr', gap: '2rem', alignItems: 'start' }}>
-        
-        {/* Left Column */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', minWidth: 0 }}>
-          
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#059669', fontWeight: 600, fontSize: '0.9rem', marginBottom: '0.5rem' }}>
-            <Tag size={16} fill="currentColor" /> Saving ₹{totalDiscount.toFixed(0)} on this order
+      {/* Payment Error Banner */}
+      {paymentError && (
+        <div style={{ 
+          maxWidth: '1100px', margin: '1rem auto 0', padding: '0 5%'
+        }}>
+          <div style={{ 
+            background: '#fef2f2', border: '1px solid #fecaca', borderRadius: '12px', 
+            padding: '1rem 1.5rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+            animation: 'fadeIn 0.3s ease-out'
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+              <div style={{ background: '#fee2e2', padding: '0.4rem', borderRadius: '8px', display: 'flex' }}>
+                <Info size={18} color="#ef4444" />
+              </div>
+              <span style={{ color: '#991b1b', fontWeight: 600, fontSize: '0.9rem' }}>{paymentError}</span>
+            </div>
+            <button onClick={() => setPaymentError('')} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '0.25rem' }}>
+              <X size={16} color="#991b1b" />
+            </button>
           </div>
-
-          <div style={{ background: '#fff', borderRadius: '12px', border: '1px solid #eaeaea', overflow: 'hidden' }}>
-             
-             {/* 1. Contact Details */}
-             <div style={{ padding: '1.5rem', borderBottom: '1px solid #eaeaea' }}>
-               {isEditingPhone ? (
-                 <div>
-                   <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, marginBottom: '0.5rem' }}>Phone Number</label>
-                   <div style={{ display: 'flex', gap: '0.5rem' }}>
-                     <input type="tel" value={formData.phone} onChange={e => setFormData({...formData, phone: e.target.value})} style={{ flex: 1, padding: '0.75rem', borderRadius: '8px', border: '1px solid #ccc', fontSize: '0.95rem' }} autoFocus />
-                     <button onClick={() => setIsEditingPhone(false)} style={{ background: '#111', color: '#fff', border: 'none', padding: '0 1.5rem', borderRadius: '8px', fontWeight: 600, cursor: 'pointer' }}>Save</button>
-                   </div>
-                 </div>
-               ) : (
-                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                   <div style={{ display: 'flex', alignItems: 'center' }}>
-                     <div style={{ background: '#f3f4f6', padding: '0.75rem', borderRadius: '8px', marginRight: '1.25rem' }}>
-                        <Phone size={20} color="#555" />
-                     </div>
-                     <div>
-                       <div style={{ fontWeight: 600, fontSize: '0.95rem', color: '#111', marginBottom: '0.2rem' }}>Send booking details to</div>
-                       <div style={{ fontSize: '0.85rem', color: '#666' }}>{formData.phone}</div>
-                     </div>
-                   </div>
-                   <button onClick={() => setIsEditingPhone(true)} style={{ background: 'transparent', border: 'none', color: '#6e42e5', fontWeight: 600, fontSize: '0.85rem', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.25rem' }}><Edit2 size={12}/> Edit</button>
-                 </div>
-               )}
-             </div>
-
-             {/* 2. Address Details */}
-             <div style={{ padding: '1.5rem', borderBottom: '1px solid #eaeaea' }}>
-               {isEditingAddress ? (
-                 <div>
-                   <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, marginBottom: '0.5rem' }}>Service Address</label>
-                   <textarea value={formData.address} onChange={e => setFormData({...formData, address: e.target.value})} rows={3} style={{ width: '100%', padding: '0.75rem', borderRadius: '8px', border: '1px solid #ccc', fontSize: '0.95rem', marginBottom: '0.75rem', resize: 'vertical' }} autoFocus />
-                   <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end' }}>
-                     <button onClick={() => setIsEditingAddress(false)} style={{ background: '#f3f4f6', color: '#111', border: 'none', padding: '0.5rem 1.25rem', borderRadius: '8px', fontWeight: 600, cursor: 'pointer' }}>Cancel</button>
-                     <button onClick={() => setIsEditingAddress(false)} style={{ background: '#111', color: '#fff', border: 'none', padding: '0.5rem 1.5rem', borderRadius: '8px', fontWeight: 600, cursor: 'pointer' }}>Save Address</button>
-                   </div>
-                 </div>
-               ) : (
-                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                   <div style={{ display: 'flex', alignItems: 'center' }}>
-                     <div style={{ background: '#f3f4f6', padding: '0.75rem', borderRadius: '8px', marginRight: '1.25rem' }}>
-                        <MapPin size={20} color="#555" />
-                     </div>
-                     <div>
-                       <div style={{ fontWeight: 600, fontSize: '0.95rem', color: '#111', marginBottom: '0.2rem' }}>Address</div>
-                       <div style={{ fontSize: '0.85rem', color: '#666' }}>{formData.address}</div>
-                     </div>
-                   </div>
-                   <button onClick={() => setIsEditingAddress(true)} style={{ background: '#fff', border: '1px solid #ddd', padding: '0.4rem 0.8rem', borderRadius: '6px', fontWeight: 600, fontSize: '0.8rem', cursor: 'pointer', color: '#111' }}>Edit</button>
-                 </div>
-               )}
-             </div>
-
-             {/* 3. Slot Selection */}
-             <div style={{ padding: '1.5rem', borderBottom: '1px solid #eaeaea', background: selectedDate ? '#fafafa' : '#fff' }}>
-               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem' }}>
-                 <div style={{ display: 'flex', alignItems: 'center' }}>
-                   <div style={{ background: '#f3f4f6', padding: '0.75rem', borderRadius: '8px', marginRight: '1.25rem' }}>
-                      <Clock size={20} color={selectedDate ? '#10b981' : '#555'} />
-                   </div>
-                   <div>
-                     <div style={{ fontWeight: 600, fontSize: '0.95rem', color: '#111' }}>Slot</div>
-                     {selectedDate && <div style={{ fontSize: '0.85rem', color: '#059669', fontWeight: 600, marginTop: '0.2rem' }}>{selectedDate} at {selectedTime}</div>}
-                   </div>
-                 </div>
-                 {selectedDate && <button onClick={() => setIsSlotModalOpen(true)} style={{ background: 'transparent', border: 'none', color: '#6e42e5', fontWeight: 600, fontSize: '0.85rem', cursor: 'pointer' }}>Change</button>}
-               </div>
-               
-               {!selectedDate && (
-                 <button onClick={() => setIsSlotModalOpen(true)} style={{ width: '100%', background: '#6e42e5', color: '#fff', padding: '1.1rem', borderRadius: '8px', border: 'none', fontWeight: 600, fontSize: '1rem', cursor: 'pointer', transition: 'background 0.2s', boxShadow: '0 4px 14px rgba(110,66,229,0.3)' }} onMouseEnter={e => e.currentTarget.style.background = '#5b32cc'} onMouseLeave={e => e.currentTarget.style.background = '#6e42e5'}>
-                   Select time & date
-                 </button>
-               )}
-             </div>
-
-             {/* 4. Payment Method */}
-             <div style={{ padding: '1.5rem', opacity: selectedDate ? 1 : 0.4, transition: 'opacity 0.3s' }}>
-               <div style={{ display: 'flex', alignItems: 'center', marginBottom: '1.25rem' }}>
-                 <div style={{ background: '#f3f4f6', padding: '0.75rem', borderRadius: '8px', marginRight: '1.25rem' }}>
-                    <CreditCard size={20} color="#555" />
-                 </div>
-                 <div style={{ fontWeight: 600, fontSize: '0.95rem', color: '#111' }}>Payment Method</div>
-               </div>
-
-               {selectedDate && (
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginLeft: '3.75rem', animation: 'fadeIn 0.3s ease-in' }}>
-                    <label style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', cursor: 'pointer' }}>
-                      <input type="radio" name="payment" checked={selectedPayment === 'pay_after'} onChange={() => setSelectedPayment('pay_after')} style={{ width: '18px', height: '18px', accentColor: '#6e42e5' }} />
-                      <span style={{ fontWeight: 500, fontSize: '0.95rem', color: '#111' }}>Pay after service</span>
-                    </label>
-                    <label style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', cursor: 'pointer' }}>
-                      <input type="radio" name="payment" checked={selectedPayment === 'upi'} onChange={() => setSelectedPayment('upi')} style={{ width: '18px', height: '18px', accentColor: '#6e42e5' }} />
-                      <span style={{ fontWeight: 500, fontSize: '0.95rem', color: '#111' }}>UPI / Net Banking</span>
-                    </label>
-                    <label style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', cursor: 'pointer' }}>
-                      <input type="radio" name="payment" checked={selectedPayment === 'card'} onChange={() => setSelectedPayment('card')} style={{ width: '18px', height: '18px', accentColor: '#6e42e5' }} />
-                      <span style={{ fontWeight: 500, fontSize: '0.95rem', color: '#111' }}>Credit / Debit Card</span>
-                    </label>
-
-                    <button onClick={handleBook} disabled={status === 'booking'} style={{ marginTop: '1rem', width: '100%', background: '#111', color: '#fff', padding: '1.1rem', borderRadius: '8px', border: 'none', fontWeight: 600, fontSize: '1rem', cursor: status === 'booking' ? 'wait' : 'pointer' }}>
-                      {status === 'booking' ? 'Processing...' : `Place Booking • ₹${finalAmountToPay.toFixed(0)}`}
-                    </button>
-                  </div>
-               )}
-             </div>
-          </div>
-
-          <div style={{ marginTop: '1rem', marginLeft: '0.5rem' }}>
-            <div style={{ fontWeight: 700, fontSize: '1rem', color: '#111', marginBottom: '0.5rem' }}>Cancellation policy</div>
-            <p style={{ color: '#666', fontSize: '0.85rem', lineHeight: 1.5, margin: '0 0 0.5rem 0' }}>Free cancellations if done more than 12 hrs before the service. A fee will be charged otherwise.</p>
-            <span onClick={() => alert("Full policy details stub")} style={{ fontWeight: 600, fontSize: '0.85rem', color: '#111', textDecoration: 'underline', cursor: 'pointer' }}>Read full policy</span>
-          </div>
-
         </div>
+      )}
 
-        {/* Right Column */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', minWidth: 0 }}>
-          
-          {/* Cart Block */}
-          <div style={{ background: '#fff', borderRadius: '12px', border: '1px solid #eaeaea', padding: '1.5rem' }}>
-            <h3 style={{ fontSize: '1.2rem', fontWeight: 700, color: '#111', margin: '0 0 1.5rem 0' }}>{cartItems.length > 0 ? (cartItems[0].category === 'painter' ? 'Painting' : cartItems[0].category === 'electrician' ? 'Electrician' : 'AC') : 'Services'}</h3>
-            
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', marginBottom: '1.5rem' }}>
-               {cartItems.map((item) => (
-                 <div key={item.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '1rem' }}>
-                   <div style={{ flex: 1 }}>
-                     <div style={{ fontSize: '0.9rem', color: '#111', fontWeight: 500, lineHeight: 1.4 }}>{item.title}</div>
-                   </div>
-                   
-                   <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                     {/* Counter */}
-                     <div style={{ display: 'flex', alignItems: 'center', background: '#fff', border: '1px solid #e0d4fc', borderRadius: '8px', padding: '0.1rem' }}>
-                        <button style={{ background: 'transparent', border: 'none', width: '28px', height: '28px', cursor: 'pointer', color: '#6e42e5', fontWeight: 600, fontSize: '1.2rem', display: 'flex', alignItems: 'center', justifyContent: 'center' }} onClick={() => updateQuantity(item.id, -1)}>-</button>
-                        <span style={{ width: '24px', textAlign: 'center', fontSize: '0.9rem', fontWeight: 600, color: '#6e42e5' }}>{item.quantity}</span>
-                        <button style={{ background: 'transparent', border: 'none', width: '28px', height: '28px', cursor: 'pointer', color: '#6e42e5', fontWeight: 600, fontSize: '1.2rem', display: 'flex', alignItems: 'center', justifyContent: 'center' }} onClick={() => updateQuantity(item.id, 1)}>+</button>
+      <div className="checkout-grid" style={{ 
+        maxWidth: '1100px', margin: '2rem auto', padding: '0 5%', display: 'flex', 
+        flexDirection: isMobile ? 'column' : 'row', gap: '2rem', alignItems: 'start' 
+      }}>
+        
+        {/* FIRST SECTION (ON MOBILE: Summary & Cart) */}
+        <div style={{ order: isMobile ? 1 : 2, display: 'flex', flexDirection: 'column', gap: '1rem', width: isMobile ? '100%' : '40%' }}>
+           
+            {/* Cart Block - Matched to Image 1 */}
+            <div style={{ background: '#fff', borderRadius: '16px', border: '1px solid #eaeaea', padding: '1.5rem', boxShadow: '0 2px 10px rgba(0,0,0,0.02)' }}>
+              <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#111', margin: '0 0 1.25rem 0' }}>Painting</h3>
+              
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', marginBottom: '1.5rem' }}>
+                 {cartItems.map((item) => (
+                   <div key={item.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '1rem' }}>
+                     <div style={{ flex: 1 }}>
+                       <div style={{ fontSize: '0.95rem', color: '#111', fontWeight: 600, lineHeight: 1.4 }}>{item.title}</div>
                      </div>
                      
-                     {/* Price */}
-                     <div style={{ textAlign: 'right', minWidth: '60px' }}>
-                       <div style={{ fontSize: '0.9rem', fontWeight: 600, color: '#111' }}>₹{Number(item.discountPrice || 0).toFixed(0)}</div>
-                       {item.originalPrice > item.discountPrice && (
-                         <div style={{ fontSize: '0.8rem', color: '#888', textDecoration: 'line-through' }}>₹{Number(item.originalPrice || 0).toFixed(0)}</div>
+                     <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
+                       {/* Counter - Clean style from Image 1 */}
+                       <div style={{ display: 'flex', alignItems: 'center', background: '#fff', border: '1px solid #e2e8f0', borderRadius: '8px', padding: '0.15rem' }}>
+                          <button style={{ background: 'transparent', border: 'none', width: '24px', height: '24px', cursor: 'pointer', color: '#6e42e5', fontSize: '1rem', fontWeight: 700 }} onClick={() => updateQuantity(item.id, -1)}>-</button>
+                          <span style={{ width: '20px', textAlign: 'center', fontSize: '0.9rem', fontWeight: 700, color: '#6e42e5' }}>{item.quantity}</span>
+                          <button style={{ background: 'transparent', border: 'none', width: '24px', height: '24px', cursor: 'pointer', color: '#6e42e5', fontSize: '1rem', fontWeight: 700 }} onClick={() => updateQuantity(item.id, 1)}>+</button>
+                       </div>
+                       
+                       {/* Price */}
+                       <div style={{ textAlign: 'right', minWidth: '60px' }}>
+                         <div style={{ fontSize: '1rem', fontWeight: 800, color: '#111' }}>₹{Number(item.discountPrice || 0).toFixed(0)}</div>
+                         {item.originalPrice > item.discountPrice && (
+                           <div style={{ fontSize: '0.8rem', color: '#94a3b8', textDecoration: 'line-through', fontWeight: 600 }}>₹{Number(item.originalPrice || 0).toFixed(0)}</div>
+                         )}
+                       </div>
+                     </div>
+                   </div>
+                 ))}
+              </div>
+  
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.75rem 0', borderTop: '1px solid #f8fafc' }}>
+                <div style={{ width: '22px', height: '22px', background: '#111', borderRadius: '4px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                  <SquareCheck size={14} color="#fff" strokeWidth={3} />
+                </div>
+                <span style={{ fontSize: '0.85rem', color: '#475569', fontWeight: 600 }}>Avoid calling before reaching the location</span>
+              </div>
+            </div>
+  
+
+  
+            {/* Detailed Payment Summary - Matched to Image 1 */}
+            <div style={{ background: '#fff', borderRadius: '16px', border: '1px solid #eaeaea', overflow: 'hidden' }}>
+               <div style={{ padding: '1.5rem' }}>
+                 <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#111', margin: '0 0 1.5rem 0' }}>Payment summary</h3>
+                 
+                 <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', color: '#475569', fontWeight: 600, fontSize: '0.95rem', marginBottom: '1.5rem' }}>
+                   <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                     <span>Item total (Net)</span>
+                     <span style={{ color: '#111', fontWeight: 700 }}>₹{netPrice.toFixed(2)}</span>
+                   </div>
+                   <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                     <span>Taxes (18% GST)</span>
+                     <span style={{ color: '#111', fontWeight: 700 }}>₹{inclusiveTax.toFixed(2)}</span>
+                   </div>
+                   <div style={{ display: 'flex', justifyContent: 'space-between', borderTop: '1px solid #f1f5f9', paddingTop: '1rem' }}>
+                     <span style={{ color: '#111', fontWeight: 700 }}>Total amount (Inclusive)</span>
+                     <span style={{ color: '#111', fontWeight: 800 }}>₹{total.toFixed(0)}</span>
+                   </div>
+                   {tipAmount > 0 && (
+                     <div style={{ display: 'flex', justifyContent: 'space-between', color: '#6e42e5' }}>
+                       <span>Tip for the Professional</span>
+                       <span style={{ fontWeight: 700 }}>₹{tipAmount}</span>
+                     </div>
+                   )}
+                   <div style={{ display: 'flex', justifyContent: 'space-between', borderTop: '2px solid #f8fafc', paddingTop: '1rem' }}>
+                     <span style={{ color: '#111', fontWeight: 800 }}>Amount to pay</span>
+                     <span style={{ color: '#111', fontWeight: 900, fontSize: '1.1rem' }}>₹{finalAmountToPay.toFixed(0)}</span>
+                   </div>
+                 </div>
+  
+                 {/* Tip Selector */}
+                 <div style={{ marginBottom: '0.5rem' }}>
+                   <div style={{ fontSize: '0.95rem', fontWeight: 700, color: '#111', marginBottom: '1.25rem' }}>Add a tip to thank the Professional</div>
+                   <div style={{ display: 'flex', gap: '1rem', overflowX: 'auto', paddingBottom: '0.5rem', scrollbarWidth: 'none' }}>
+                     {[50, 75, 100].map(amt => (
+                       <button key={amt} onClick={() => setTipAmount(amt === tipAmount ? 0 : amt)} style={{ padding: '0.75rem 1.5rem', borderRadius: '99px', border: tipAmount === amt ? '2px solid #6e42e5' : '1px solid #e2e8f0', background: tipAmount === amt ? '#f5f3ff' : '#fff', color: tipAmount === amt ? '#6e42e5' : '#111', fontWeight: 700, fontSize: '0.9rem', cursor: 'pointer', transition: 'all 0.2s', flexShrink: 0 }}>
+                         ₹{amt}
+                       </button>
+                     ))}
+                     
+                     <div style={{ flexShrink: 0 }}>
+                       {isCustomTipping ? (
+                         <div style={{ display: 'flex', alignItems: 'center', background: '#fff', border: '2px solid #6e42e5', borderRadius: '99px', padding: '0.2rem 0.5rem 0.2rem 1rem' }}>
+                           <span style={{ fontSize: '0.9rem', fontWeight: 700 }}>₹</span>
+                           <input type="number" value={customTip} onChange={e => setCustomTip(e.target.value)} autoFocus style={{ width: '40px', border: 'none', outline: 'none', padding: '0.5rem 0.25rem', fontSize: '0.9rem', fontWeight: 700 }} />
+                           <button onClick={handleApplyCustomTip} style={{ background: '#6e42e5', color: '#fff', border: 'none', padding: '0.4rem 0.75rem', borderRadius: '99px', fontWeight: 700, cursor: 'pointer', fontSize: '0.8rem' }}>OK</button>
+                         </div>
+                       ) : (
+                         <button onClick={() => setIsCustomTipping(true)} style={{ padding: '0.75rem 1.5rem', borderRadius: '99px', border: '1px solid #e2e8f0', background: '#fff', fontWeight: 700, fontSize: '0.9rem', cursor: 'pointer' }}>Custom</button>
                        )}
                      </div>
                    </div>
                  </div>
-               ))}
-            </div>
-
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', cursor: 'pointer' }} onClick={() => setAvoidCalling(!avoidCalling)}>
-              {avoidCalling ? (
-                <div style={{ width: '20px', height: '20px', background: '#111', borderRadius: '4px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <SquareCheck size={14} color="#fff" strokeWidth={3} />
-                </div>
-              ) : (
-                <div style={{ width: '20px', height: '20px', border: '2px solid #ccc', borderRadius: '4px' }}></div>
-              )}
-              <span style={{ fontSize: '0.85rem', color: '#333', fontWeight: 500 }}>Avoid calling before reaching the location</span>
-            </div>
-          </div>
-
-          {/* Offers Block */}
-          <div onClick={() => alert("Offers integration coming soon!")} style={{ background: '#fff', borderRadius: '12px', border: '1px solid #eaeaea', padding: '1.25rem 1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer', transition: 'box-shadow 0.2s' }} onMouseEnter={e => e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.03)'} onMouseLeave={e => e.currentTarget.style.boxShadow = 'none'}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-              <div style={{ background: '#059669', borderRadius: '50%', padding: '0.25rem', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <Percent size={14} color="#fff" />
-              </div>
-              <span style={{ fontWeight: 600, fontSize: '0.9rem', color: '#111' }}>Coupons and offers</span>
-            </div>
-            <span style={{ color: '#6e42e5', fontWeight: 600, fontSize: '0.9rem' }}>6 offers &gt;</span>
-          </div>
-
-          {/* Payment Summary */}
-          <div style={{ background: '#fff', borderRadius: '12px', border: '1px solid #eaeaea', overflow: 'hidden', transition: 'all 0.3s' }}>
-            <div style={{ padding: '1.5rem' }}>
-              <h3 style={{ fontSize: '1.1rem', fontWeight: 700, color: '#111', margin: '0 0 1.25rem 0' }}>Payment summary</h3>
-              
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginBottom: '1.25rem' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem', color: '#555' }}>
-                  <span>Item total</span>
-                  <div>
-                    {totalDiscount > 0 && <span style={{ textDecoration: 'line-through', marginRight: '0.5rem', color: '#aaa' }}>₹{subtotal.toFixed(0)}</span>}
-                    <span style={{ color: '#111' }}>₹{itemTotal.toFixed(0)}</span>
-                  </div>
-                </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem', color: '#555', alignItems: 'center' }}>
-                  <span style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', textDecoration: 'underline', textDecorationStyle: 'dashed' }}>Taxes and Fee</span>
-                  <span style={{ color: '#111' }}>₹{taxesAndFee}</span>
-                </div>
-                
-                {/* Breakup Animation Area */}
-                {showBreakup && tipAmount > 0 && (
-                   <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem', color: '#059669', animation: 'fadeIn 0.2s ease-in' }}>
-                     <span>Added Tip</span>
-                     <span>+ ₹{tipAmount}</span>
+               </div>
+  
+               {/* Mobile Sticky Summary Preview */}
+               {isMobile && (
+                 <div style={{ padding: '1.25rem 1.5rem', background: '#f9fafb', borderTop: '1px solid #f1f5f9', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                   <div>
+                     <div style={{ fontSize: '1rem', fontWeight: 900, color: '#111' }}>₹{finalAmountToPay.toFixed(0)}</div>
+                     <span onClick={() => window.scrollTo({ bottom: 0, behavior: 'smooth' })} style={{ fontSize: '0.75rem', color: '#6e42e5', fontWeight: 700, cursor: 'pointer' }}>View Breakup</span>
                    </div>
+                   <div style={{ fontSize: '0.9rem', fontWeight: 800, color: '#111' }}>Amount to pay</div>
+                 </div>
+               )}
+            </div>
+        </div>
+        
+        {/* SECOND SECTION (ON MOBILE: Details & Payment) */}
+        <div style={{ order: isMobile ? 2 : 1, display: 'flex', flexDirection: 'column', gap: '1.5rem', width: isMobile ? '100% ' : '60%' }}>
+          
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#059669', fontWeight: 700, fontSize: '0.9rem', marginBottom: '0.5rem' }}>
+            <Tag size={16} fill="currentColor" /> Saving ₹{totalDiscount.toFixed(0)} on this order
+          </div>
+  
+          <div style={{ background: '#fff', borderRadius: '16px', border: '1px solid #eaeaea', overflow: 'hidden' }}>
+             
+             {/* 1. Contact Details */}
+             <div style={{ padding: '1.5rem', borderBottom: '1px solid #f1f5f9' }}>
+               {isEditingPhone ? (
+                 <div>
+                   <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 700, color: '#475569', marginBottom: '0.5rem' }}>Phone Number</label>
+                   <div style={{ display: 'flex', gap: '1rem' }}>
+                     <input type="tel" value={formData.phone} onChange={e => setFormData({...formData, phone: e.target.value})} style={{ flex: 1, padding: '1rem', borderRadius: '12px', border: '1px solid #e2e8f0', fontSize: '1rem', outline: 'none' }} autoFocus />
+                     <button onClick={() => setIsEditingPhone(false)} style={{ background: '#111', color: '#fff', border: 'none', padding: '0 1.5rem', borderRadius: '12px', fontWeight: 700, cursor: 'pointer' }}>Save</button>
+                   </div>
+                 </div>
+               ) : (
+                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                   <div style={{ display: 'flex', alignItems: 'center' }}>
+                     <div style={{ background: '#f8fafc', padding: '0.75rem', borderRadius: '12px', marginRight: '1.25rem', color: '#64748b' }}>
+                        <Phone size={22} strokeWidth={2.5} />
+                     </div>
+                     <div>
+                       <div style={{ fontWeight: 800, fontSize: '1rem', color: '#111', marginBottom: '0.1rem' }}>Send booking details to</div>
+                       <div style={{ fontSize: '0.9rem', color: '#64748b', fontWeight: 600 }}>{formData.phone}</div>
+                     </div>
+                   </div>
+                   <button onClick={() => setIsEditingPhone(true)} style={{ background: 'transparent', border: 'none', color: '#6e42e5', fontWeight: 800, fontSize: '0.9rem', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.25rem' }}><Edit2 size={14}/> Edit</button>
+                 </div>
+               )}
+             </div>
+  
+              {/* 2. Address Details */}
+              <div style={{ padding: '1.5rem', borderBottom: '1px solid #f1f5f9' }}>
+                {isEditingAddress ? (
+                  <div style={{ animation: 'fadeIn 0.3s ease-out' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
+                       <label style={{ fontSize: '1.1rem', fontWeight: 900, color: '#111' }}>Address</label>
+                       <button onClick={() => setIsEditingAddress(false)} style={{ background: 'none', border: 'none', color: '#666', cursor: 'pointer' }}><X size={20} /></button>
+                    </div>
+  
+                    {/* THE MAP MOCKUP */}
+                    <div style={{ 
+                      width: '100%', height: '220px', background: '#f8fafc', borderRadius: '16px', marginBottom: '1.25rem', overflow: 'hidden', position: 'relative',
+                      border: '1px solid #e2e8f0'
+                    }}>
+                       {/* Simplified map look */}
+                       <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }}>
+                          <MapPin size={40} color="#6e42e5" fill="#6e42e533" />
+                       </div>
+                       <div style={{ position: 'absolute', bottom: '1rem', left: '1rem', background: '#fff', padding: '0.6rem 1rem', borderRadius: '10px', fontSize: '0.8rem', fontWeight: 800, border: '1px solid #e2e8f0', boxShadow: '0 4px 12px rgba(0,0,0,0.08)' }}>
+                          📍 Current Location
+                       </div>
+                    </div>
+  
+                    <textarea value={formData.address} onChange={e => setFormData({...formData, address: e.target.value})} rows={2} style={{ width: '100%', padding: '1rem', borderRadius: '12px', border: '1px solid #e2e8f0', fontSize: '0.95rem', marginBottom: '1.25rem', resize: 'none', outline: 'none' }} placeholder="Door No, Street name..." autoFocus />
+                    
+                    <button onClick={() => setIsEditingAddress(false)} style={{ width: '100%', background: '#111', color: '#fff', border: 'none', padding: '1.1rem', borderRadius: '12px', fontWeight: 800, cursor: 'pointer', fontSize: '1rem' }}>Confirm Location</button>
+                  </div>
+                ) : (
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <div style={{ display: 'flex', alignItems: 'center' }}>
+                      <div style={{ background: '#f8fafc', padding: '0.75rem', borderRadius: '12px', marginRight: '1.25rem', color: '#64748b' }}>
+                         <MapPin size={22} strokeWidth={2.5} />
+                      </div>
+                      <div>
+                        <div style={{ fontWeight: 800, fontSize: '1rem', color: '#111', marginBottom: '0.1rem' }}>Address</div>
+                        <div style={{ fontSize: '0.9rem', color: '#64748b', fontWeight: 600, maxWidth: '200px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{formData.address}</div>
+                      </div>
+                    </div>
+                    <button onClick={() => setIsEditingAddress(true)} style={{ background: '#fff', border: '1px solid #e2e8f0', padding: '0.5rem 1rem', borderRadius: '10px', fontWeight: 800, fontSize: '0.85rem', cursor: 'pointer', color: '#111' }}>Edit</button>
+                  </div>
                 )}
               </div>
-
-              <div style={{ padding: '1rem 0', borderTop: '1px solid #eaeaea', borderBottom: '1px solid #eaeaea', display: 'flex', justifyContent: 'space-between', fontWeight: 700, color: '#111', fontSize: '0.9rem', marginBottom: '1.25rem' }}>
-                <span>Total amount</span>
-                <span>₹{(itemTotal + taxesAndFee).toFixed(0)}</span>
-              </div>
-
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontWeight: 800, color: '#111', fontSize: '0.9rem', marginBottom: '2rem' }}>
-                <span>Amount to pay</span>
-                <span>₹{finalAmountToPay.toFixed(0)}</span>
-              </div>
-
-              {/* Tipping Section */}
-              <div>
-                <div style={{ fontSize: '0.85rem', fontWeight: 600, color: '#111', marginBottom: '1rem' }}>Add a tip to thank the Professional</div>
-                <div style={{ display: 'flex', gap: '0.75rem', overflowX: 'auto', paddingBottom: '0.5rem' }}>
-                  {[50, 75, 100].map((amt) => (
-                    <button 
-                      key={amt} 
-                      onClick={() => { setTipAmount(tipAmount === amt ? 0 : amt); setIsCustomTipping(false); setShowBreakup(true); }}
-                      style={{ 
-                        padding: '0.5rem 1rem', flexShrink: 0, cursor: 'pointer', transition: 'all 0.2s',
-                        borderRadius: '16px', fontWeight: 600, fontSize: '0.85rem',
-                        background: tipAmount === amt && !isCustomTipping ? '#f5f3ff' : '#fff', 
-                        border: tipAmount === amt && !isCustomTipping ? '1px solid #6e42e5' : '1px solid #eaeaea', 
-                        color: tipAmount === amt && !isCustomTipping ? '#6e42e5' : '#111', 
-                      }}
-                    >
-                      ₹{amt}
-                    </button>
-                  ))}
-                  
-                  <div style={{ position: 'relative', display: 'flex', flexShrink: 0 }}>
-                    {isCustomTipping ? (
-                      <div style={{ display: 'flex', alignItems: 'center', background: '#fff', border: '1px solid #6e42e5', borderRadius: '16px', overflow: 'hidden' }}>
-                        <span style={{ paddingLeft: '0.75rem', fontSize: '0.85rem', fontWeight: 600, color: '#111' }}>₹</span>
-                        <input type="number" min="0" value={customTip} onChange={e => setCustomTip(e.target.value)} autoFocus style={{ width: '50px', border: 'none', outline: 'none', padding: '0.5rem', fontSize: '0.85rem', fontWeight: 600 }} />
-                        <button onClick={handleApplyCustomTip} style={{ background: '#6e42e5', color: '#fff', border: 'none', padding: '0.5rem 0.75rem', fontWeight: 600, cursor: 'pointer', fontSize: '0.75rem' }}>OK</button>
-                      </div>
-                    ) : (
-                      <button 
-                        onClick={() => { setIsCustomTipping(true); setTipAmount(0); }}
-                        style={{ 
-                          padding: '0.5rem 1rem', background: (tipAmount > 0 && ![50,75,100].includes(tipAmount)) ? '#f5f3ff' : '#fff', 
-                          border: (tipAmount > 0 && ![50,75,100].includes(tipAmount)) ? '1px solid #6e42e5' : '1px solid #eaeaea', 
-                          borderRadius: '16px', fontWeight: 600, fontSize: '0.85rem', 
-                          color: (tipAmount > 0 && ![50,75,100].includes(tipAmount)) ? '#6e42e5' : '#111', cursor: 'pointer' 
-                        }}
-                      >
-                        {(tipAmount > 0 && ![50,75,100].includes(tipAmount)) ? `₹${tipAmount}` : 'Custom'}
-                      </button>
-                    )}
-                  </div>
-                </div>
-              </div>
-            </div>
-            
-            {/* Sticky Bottom Actions */}
-            <div style={{ padding: '1.25rem 1.5rem', background: '#fafafa', borderTop: '1px solid #eaeaea', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-              <div style={{ fontWeight: 600, fontSize: '0.95rem', color: '#111', margin: 0 }}>Amount to pay</div>
-              <div style={{ textAlign: 'right' }}>
-                <div style={{ fontSize: '1.25rem', fontWeight: 800, color: '#111', transition: 'color 0.2s', marginTop: '-0.2rem' }}>₹{finalAmountToPay.toFixed(0)}</div>
-                <div onClick={() => setShowBreakup(!showBreakup)} style={{ fontSize: '0.75rem', color: '#6e42e5', fontWeight: 600, marginTop: '0.25rem', cursor: 'pointer', userSelect: 'none' }}>{showBreakup ? 'Hide Breakup' : 'View Breakup'}</div>
-              </div>
-            </div>
+  
+             {/* 3. Slot Selection */}
+             <div style={{ padding: '1.5rem', borderBottom: '1px solid #f1f5f9' }}>
+               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                 <div style={{ display: 'flex', alignItems: 'center' }}>
+                   <div style={{ background: '#f8fafc', padding: '0.75rem', borderRadius: '12px', marginRight: '1.25rem', color: '#64748b' }}>
+                      <Clock size={22} strokeWidth={2.5} />
+                   </div>
+                   <div>
+                     <div style={{ fontWeight: 800, fontSize: '1rem', color: '#111', marginBottom: '0.1rem' }}>Slot</div>
+                     <div style={{ fontSize: '0.9rem', color: selectedDate ? '#059669' : '#64748b', fontWeight: 700 }}>{selectedDate ? `${selectedDate} at ${selectedTime}` : 'Select a time slot'}</div>
+                   </div>
+                 </div>
+                 <button onClick={() => setIsSlotModalOpen(true)} style={{ background: 'transparent', border: 'none', color: '#6e42e5', fontWeight: 800, fontSize: '0.9rem', cursor: 'pointer' }}>{selectedDate ? 'Change' : 'Select'}</button>
+               </div>
+             </div>
+  
+             {/* 4. Proceed to Pay CTA */}
+             <div style={{ padding: '1.5rem', background: '#f8fafc' }}>
+               <button
+                 id="proceed-to-pay-btn"
+                 onClick={() => {
+                   if (!selectedDate || !selectedTime) {
+                     alert('Please select a date and time slot first.');
+                     return;
+                   }
+                   handleBook();
+                 }}
+                 style={{
+                   width: '100%', background: 'linear-gradient(135deg, #6e42e5 0%, #4f29c8 100%)',
+                   color: '#fff', padding: '1.25rem', borderRadius: '14px', border: 'none',
+                   fontWeight: 800, fontSize: '1.1rem', cursor: 'pointer',
+                   boxShadow: '0 8px 25px rgba(110,66,229,0.35)',
+                   display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.75rem',
+                   transition: 'all 0.2s'
+                 }}
+                 onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-2px)'}
+                 onMouseLeave={e => e.currentTarget.style.transform = 'translateY(0)'}
+               >
+                 <CreditCard size={20} /> Proceed to Pay • ₹{finalAmountToPay.toFixed(0)}
+               </button>
+               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', marginTop: '1rem', color: '#94a3b8', fontSize: '0.78rem', fontWeight: 600 }}>
+                 <ShieldCheck size={13} /> Secured by Razorpay
+               </div>
+             </div>
           </div>
-
+  
+          <div style={{ padding: '0 0.5rem' }}>
+            <div style={{ fontWeight: 900, fontSize: '1.1rem', color: '#111', marginBottom: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Cancellation policy</div>
+            <p style={{ color: '#64748b', fontSize: '0.9rem', lineHeight: 1.6, margin: '0 0 1rem 0', fontWeight: 600 }}>Free cancellations if done more than 12 hrs before the service. A fee will be charged otherwise.</p>
+            <span onClick={() => alert("Full policy details stub")} style={{ fontWeight: 800, fontSize: '0.9rem', color: '#6e42e5', cursor: 'pointer' }}>Read full policy</span>
+          </div>
+  
         </div>
+
       </div>
 
       {/* Date/Time Modal */}
@@ -484,23 +676,31 @@ const Checkout = () => {
             </div>
             
             <h4 style={{ fontSize: '0.9rem', fontWeight: 600, color: '#555', marginBottom: '0.75rem' }}>Select Date</h4>
-            <div style={{ display: 'flex', gap: '0.75rem', overflowX: 'auto', paddingBottom: '1rem', borderBottom: '1px solid #eee', marginBottom: '1.5rem' }}>
-              {['Today, 9 Apr', 'Tomorrow, 10 Apr', 'Thu, 11 Apr'].map(d => (
-                <button key={d} onClick={() => setTempDate(d)} style={{ padding: '0.75rem 1.25rem', borderRadius: '12px', flexShrink: 0, fontWeight: 600, fontSize: '0.9rem', cursor: 'pointer', background: tempDate === d ? '#f5f3ff' : '#fff', border: tempDate === d ? '2px solid #6e42e5' : '1px solid #ddd', color: tempDate === d ? '#6e42e5' : '#111', transition: 'all 0.2s' }}>
-                  {d}
+            <div style={{ display: 'flex', gap: '0.75rem', overflowX: 'auto', paddingBottom: '1rem', borderBottom: '1px solid #eee', marginBottom: '1.5rem', scrollbarWidth: 'none' }}>
+              {dates.map(d => (
+                <button key={d.id} onClick={() => { setTempDate(d.display); setTempTime(''); }} style={{ padding: '0.75rem 1.25rem', borderRadius: '12px', flexShrink: 0, fontWeight: 600, fontSize: '0.9rem', cursor: 'pointer', background: tempDate === d.display ? '#f5f3ff' : '#fff', border: tempDate === d.display ? '2px solid #6e42e5' : '1px solid #ddd', color: tempDate === d.display ? '#6e42e5' : '#111', transition: 'all 0.2s', textAlign: 'center' }}>
+                  <div style={{ fontSize: '0.7rem', opacity: 0.6 }}>{d.label}</div>
+                  <div>{d.date}</div>
                 </button>
               ))}
             </div>
 
             {tempDate && (
               <>
-                <h4 style={{ fontSize: '0.9rem', fontWeight: 600, color: '#555', marginBottom: '0.75rem', animation: 'fadeIn 0.3s' }}>{tempDate} - Select Time</h4>
+                <h4 style={{ fontSize: '0.9rem', fontWeight: 600, color: '#555', marginBottom: '0.75rem', animation: 'fadeIn 0.3s' }}>Select Time Slot</h4>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem', marginBottom: '2rem', animation: 'fadeIn 0.3s' }}>
-                  {['09:00 AM', '11:30 AM', '02:00 PM', '04:30 PM'].map(t => (
-                    <button key={t} onClick={() => setTempTime(t)} style={{ padding: '0.85rem', borderRadius: '12px', fontWeight: 600, fontSize: '0.9rem', cursor: 'pointer', background: tempTime === t ? '#f5f3ff' : '#fff', border: tempTime === t ? '2px solid #6e42e5' : '1px solid #ddd', color: tempTime === t ? '#6e42e5' : '#111', transition: 'all 0.2s' }}>
-                      {t}
-                    </button>
-                  ))}
+                  {getAvailableSlots(tempDate).length > 0 ? (
+                    getAvailableSlots(tempDate).map(slot => (
+                      <button key={slot.time} onClick={() => setTempTime(slot.time)} style={{ padding: '1rem', borderRadius: '12px', fontWeight: 600, fontSize: '0.9rem', cursor: 'pointer', background: tempTime === slot.time ? '#f5f3ff' : '#fff', border: tempTime === slot.time ? '2px solid #6e42e5' : '1px solid #ddd', color: tempTime === slot.time ? '#6e42e5' : '#111', transition: 'all 0.2s', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.2rem' }}>
+                        <span style={{ fontSize: '1rem' }}>{slot.time}</span>
+                        <span style={{ fontSize: '0.7rem', opacity: 0.6 }}>{slot.label}</span>
+                      </button>
+                    ))
+                  ) : (
+                    <div style={{ gridColumn: '1 / span 2', textAlign: 'center', padding: '1rem', color: '#ef4444', fontWeight: 600, background: '#fef2f2', borderRadius: '12px' }}>
+                      No slots available for today. Please select tomorrow.
+                    </div>
+                  )}
                 </div>
               </>
             )}
@@ -544,8 +744,17 @@ const Checkout = () => {
                     onBlur={e => e.target.style.borderColor = '#eee'}
                   />
                 </div>
-                <button onClick={handleSendOtp} style={{ width: '100%', background: '#111', color: '#fff', padding: '1.1rem', borderRadius: '12px', border: 'none', fontWeight: 700, fontSize: '1rem', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}>
-                  Send OTP <ChevronRight size={18} />
+                {otpError && (
+                  <div style={{ background: '#fef2f2', border: '1px solid #fecaca', borderRadius: '10px', padding: '0.75rem 1rem', color: '#991b1b', fontSize: '0.85rem', fontWeight: 600 }}>
+                    {otpError}
+                  </div>
+                )}
+                <button
+                  onClick={handleSendOtp}
+                  disabled={otpLoading}
+                  style={{ width: '100%', background: otpLoading ? '#94a3b8' : '#111', color: '#fff', padding: '1.1rem', borderRadius: '12px', border: 'none', fontWeight: 700, fontSize: '1rem', cursor: otpLoading ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', transition: 'background 0.2s' }}
+                >
+                  {otpLoading ? 'Sending...' : <><span>Send OTP</span><ChevronRight size={18} /></>}
                 </button>
               </div>
             ) : (
@@ -569,14 +778,25 @@ const Checkout = () => {
                     />
                   ))}
                 </div>
-                <button 
-                  onClick={handleVerifyOtp} 
-                  style={{ width: '100%', background: '#6e42e5', color: '#fff', padding: '1.1rem', borderRadius: '12px', border: 'none', fontWeight: 700, fontSize: '1rem', cursor: 'pointer', transition: 'all 0.2s', boxShadow: '0 4px 14px rgba(110,66,229,0.3)' }}
+                {otpError && (
+                  <div style={{ background: '#fef2f2', border: '1px solid #fecaca', borderRadius: '10px', padding: '0.75rem 1rem', color: '#991b1b', fontSize: '0.85rem', fontWeight: 600, textAlign: 'center' }}>
+                    {otpError}
+                  </div>
+                )}
+                <button
+                  onClick={handleVerifyOtp}
+                  disabled={otpLoading || otpValue.join('').length < 4}
+                  style={{ width: '100%', background: otpLoading ? '#94a3b8' : '#6e42e5', color: '#fff', padding: '1.1rem', borderRadius: '12px', border: 'none', fontWeight: 700, fontSize: '1rem', cursor: (otpLoading || otpValue.join('').length < 4) ? 'not-allowed' : 'pointer', transition: 'all 0.2s', boxShadow: '0 4px 14px rgba(110,66,229,0.3)' }}
                 >
-                  Verify & Proceed
+                  {otpLoading ? 'Verifying...' : 'Verify & Proceed'}
                 </button>
-                <div style={{ textAlign: 'center' }}>
-                  <button onClick={() => setAuthStep('phone')} style={{ background: 'none', border: 'none', color: '#6e42e5', fontWeight: 600, fontSize: '0.9rem', cursor: 'pointer' }}>Change Phone Number</button>
+                <div style={{ textAlign: 'center', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                  {resendTimer > 0 ? (
+                    <span style={{ color: '#94a3b8', fontSize: '0.85rem', fontWeight: 600 }}>Resend OTP in {resendTimer}s</span>
+                  ) : (
+                    <button onClick={handleSendOtp} disabled={otpLoading} style={{ background: 'none', border: 'none', color: '#6e42e5', fontWeight: 700, fontSize: '0.9rem', cursor: 'pointer' }}>Resend OTP</button>
+                  )}
+                  <button onClick={() => { setAuthStep('phone'); setOtpError(''); setOtpValue(['','','','']); }} style={{ background: 'none', border: 'none', color: '#94a3b8', fontWeight: 600, fontSize: '0.85rem', cursor: 'pointer' }}>Change Phone Number</button>
                 </div>
               </div>
             )}
@@ -588,51 +808,152 @@ const Checkout = () => {
         </div>
       )}
 
-      {/* Payment Loading Modal */}
+      {/* ─── PAYMENT METHOD POPUP MODAL ─────────────────────────────── */}
       {isPaymentModalOpen && (
-        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(255,255,255,0.95)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1100, flexDirection: 'column', animation: 'fadeIn 0.3s' }}>
-          {isPayLoading ? (
-            <div style={{ textAlign: 'center' }}>
-              <div className="payment-spinner" style={{ width: '60px', height: '60px', border: '5px solid #f3f3f3', borderTop: '5px solid #6e42e5', borderRadius: '50%', margin: '0 auto 2rem', animation: 'spin 1s linear infinite' }}></div>
-              <h3 style={{ fontSize: '1.5rem', fontWeight: 800, color: '#111', marginBottom: '0.5rem' }}>Processing Payment</h3>
-              <p style={{ color: '#666' }}>Please do not refresh or close clinical</p>
+        <div style={{
+          position: 'fixed', inset: 0, zIndex: 1200,
+          background: 'rgba(10, 10, 20, 0.65)',
+          backdropFilter: 'blur(6px)',
+          display: 'flex', alignItems: 'flex-end', justifyContent: 'center',
+          animation: 'fadeIn 0.2s ease-out'
+        }}>
+          {/* Backdrop close */}
+          <div style={{ position: 'absolute', inset: 0 }} onClick={() => !status.includes('booking') && setIsPaymentModalOpen(false)} />
+
+          <div style={{
+            position: 'relative',
+            width: '100%', maxWidth: '520px',
+            background: '#fff',
+            borderTopLeftRadius: '28px', borderTopRightRadius: '28px',
+            padding: '2rem 2rem 2.5rem',
+            boxShadow: '0 -20px 60px rgba(0,0,0,0.15)',
+            animation: 'slideUp 0.35s cubic-bezier(0.16,1,0.3,1)'
+          }}>
+            {/* Drag handle */}
+            <div style={{ width: '40px', height: '4px', background: '#e2e8f0', borderRadius: '99px', margin: '0 auto 1.75rem' }} />
+
+            {/* Header */}
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
+              <div>
+                <h3 style={{ fontSize: '1.3rem', fontWeight: 900, color: '#0f172a', margin: 0 }}>Choose Payment Method</h3>
+                <p style={{ fontSize: '0.85rem', color: '#94a3b8', fontWeight: 600, margin: '0.25rem 0 0' }}>Amount: <span style={{ color: '#6e42e5', fontWeight: 800 }}>{'₹'}{finalAmountToPay.toFixed(0)}</span></p>
+              </div>
+              <button onClick={() => setIsPaymentModalOpen(false)} style={{ background: '#f1f5f9', border: 'none', width: '36px', height: '36px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <X size={18} color="#64748b" />
+              </button>
             </div>
-          ) : (
-            <div style={{ width: '90%', maxWidth: '400px', background: '#fff', borderRadius: '24px', padding: '2rem', boxShadow: '0 10px 40px rgba(0,0,0,0.1)', border: '1px solid #eee' }}>
-               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
-                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: 800, fontSize: '1.1rem' }}>
-                    <div style={{ background: '#111', color: '#fff', padding: '0.2rem 0.5rem', borderRadius: '4px', fontSize: '0.8rem' }}>DC</div> Pay Securely
-                 </div>
-                 <button onClick={() => setIsPaymentModalOpen(false)} style={{ background: 'none', border: 'none', cursor: 'pointer' }}><X size={20} /></button>
-               </div>
 
-               <div style={{ background: '#f8fafc', borderRadius: '16px', padding: '1.5rem', marginBottom: '1.5rem' }}>
-                  <div style={{ fontSize: '0.85rem', color: '#64748b', marginBottom: '0.25rem' }}>Amount to pay</div>
-                  <div style={{ fontSize: '2rem', fontWeight: 900, color: '#111' }}>₹{finalAmountToPay.toFixed(0)}</div>
-               </div>
-
-               <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                 <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', padding: '1rem', border: '2px solid #6e42e5', borderRadius: '12px', background: '#f5f3ff' }}>
-                    <div style={{ background: '#fff', padding: '0.5rem', borderRadius: '8px' }}>
-                      <img src="https://upload.wikimedia.org/wikipedia/commons/e/e1/UPI-Logo-vector.svg" alt="UPI" style={{ width: '40px' }} />
+            {/* Payment Options */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', margin: '1.5rem 0' }}>
+              {[
+                { id: 'upi',        Icon: Smartphone,  label: 'UPI',                  sub: 'Google Pay · PhonePe · Paytm · BHIM' },
+                { id: 'card',       Icon: CreditCard,   label: 'Debit / Credit Card',  sub: 'Visa · Mastercard · RuPay' },
+                { id: 'netbanking', Icon: Building2,    label: 'Net Banking',           sub: 'All major banks supported' },
+              ].map(opt => (
+                <div key={opt.id}>
+                  <button
+                    onClick={() => setSelectedPayment(opt.id)}
+                    style={{
+                      display: 'flex', alignItems: 'center', gap: '1rem',
+                      padding: '1rem 1.25rem',
+                      borderRadius: selectedPayment === opt.id && opt.id === 'upi' ? '16px 16px 0 0' : '16px',
+                      border: selectedPayment === opt.id ? '2px solid #6e42e5' : '1.5px solid #e8edf5',
+                      borderBottom: selectedPayment === opt.id && opt.id === 'upi' ? '1px solid #e8edf5' : undefined,
+                      background: selectedPayment === opt.id ? '#f5f3ff' : '#fafbfc',
+                      cursor: 'pointer', transition: 'all 0.18s',
+                      textAlign: 'left', width: '100%'
+                    }}
+                  >
+                    <div style={{ width: '44px', height: '44px', background: selectedPayment === opt.id ? '#ede9fe' : '#f1f5f9', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                      <opt.Icon size={22} color={selectedPayment === opt.id ? '#6e42e5' : '#64748b'} />
                     </div>
                     <div style={{ flex: 1 }}>
-                       <div style={{ fontWeight: 700, fontSize: '0.95rem' }}>Google Pay / PhonePe</div>
-                       <div style={{ fontSize: '0.8rem', color: '#6e42e5', fontWeight: 600 }}>Connected via {user?.mobile}</div>
+                      <div style={{ fontWeight: 800, fontSize: '0.95rem', color: '#0f172a' }}>{opt.label}</div>
+                      <div style={{ fontSize: '0.75rem', color: '#94a3b8', fontWeight: 600, marginTop: '0.1rem' }}>{opt.sub}</div>
                     </div>
-                    <CheckCircle size={20} color="#6e42e5" fill="#6e42e511" />
-                 </div>
+                    <div style={{
+                      width: '20px', height: '20px', borderRadius: '50%', flexShrink: 0,
+                      border: selectedPayment === opt.id ? '6px solid #6e42e5' : '2px solid #e2e8f0',
+                      background: '#fff', transition: 'all 0.15s'
+                    }} />
+                  </button>
 
-                 <button onClick={handlePaymentSubmit} style={{ width: '100%', background: '#111', color: '#fff', padding: '1.25rem', borderRadius: '14px', border: 'none', fontWeight: 700, fontSize: '1.1rem', cursor: 'pointer', marginTop: '1rem', boxShadow: '0 10px 20px rgba(0,0,0,0.1)' }}>
-                   Pay ₹{finalAmountToPay.toFixed(0)}
-                 </button>
-                 
-                 <div style={{ textAlign: 'center', marginTop: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.4rem', color: '#94a3b8', fontSize: '0.8rem' }}>
-                    <Lock size={12} /> SECURE ENCRYPTED TRANSACTION
-                 </div>
-               </div>
+                  {/* UPI App Grid - expands when UPI is selected */}
+                  {opt.id === 'upi' && selectedPayment === 'upi' && (
+                    <div style={{
+                      border: '2px solid #6e42e5', borderTop: 'none',
+                      borderRadius: '0 0 16px 16px',
+                      background: '#faf8ff',
+                      padding: '1rem 1.25rem 0.75rem',
+                    }}>
+                      <p style={{ fontSize: '0.72rem', color: '#94a3b8', fontWeight: 700, margin: '0 0 0.75rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                        Razorpay will show apps available on your device
+                      </p>
+                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '0.75rem' }}>
+                        {[
+                          { name: 'PhonePe',    color: '#5F259F', letter: 'Pe',  bg: '#f3ebff' },
+                          { name: 'Google Pay', color: '#1a73e8', letter: 'G',   bg: '#e8f0fe' },
+                          { name: 'Paytm',      color: '#00BAF2', letter: 'P',   bg: '#e6f7ff' },
+                          { name: 'BHIM',       color: '#1B5E20', letter: 'B',   bg: '#e8f5e9' },
+                        ].map(app => (
+                          <div key={app.name} style={{ textAlign: 'center' }}>
+                            <div style={{
+                              width: '48px', height: '48px', borderRadius: '14px',
+                              background: app.bg, border: `1.5px solid ${app.color}22`,
+                              display: 'flex', alignItems: 'center', justifyContent: 'center',
+                              margin: '0 auto 0.35rem',
+                              fontSize: '1rem', fontWeight: 900, color: app.color,
+                              letterSpacing: '-0.02em',
+                            }}>
+                              {app.letter}
+                            </div>
+                            <div style={{ fontSize: '0.65rem', fontWeight: 700, color: '#475569', lineHeight: 1.2 }}>{app.name}</div>
+                          </div>
+                        ))}
+                      </div>
+                      <p style={{ fontSize: '0.7rem', color: '#6e42e5', fontWeight: 700, margin: '0.75rem 0 0', textAlign: 'center' }}>
+                        + Any other UPI app installed on your phone
+                      </p>
+                    </div>
+                  )}
+                </div>
+              ))}
             </div>
-          )}
+
+            {/* Pay Now button */}
+            <button
+              id="pay-now-btn"
+              onClick={handleBook}
+              disabled={status === 'booking' || status === 'payment'}
+              style={{
+                width: '100%',
+                background: (status === 'booking' || status === 'payment')
+                  ? '#94a3b8'
+                  : 'linear-gradient(135deg, #6e42e5 0%, #4f29c8 100%)',
+                color: '#fff', padding: '1.2rem', borderRadius: '16px', border: 'none',
+                fontWeight: 800, fontSize: '1.05rem',
+                cursor: (status === 'booking' || status === 'payment') ? 'not-allowed' : 'pointer',
+                boxShadow: '0 8px 25px rgba(110,66,229,0.3)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.75rem',
+                transition: 'all 0.2s'
+              }}
+            >
+              {(status === 'booking' || status === 'payment') && (
+                <div style={{ width: '18px', height: '18px', border: '2.5px solid rgba(255,255,255,0.4)', borderTopColor: '#fff', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
+              )}
+              {status === 'booking'
+                ? 'Creating Booking...'
+                : status === 'payment'
+                  ? 'Opening Razorpay...'
+                  : `Pay Now · ${'₹'}${finalAmountToPay.toFixed(0)}`
+              }
+            </button>
+
+            {/* Secure note */}
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.4rem', marginTop: '1rem', color: '#94a3b8', fontSize: '0.78rem', fontWeight: 600 }}>
+              <ShieldCheck size={13} /> 100% Secured by Razorpay
+            </div>
+          </div>
         </div>
       )}
 

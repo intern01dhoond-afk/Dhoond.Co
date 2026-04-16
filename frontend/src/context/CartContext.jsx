@@ -5,8 +5,17 @@ const CartContext = createContext();
 export const useCart = () => useContext(CartContext);
 
 export const CartProvider = ({ children }) => {
-  const [cartItems, setCartItems] = useState([]);
+  const [cartItems, setCartItems] = useState(() => {
+    const saved = localStorage.getItem('dhoond_cart');
+    return saved ? JSON.parse(saved) : [];
+  });
   const [isCartOpen, setIsCartOpen] = useState(false);
+  // Tracks which category group the user chose to checkout
+  const [checkoutCategory, setCheckoutCategory] = useState(null);
+
+  React.useEffect(() => {
+    localStorage.setItem('dhoond_cart', JSON.stringify(cartItems));
+  }, [cartItems]);
 
   const addToCart = (service) => {
     const qtyToAdd = service.quantity ? Number(service.quantity) : 1;
@@ -36,12 +45,18 @@ export const CartProvider = ({ children }) => {
 
   const clearCart = () => setCartItems([]);
 
+  // Clear only items belonging to a specific category
+  const clearCategoryFromCart = (category) => {
+    setCartItems(prev => prev.filter(item => item.category !== category));
+  };
+
   const totalAmount = cartItems.reduce((sum, item) => sum + (item.discountPrice * item.quantity), 0);
 
   return (
     <CartContext.Provider value={{
-      cartItems, addToCart, removeFromCart, updateQuantity, clearCart,
-      isCartOpen, setIsCartOpen, totalAmount
+      cartItems, addToCart, removeFromCart, updateQuantity, clearCart, clearCategoryFromCart,
+      isCartOpen, setIsCartOpen, totalAmount,
+      checkoutCategory, setCheckoutCategory
     }}>
       {children}
     </CartContext.Provider>

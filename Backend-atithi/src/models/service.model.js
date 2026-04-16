@@ -27,4 +27,20 @@ const deleteService = async (id) => {
   await pool.query('DELETE FROM services WHERE id = $1', [id]);
 };
 
-module.exports = { getServices, getServiceById, createService, deleteService };
+const updateService = async (id, { title, category, original_price, discount_price, discount_tag, description, image }) => {
+  const result = await pool.query(
+    `UPDATE services SET
+      title = COALESCE($1, title),
+      category = COALESCE($2, category),
+      original_price = COALESCE($3, original_price),
+      discount_price = COALESCE($4, discount_price),
+      discount_tag = COALESCE($5, discount_tag),
+      description = COALESCE($6, description),
+      image = COALESCE($7, image)
+     WHERE id = $8 RETURNING *`,
+    [title, category, original_price, discount_price, discount_tag, description, image, id]
+  );
+  return result.rows[0];
+};
+
+module.exports = { getServices, getServiceById, createService, deleteService, updateService };
