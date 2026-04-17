@@ -675,25 +675,48 @@ const Checkout = () => {
                <button
                  id="proceed-to-pay-btn"
                  onClick={() => {
+                   if (status === 'booking' || status === 'payment') return;
                    if (!selectedDate || !selectedTime) {
                      alert('Please select a date and time slot first.');
                      return;
                    }
                    handleBook();
                  }}
+                 disabled={status === 'booking' || status === 'payment'}
                  style={{
-                   width: '100%', background: 'linear-gradient(135deg, #6e42e5 0%, #4f29c8 100%)',
+                   width: '100%', background: (status === 'booking' || status === 'payment') ? '#cbd5e1' : 'linear-gradient(135deg, #6e42e5 0%, #4f29c8 100%)',
                    color: '#fff', padding: '1.25rem', borderRadius: '14px', border: 'none',
-                   fontWeight: 800, fontSize: '1.1rem', cursor: 'pointer',
-                   boxShadow: '0 8px 25px rgba(110,66,229,0.35)',
+                   fontWeight: 800, fontSize: '1.1rem', cursor: (status === 'booking' || status === 'payment') ? 'not-allowed' : 'pointer',
+                   boxShadow: (status === 'booking' || status === 'payment') ? 'none' : '0 8px 25px rgba(110,66,229,0.35)',
                    display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.75rem',
-                   transition: 'all 0.2s'
+                   transition: 'all 0.2s', position: 'relative'
                  }}
-                 onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-2px)'}
-                 onMouseLeave={e => e.currentTarget.style.transform = 'translateY(0)'}
                >
-                 <CreditCard size={20} /> Proceed to Pay • ₹{finalAmountToPay.toFixed(0)}
+                 {(status === 'booking' || status === 'payment') ? (
+                   <>
+                     <div className="spinner-small" style={{
+                       width: '18px', height: '18px', border: '3px solid rgba(255,255,255,0.3)',
+                       borderTopColor: '#fff', borderRadius: '50%', animation: 'spin 0.8s linear infinite'
+                     }}></div>
+                     Processing...
+                   </>
+                 ) : (
+                   <>
+                     <CreditCard size={20} /> Proceed to Pay • ₹{finalAmountToPay.toFixed(0)}
+                   </>
+                 )}
                </button>
+               
+               <style>{`
+                 @keyframes spin { to { transform: rotate(360deg); } }
+               `}</style>
+
+               {paymentError && (
+                 <div style={{ marginTop: '1rem', padding: '0.75rem', background: '#fef2f2', border: '1px solid #fecaca', borderRadius: '10px', color: '#b91c1c', fontSize: '0.85rem', fontWeight: 600, textAlign: 'center' }}>
+                   {paymentError}
+                 </div>
+               )}
+               
                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', marginTop: '1rem', color: '#94a3b8', fontSize: '0.78rem', fontWeight: 600 }}>
                  <ShieldCheck size={13} /> Secured by Razorpay
                </div>
@@ -963,6 +986,13 @@ const Checkout = () => {
                 </div>
               ))}
             </div>
+
+            {/* Payment Error Banner */}
+            {paymentError && (
+              <div style={{ background: '#fef2f2', border: '1px solid #fecaca', borderRadius: '12px', padding: '1rem', color: '#991b1b', fontSize: '0.85rem', fontWeight: 600, marginBottom: '1rem', textAlign: 'center' }}>
+                {paymentError}
+              </div>
+            )}
 
             {/* Pay Now button */}
             <button
