@@ -87,7 +87,7 @@ const Profile = () => {
     setSaving(true);
     setSaveError('');
     try {
-      const res = await fetch(`${API_URL}/api/user/${user.id}`, {
+      const res = await fetch(`${API_URL}/api/user/profile/${user.id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(editForm),
