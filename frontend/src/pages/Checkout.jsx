@@ -243,34 +243,50 @@ const Checkout = () => {
       return;
     }
 
-    console.log("[Checkout] Opening Razorpay Gateway...");
-    console.log("[Checkout] Amount (Paise):", Math.round(finalAmountToPay * 100));
-    console.log("[Checkout] Key:", import.meta.env.VITE_RAZORPAY_KEY_ID ? "Found" : "Missing");
-
-    const options = {
-      key: import.meta.env.VITE_RAZORPAY_KEY_ID || "rzp_test_Sdh2WaT4aYxo9E",
-      amount: Math.round(finalAmountToPay * 100),
-      currency: "INR",
-      name: "Dhoond Services",
-      description: "Service Booking Transaction",
-      image: "https://dhoond.vercel.app/vite.svg", // Use absolute URL for stability
-      handler: function (response) {
-        processFinalBooking(response.razorpay_payment_id);
-      },
-      prefill: {
-        name: user?.name || "Customer",
-        email: user?.email || "customer@example.com",
-        contact: String(user?.mobile || formData.phone || tempPhone).replace(/\D/g, '').slice(-10)
-      },
-      theme: {
-        color: "#6e42e5"
-      },
-      notes: {
-        category: checkoutCategory || 'general'
-      }
-    };
+    setStatus('booking'); // Show loading state
+    const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5001';
 
     try {
+      // 1. Create Order on Backend
+      console.log("[Checkout] Creating Razorpay Order...");
+      const orderRes = await fetch(`${apiUrl}/api/payment/razorpay-order`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ amount: finalAmountToPay }),
+      });
+      const orderData = await orderRes.json();
+      
+      if (!orderRes.ok || !orderData.order_id) {
+        throw new Error(orderData.message || 'Failed to create payment order');
+      }
+
+      console.log("[Checkout] Order Created:", orderData.order_id);
+
+      // 2. Open Razorpay with the Order ID
+      const options = {
+        key: import.meta.env.VITE_RAZORPAY_KEY_ID || "rzp_test_Sdh2WaT4aYxo9E",
+        amount: Math.round(finalAmountToPay * 100),
+        currency: "INR",
+        name: "Dhoond Services",
+        description: "Service Booking Transaction",
+        image: "https://dhoond.vercel.app/vite.svg",
+        order_id: orderData.order_id, // IMPORTANT: Link the order
+        handler: function (response) {
+          processFinalBooking(response.razorpay_payment_id);
+        },
+        prefill: {
+          name: user?.name || "Customer",
+          email: user?.email || "customer@example.com",
+          contact: String(user?.mobile || formData.phone || tempPhone).replace(/\D/g, '').slice(-10)
+        },
+        theme: {
+          color: "#6e42e5"
+        },
+        notes: {
+          category: checkoutCategory || 'general'
+        }
+      };
+
       const rzp = new window.Razorpay(options);
       rzp.on('payment.failed', function (response){
          console.error("[Razorpay] Payment Failed:", response.error);
@@ -280,7 +296,7 @@ const Checkout = () => {
       rzp.open();
     } catch (err) {
       console.error("[Razorpay] Init Error:", err);
-      setPaymentError("Could not initialize payment gateway.");
+      setPaymentError(err.message || "Could not initialize payment gateway.");
       setStatus('idle');
     }
   };

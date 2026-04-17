@@ -1,4 +1,26 @@
 const paymentModel = require("../models/payment.model");
+const razorpay = require("../utils/razorpay");
+
+const createRazorpayOrderController = async (req, res) => {
+  try {
+    const { amount } = req.body; // Amount in Rupees
+    if (!amount || amount <= 0) {
+      return res.status(400).json({ success: false, message: "Valid amount is required" });
+    }
+
+    const options = {
+      amount: Math.round(amount * 100), // convert to paise
+      currency: "INR",
+      receipt: `receipt_${Date.now()}`,
+    };
+
+    const order = await razorpay.orders.create(options);
+    res.json({ success: true, order_id: order.id });
+  } catch (error) {
+    console.error("[Razorpay Order Error]", error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
 
 const createPaymentController = async (req, res) => {
   try {
@@ -63,4 +85,5 @@ const getPaymentsController = async (req, res) => {
 module.exports = {
   createPaymentController,
   getPaymentsController,
+  createRazorpayOrderController
 };
