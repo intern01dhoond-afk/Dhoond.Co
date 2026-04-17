@@ -237,53 +237,52 @@ const Checkout = () => {
       return;
     }
 
+    if (finalAmountToPay <= 0) {
+      setPaymentError('Invalid payment amount. Please add items to your cart.');
+      setStatus('idle');
+      return;
+    }
+
+    console.log("[Checkout] Opening Razorpay Gateway...");
+    console.log("[Checkout] Amount (Paise):", Math.round(finalAmountToPay * 100));
+    console.log("[Checkout] Key:", import.meta.env.VITE_RAZORPAY_KEY_ID ? "Found" : "Missing");
+
     const options = {
-      key: import.meta.env.VITE_RAZORPAY_KEY_ID || "rzp_test_Sdh2WaT4aYxo9E", // Use real key from .env
-      amount: Math.round(finalAmountToPay * 100), // Amount is in currency subunits. Default currency is INR.
+      key: import.meta.env.VITE_RAZORPAY_KEY_ID || "rzp_test_Sdh2WaT4aYxo9E",
+      amount: Math.round(finalAmountToPay * 100),
       currency: "INR",
       name: "Dhoond Services",
       description: "Service Booking Transaction",
-      image: "/vite.svg", 
+      image: "https://dhoond.vercel.app/vite.svg", // Use absolute URL for stability
       handler: function (response) {
-        // Payment Success Handler
         processFinalBooking(response.razorpay_payment_id);
       },
       prefill: {
         name: user?.name || "Customer",
         email: user?.email || "customer@example.com",
-        contact: user?.mobile || formData.phone || tempPhone
+        contact: String(user?.mobile || formData.phone || tempPhone).replace(/\D/g, '').slice(-10)
       },
       theme: {
         color: "#6e42e5"
       },
-      config: {
-        display: {
-          blocks: {
-            banks: {
-              name: 'Pay via UPI / QR',
-              instruments: [
-                {
-                  method: 'upi'
-                }
-              ]
-            }
-          },
-          sequence: ['block.banks', 'method.card', 'method.netbanking'],
-          preferences: {
-            show_default_blocks: true // Restored to true to prevent "No method found" error
-          }
-        }
+      notes: {
+        category: checkoutCategory || 'general'
       }
     };
 
-    const rzp = new window.Razorpay(options);
-    
-    rzp.on('payment.failed', function (response){
-       setPaymentError(response.error.description || 'Payment Failed');
-       setStatus('idle');
-    });
-
-    rzp.open();
+    try {
+      const rzp = new window.Razorpay(options);
+      rzp.on('payment.failed', function (response){
+         console.error("[Razorpay] Payment Failed:", response.error);
+         setPaymentError(response.error.description || 'Payment Failed');
+         setStatus('idle');
+      });
+      rzp.open();
+    } catch (err) {
+      console.error("[Razorpay] Init Error:", err);
+      setPaymentError("Could not initialize payment gateway.");
+      setStatus('idle');
+    }
   };
 
   const handleBook = () => {
