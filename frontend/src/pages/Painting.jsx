@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { ChevronRight } from 'lucide-react';
 import PaintingServiceList from '../components/PaintingServiceList';
 
@@ -19,9 +19,26 @@ const isTouch = () => typeof window !== 'undefined' && ('ontouchstart' in window
 
 export default function Painting() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [galleryActive, setGalleryActive] = useState('after');
   const [activeService, setActiveService] = useState('Painting');
   const [selectedService, setSelectedService] = useState(null);
+  
+  // Sync URL Params -> Local Modal State
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const sTitle = params.get('service');
+    if (sTitle) {
+      setSelectedService({
+        title: sTitle,
+        p: params.get('sub') || '',
+        filter: params.get('filter') || ''
+      });
+    } else {
+      setSelectedService(null);
+    }
+  }, [location.search]);
+
   const cursorRef = useRef(null);
   const followerRef = useRef(null);
   const cleanupRef = useRef([]);
@@ -597,7 +614,7 @@ export default function Painting() {
                   className={`p-sel-btn${activeService === s.n ? ' active' : ''}`}
                   onClick={() => {
                     setActiveService(s.n);
-                    setSelectedService({ title: s.n, p: s.p });
+                    navigate(`?service=${encodeURIComponent(s.n)}&sub=${encodeURIComponent(s.p)}`);
                   }}
                   aria-pressed={activeService === s.n}
                 >
@@ -608,7 +625,7 @@ export default function Painting() {
             </div>
 
             <div className="p-hero-actions">
-              <button onClick={() => setSelectedService({ title: 'Book your Consultation', p: 'Talk to an expert' })} className="p-btn-primary">
+              <button onClick={() => navigate(`?service=${encodeURIComponent('Book your Consultation')}&sub=${encodeURIComponent('Talk to an expert')}`)} className="p-btn-primary">
                 <span className="p-btn-fill" />
                 <span>Book a consultant</span>
                 <svg viewBox="0 0 24 24" stroke="currentColor" fill="none" width="15" height="15" strokeWidth="2"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2z" /></svg>
@@ -649,7 +666,7 @@ export default function Painting() {
             { img: '/grill_gate.png',          title: 'Specialty Coatings',     sub: 'Epoxy & protective finishes for Grills, Gates & Doors', filter: 'coatings'     },
           ].map(s => (
             <div key={s.title} className="p-service-item" role="listitem" style={{ cursor: 'pointer' }} onClick={() => {
-              setSelectedService({ title: s.title, p: s.sub, filter: s.filter });
+              navigate(`?service=${encodeURIComponent(s.title)}&sub=${encodeURIComponent(s.sub)}&filter=${s.filter}`);
             }}>
               <div className="p-si-img">
                 <img src={s.img} alt={s.title} />
@@ -843,7 +860,7 @@ export default function Painting() {
 
 
         <div className="mobile-sticky-cta" role="complementary" aria-label="Book now">
-          <button onClick={() => setSelectedService({ title: 'Book your Consultation', p: 'Talk to an expert' })} className="mobile-sticky-cta-call" style={{ width: '100%', margin: 0, border: 'none', background: '#facc15' }}>
+          <button onClick={() => navigate(`?service=${encodeURIComponent('Book your Consultation')}&sub=${encodeURIComponent('Talk to an expert')}`)} className="mobile-sticky-cta-call" style={{ width: '100%', margin: 0, border: 'none', background: '#facc15' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                <div style={{ width: '42px', height: '42px', background: 'rgba(0,0,0,0.1)', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                  <svg viewBox="0 0 24 24" stroke="#111" fill="none" width="20" height="20" strokeWidth="2.5"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2z" /></svg>
@@ -865,7 +882,7 @@ export default function Painting() {
       {selectedService && (
         <PaintingServiceList 
           service={selectedService} 
-          onClose={() => setSelectedService(null)} 
+          onClose={() => navigate(location.pathname)} 
         />
       )}
     </>
