@@ -224,7 +224,7 @@ const Home = () => {
               <h3 style={{ fontSize: '1.1rem', fontWeight: 800, marginBottom: '1rem' }}>Trusted Commercial & Home Care Services</h3>
               <div className="service-scroll service-grid service-grid-mobile" style={{ display: 'flex', gap: '1.25rem', overflowX: 'auto', paddingBottom: '1rem' }}>
                 {[
-                  { label: 'Painting', img: '/icons/painter.png', cat: 'painter' },
+                  { label: 'Painting', img: '/icons/painter_new.jpg', cat: 'painter' },
                   { label: 'AC Tech', img: '/icons/ac_technician.png', cat: 'technician' },
                   { label: 'RO Tech', img: '/icons/ro_technician.png', cat: 'technician' },
                   { label: 'Electrician', img: '/icons/electrician.png', cat: 'electrician' },
