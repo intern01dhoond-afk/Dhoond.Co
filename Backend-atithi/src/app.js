@@ -1,4 +1,4 @@
-// Restart trigger
+// Restart trigger for live payments
 const express = require("express");
 const cors    = require("cors");
 const app     = express();
