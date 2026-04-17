@@ -57,7 +57,7 @@ const PartnersManager = () => {
   const [editDocs, setEditDocs]       = useState({}); // { [partnerId]: JSONB docs }
   const [savingDocs, setSavingDocs]   = useState(null);
 
-  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5001';
+  const API_URL = import.meta.env.VITE_API_URL || '';
   const getUser = () => { try { return JSON.parse(localStorage.getItem('dhoond_user') || '{}'); } catch { return {}; } };
 
   const fetchPartners = async () => {

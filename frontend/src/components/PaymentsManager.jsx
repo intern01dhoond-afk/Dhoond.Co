@@ -22,7 +22,7 @@ const PaymentsManager = () => {
   const [search, setSearch]     = useState('');
   const [filter, setFilter]     = useState('all');
 
-  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5001';
+  const API_URL = import.meta.env.VITE_API_URL || '';
 
   useEffect(() => {
     const fetchPayments = async () => {
@@ -31,10 +31,12 @@ const PaymentsManager = () => {
         const res  = await fetch(`${API_URL}/api/V1/payments/all`, {
           headers: { 'x-user-id': user?.id || '' }
         });
+        if (!res.ok) throw new Error(`Server Error (${res.status})`);
         const data = await res.json();
-        if (res.ok) setPayments(Array.isArray(data.data) ? data.data : []);
-        else setError(data.error || 'Failed to fetch');
-      } catch (e) { setError(e.message); }
+        setPayments(Array.isArray(data.data) ? data.data : []);
+      } catch (e) { 
+        setError(e.message === 'Failed to fetch' ? 'Connection Error: Backend unreachable' : e.message); 
+      }
       finally { setLoading(false); }
     };
     fetchPayments();

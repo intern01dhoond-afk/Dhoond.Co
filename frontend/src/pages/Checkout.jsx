@@ -162,7 +162,7 @@ const Checkout = () => {
   // ─── RAZORPAY CHECKOUT ─────────────────────────────────────────────────────
   const processFinalBooking = async (paymentId) => {
     try {
-      const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5001';
+      const apiUrl = import.meta.env.VITE_API_URL || '';
       
       console.log("[Checkout] Starting backend sync for payment:", paymentId);
 
@@ -245,7 +245,7 @@ const Checkout = () => {
     }
 
     setStatus('booking'); // Show loading state
-    const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5001';
+    const apiUrl = import.meta.env.VITE_API_URL || '';
 
     try {
       // 1. Create Order on Backend
@@ -342,7 +342,7 @@ const Checkout = () => {
     }
     setOtpLoading(true);
     setOtpError('');
-    const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5001';
+    const apiUrl = import.meta.env.VITE_API_URL || '';
     try {
       const res = await fetch(`${apiUrl}/api/auth/send-otp`, {
         method: 'POST',
@@ -366,7 +366,7 @@ const Checkout = () => {
     if (otp.length < 4) return;
     setOtpLoading(true);
     setOtpError('');
-    const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5001';
+    const apiUrl = import.meta.env.VITE_API_URL || '';
     try {
       const res = await fetch(`${apiUrl}/api/auth/verify-otp`, {
         method: 'POST',

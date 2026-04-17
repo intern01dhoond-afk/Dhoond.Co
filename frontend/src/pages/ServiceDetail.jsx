@@ -12,7 +12,7 @@ const ServiceDetail = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5001';
+    const apiUrl = import.meta.env.VITE_API_URL || '';
     fetch(`${apiUrl}/api/services/${id}`)
       .then(res => {
         if (!res.ok) throw new Error('Failed to fetch');

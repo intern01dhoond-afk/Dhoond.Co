@@ -42,15 +42,25 @@ const Admin = () => {
         return;
       }
 
-      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5001';
+      // Use relative path by default in production to leverage Vercel rewrites
+      const API_URL = import.meta.env.VITE_API_URL || '';
+      
       const res = await fetch(`${API_URL}/api/admin/stats`, {
         headers: { 'x-user-id': user.id }
       });
+      
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data.error || `Server Error (${res.status})`);
+      }
+      
       const data = await res.json();
-      if (res.ok) setStats(data);
-      else throw new Error(data.error || 'Failed to fetch admin data');
+      setStats(data);
     } catch (err) {
-      setError(err.message);
+      console.error('[Admin] Fetch error:', err);
+      setError(err.message === 'Failed to fetch' 
+        ? 'Could not connect to the backend server. Please check if the services are live.'
+        : err.message);
     } finally {
       setLoading(false);
     }
@@ -113,8 +123,8 @@ const Admin = () => {
 
   if (error) return (
     <div style={{ padding: '4rem', textAlign: 'center' }}>
-      <h2 style={{ color: '#ef4444' }}>Access Denied</h2>
-      <p>{error}</p>
+      <h2 style={{ color: '#ef4444' }}>{error.includes('Denied') ? 'Access Denied' : 'Service Unavailable'}</h2>
+      <p style={{ color: '#64748b', maxWidth: '500px', margin: '0.5rem auto' }}>{error}</p>
       <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', marginTop: '1.5rem' }}>
         <button onClick={() => navigate('/')} style={{ padding: '0.6rem 1.5rem', background: '#fff', border: '1px solid #e2e8f0', borderRadius: '10px', fontSize: '14px', fontWeight: 600, cursor: 'pointer' }}>Go Home</button>
         <button onClick={() => { setError(null); setAuthStep('pin'); }} style={{ padding: '0.6rem 1.5rem', background: '#0f172a', color: '#fff', border: 'none', borderRadius: '10px', fontSize: '14px', fontWeight: 600, cursor: 'pointer' }}>Use Admin PIN</button>

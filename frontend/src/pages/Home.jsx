@@ -38,7 +38,7 @@ const Home = () => {
       });
     }
 
-    const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5001';
+    const apiUrl = import.meta.env.VITE_API_URL || '';
     fetch(`${apiUrl}/api/services`)
       .then(res => res.json())
       .then(result => {

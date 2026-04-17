@@ -13,19 +13,22 @@ const UsersManager = () => {
       if (!userStr) { setLoading(false); return; }
       const adminUser = JSON.parse(userStr);
 
-      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5001';
+      const API_URL = import.meta.env.VITE_API_URL || '';
       const res = await fetch(`${API_URL}/api/V1/users/all`, {
         headers: { 'x-user-id': adminUser?.id || '' }
       });
+      
       const data = await res.json();
       if (res.ok) {
         const list = Array.isArray(data) ? data : (data.users || []);
         setUsers(list);
       } else {
-        setError(data.message || 'Failed to fetch users');
+        setError(data.error || data.message || `Server Error (${res.status})`);
       }
     } catch (err) {
-      setError(err.message);
+      setError(err.message === 'Failed to fetch' 
+        ? 'Could not connect to server. Ensure backend is running.' 
+        : err.message);
     } finally {
       setLoading(false);
     }
