@@ -65,9 +65,19 @@ const Checkout = () => {
   const [selectedPayment, setSelectedPayment] = useState('upi'); // upi, card, netbanking
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
   const [avoidCalling, setAvoidCalling] = useState(true);
-  const [status, setStatus] = useState('idle'); // idle, booking, payment, success
-  const [showBreakup, setShowBreakup] = useState(false);
   const [paymentError, setPaymentError] = useState('');
+  const [isInitializing, setIsInitializing] = useState(true);
+
+  useEffect(() => {
+    // Small delay to allow AuthContext to potentially hydrate from localStorage
+    const timer = setTimeout(() => {
+      setIsInitializing(false);
+      if (!isAuthenticated) {
+        setIsAuthModalOpen(true);
+      }
+    }, 100);
+    return () => clearTimeout(timer);
+  }, [isAuthenticated]);
   
   // Tip State
   const [tipAmount, setTipAmount] = useState(0);
@@ -359,7 +369,11 @@ const Checkout = () => {
       setFormData(prev => ({ ...prev, phone: tempPhone }));
       setIsAuthModalOpen(false);
       setOtpError('');
-      setTimeout(() => processFinalBooking(), 100);
+      
+      // AFTER OTP -> SHOW PAYMENT GATEWAY (Don't skip it!)
+      setTimeout(() => {
+        openRazorpayCheckout();
+      }, 500);
     } catch (err) {
       setOtpError(err.message || 'Incorrect OTP. Please try again.');
     } finally {
@@ -417,8 +431,23 @@ const Checkout = () => {
 
       <div className="checkout-grid" style={{ 
         maxWidth: '1100px', margin: '2rem auto', padding: '0 5%', display: 'flex', 
-        flexDirection: isMobile ? 'column' : 'row', gap: '2rem', alignItems: 'start' 
+        flexDirection: isMobile ? 'column' : 'row', gap: '2rem', alignItems: 'start',
+        opacity: (!isAuthenticated || isInitializing) ? 0.3 : 1,
+        pointerEvents: (!isAuthenticated || isInitializing) ? 'none' : 'auto',
+        filter: (!isAuthenticated || isInitializing) ? 'blur(4px)' : 'none',
+        transition: 'all 0.4s ease'
       }}>
+        
+        {(!isAuthenticated && !isInitializing) && (
+          <div style={{ position: 'absolute', top: '40%', left: '50%', transform: 'translate(-50%, -50%)', zIndex: 50, textAlign: 'center', background: '#fff', padding: '2rem', borderRadius: '20px', boxShadow: '0 10px 30px rgba(0,0,0,0.1)', width: '90%', maxWidth: '400px' }}>
+            <div style={{ background: '#f5f3ff', width: '60px', height: '60px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1.5rem' }}>
+              <Lock size={28} color="#6e42e5" />
+            </div>
+            <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#111', marginBottom: '0.5rem' }}>Login Required</h3>
+            <p style={{ color: '#64748b', fontSize: '0.9rem', marginBottom: '1.5rem' }}>Please verify your phone number to view checkout details and proceed with booking.</p>
+            <button onClick={() => setIsAuthModalOpen(true)} style={{ width: '100%', background: '#111', color: '#fff', border: 'none', padding: '1rem', borderRadius: '12px', fontWeight: 700, cursor: 'pointer' }}>Verify Now</button>
+          </div>
+        )}
         
         {/* FIRST SECTION (ON MOBILE: Summary & Cart) */}
         <div style={{ order: isMobile ? 1 : 2, display: 'flex', flexDirection: 'column', gap: '1rem', width: isMobile ? '100%' : '40%' }}>
