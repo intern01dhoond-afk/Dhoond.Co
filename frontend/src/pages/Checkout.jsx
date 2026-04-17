@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
-import { MapPin, Clock, CreditCard, Tag, Percent, Phone, SquareCheck, Info, X, Calendar, Edit2, CheckCircle2, ShieldCheck, Lock, Smartphone, Building2, ChevronRight, CheckCircle } from 'lucide-react';
+import { MapPin, Clock, CreditCard, Tag, Percent, Phone, SquareCheck, Info, X, Calendar, Edit2, CheckCircle2, ShieldCheck, Lock, Smartphone, Building2, ChevronRight, CheckCircle, ChevronLeft } from 'lucide-react';
 
 const Checkout = () => {
   const { cartItems: allCartItems, clearCart, clearCategoryFromCart, updateQuantity } = useCart();
@@ -388,6 +388,9 @@ const Checkout = () => {
       {/* Header */}
       <div style={{ background: '#fff', borderBottom: '1px solid #eee', padding: '1.25rem 5%', display: 'flex', alignItems: 'center', position: 'sticky', top: 0, zIndex: 100 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', fontWeight: 800, fontSize: '1.2rem', color: '#111', maxWidth: '1200px', margin: '0 auto', width: '100%' }}>
+          <button onClick={() => navigate('/cart')} style={{ background: 'none', border: 'none', display: 'flex', alignItems: 'center', cursor: 'pointer', padding: 0 }}>
+            <ChevronLeft size={24} color="#111" />
+          </button>
           Checkout
         </div>
       </div>
