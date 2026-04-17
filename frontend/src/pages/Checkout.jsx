@@ -62,6 +62,7 @@ const Checkout = () => {
   const [tempTime, setTempTime] = useState('');
 
   // Payment State
+  const [status, setStatus] = useState('idle'); // idle, booking, payment, success
   const [selectedPayment, setSelectedPayment] = useState('upi'); // upi, card, netbanking
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
   const [avoidCalling, setAvoidCalling] = useState(true);
@@ -249,7 +250,7 @@ const Checkout = () => {
     try {
       // 1. Create Order on Backend
       console.log("[Checkout] Creating Razorpay Order...");
-      const orderRes = await fetch(`${apiUrl}/api/payment/razorpay-order`, {
+      const orderRes = await fetch(`${apiUrl}/api/V1/payments/razorpay-order`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ amount: finalAmountToPay }),
