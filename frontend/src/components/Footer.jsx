@@ -67,9 +67,9 @@ const Footer = () => {
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4rem' }}>
           
           {/* Brand Column */}
-          <div style={{ flex: '1 1 300px', maxWidth: '350px' }} className="mobile-text-center">
+          <div style={{ flex: '1 1 400px', maxWidth: '450px' }} className="mobile-text-center">
             <Link to="/" style={{ display: 'inline-block', marginBottom: '1.5rem' }}>
-              <img src="/logo.png" alt="Dhoond" style={{ height: '55px', width: 'auto', objectFit: 'contain' }} />
+              <img src="/logo.png" alt="Dhoond" style={{ height: '120px', width: 'auto', objectFit: 'contain' }} />
             </Link>
             <p style={{ color: '#94a3b8', fontSize: '0.95rem', lineHeight: 1.8, fontWeight: 500, marginBottom: '2rem' }}>
               India's fastest growing premium home services marketplace. Quality craftsmanship delivered to your doorstep.
