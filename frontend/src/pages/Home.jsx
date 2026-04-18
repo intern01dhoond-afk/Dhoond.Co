@@ -373,7 +373,21 @@ const Home = () => {
                         borderRadius: '12px', fontWeight: 800, fontSize: '0.875rem', cursor: 'pointer',
                         display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px',
                         transition: 'opacity 0.2s',
-                      }}>
+                      }}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        addToCart({
+                          id: s.id,
+                          title: s.title,
+                          discountPrice: Number(discountPrice),
+                          originalPrice: Number(originalPrice),
+                          image: s.image,
+                          category: 'painter',
+                          quantity: 1
+                        });
+                        navigate('/cart');
+                      }}
+                    >
                         Book Consultation now
                         <ChevronRight size={15} />
                       </button>
