@@ -333,8 +333,3 @@ const Cart = () => {
 };
 
 export default Cart;
- </div>
-  );
-};
-
-export default Cart;
