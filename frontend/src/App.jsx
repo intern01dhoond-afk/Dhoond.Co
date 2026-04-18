@@ -25,12 +25,10 @@ const Navbar = () => {
   const { cartItems } = useCart();
   const { user, logout, isAuthenticated } = useAuth();
 
-  // Safety check for user properties
   const userName = user?.name || 'User';
   const userMobile = user?.mobile || '';
 
   const [isProfileOpen, setIsProfileOpen] = React.useState(false);
-
   const totalItems = cartItems.reduce((acc, item) => acc + item.quantity, 0);
 
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
@@ -39,7 +37,6 @@ const Navbar = () => {
   const [showSuggestions, setShowSuggestions] = React.useState(false);
   const [scrolled, setScrolled] = React.useState(false);
 
-  // Location state
   const [locationLabel, setLocationLabel] = React.useState(() => localStorage.getItem('dhoond_location') || 'Fetching location…');
   const [locationSubtext, setLocationSubtext] = React.useState(() => localStorage.getItem('dhoond_location_sub') || '');
   const [showLocationModal, setShowLocationModal] = React.useState(false);
@@ -50,14 +47,12 @@ const Navbar = () => {
   const searchRef = React.useRef(null);
   const locationInputRef = React.useRef(null);
 
-  // ── Auto-detect location on mount ──
   React.useEffect(() => {
     if (!localStorage.getItem('dhoond_location')) {
       detectLocation();
     }
   }, []);
 
-  // Waits for Google Maps JS SDK to load, then calls cb
   const waitForGoogleMaps = (cb, retries = 20) => {
     if (window.google && window.google.maps && window.google.maps.Geocoder) {
       cb();
@@ -83,14 +78,12 @@ const Navbar = () => {
           const geocoder = new window.google.maps.Geocoder();
           geocoder.geocode({ location: latLng }, (results, status) => {
             if (status === 'OK' && results && results.length > 0) {
-              // Try to find a sublocality or neighborhood for the short label
               const result = results[0];
               const comps = result.address_components || [];
               const find = (types) => {
                 const c = comps.find(c => types.some(t => c.types.includes(t)));
                 return c ? c.long_name : null;
               };
-              // Use full formatted address
               const label = result.formatted_address || 'My Location';
               const city = find(['locality', 'administrative_area_level_2']) || '';
               const state = find(['administrative_area_level_1']) || '';
@@ -114,14 +107,12 @@ const Navbar = () => {
     );
   };
 
-  // ── Scroll shadow ──
   React.useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 10);
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // ── Click outside search ──
   React.useEffect(() => {
     const handleClick = (e) => {
       if (searchRef.current && !searchRef.current.contains(e.target)) {
@@ -132,7 +123,6 @@ const Navbar = () => {
     return () => document.removeEventListener('mousedown', handleClick);
   }, []);
 
-  // ── Focus location input + init Places Autocomplete when modal opens ──
   React.useEffect(() => {
     if (!showLocationModal) return;
     setTimeout(() => {
@@ -238,9 +228,8 @@ const Navbar = () => {
       }}>
         <nav className="mobile-nav-container" style={{ maxWidth: '1400px', margin: '0 auto', padding: '0 5%', height: '72px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
 
-          {/* LEFT: Menu (Mobile) / Logo + Links (Desktop) */}
+          {/* LEFT */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem', flex: 1 }}>
-            {/* Mobile Hamburger */}
             <div className="mobile-only">
               {location.pathname !== '/' && !location.pathname.startsWith('/admin') ? (
                 <button className="icon-btn" onClick={() => navigate(-1)} aria-label="Go back">
@@ -253,12 +242,10 @@ const Navbar = () => {
               )}
             </div>
 
-            {/* Desktop Logo */}
             <Link to="/" className="desktop-only" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center' }}>
               <img src="/logo.png" alt="Dhoond" style={{ height: '48px', width: 'auto', objectFit: 'contain' }} />
             </Link>
 
-            {/* Desktop Nav Links */}
             <div className="desktop-only" style={{ display: 'flex', gap: '1.75rem', alignItems: 'center', marginLeft: '1rem' }}>
               {NAV_LINKS.map(link => (
                 <Link key={link.label} to={link.to || '#'} 
@@ -271,7 +258,7 @@ const Navbar = () => {
             </div>
           </div>
 
-          {/* CENTER: Logo (Mobile Only) */}
+          {/* CENTER: Mobile Logo */}
           <div className="mobile-only" style={{ position: 'absolute', left: '50%', transform: 'translateX(-50%)', display: 'flex', alignItems: 'center' }}>
             <Link to="/" style={{ display: 'flex' }}>
               <img src="/logo.png" alt="Dhoond" className="dhoond-logo" style={{ height: '44px', width: 'auto', objectFit: 'contain' }} />
@@ -280,12 +267,10 @@ const Navbar = () => {
 
           {/* RIGHT: Actions */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', flex: 1, justifyContent: 'flex-end' }}>
-            {/* Desktop Location */}
             <div className="desktop-only" style={{ marginRight: '1rem' }}>
               <LocationButton onClick={() => setShowLocationModal(true)} />
             </div>
 
-            {/* Desktop Search Bar */}
             <div className="desktop-only" style={{ position: 'relative', width: '240px', marginRight: '1rem' }} ref={searchRef}>
               <div style={{ display: 'flex', alignItems: 'center', background: '#f3f4f6', borderRadius: '99px', padding: '0.55rem 1rem' }}>
                 <Search size={16} color="#64748b" />
@@ -293,20 +278,32 @@ const Navbar = () => {
               </div>
             </div>
 
-            {/* Mobile Search Icon */}
             <button className="icon-btn mobile-only" onClick={() => setIsSearchOpen(true)}>
               <Search size={26} />
             </button>
 
-            {/* Profile (Desktop) */}
-            <div className="desktop-only" style={{ position: 'relative' }}>
+            <div style={{ position: 'relative' }}>
               <button className="icon-btn" onClick={() => isAuthenticated ? setIsProfileOpen(!isProfileOpen) : navigate('/painting')}>
-                <User size={24} color={isAuthenticated ? '#2563eb' : 'currentColor'} />
+                <User size={isAuthenticated ? 26 : 24} color={isAuthenticated ? '#2563eb' : 'currentColor'} />
               </button>
-              {/* Profile Dropdown ... (Existing logic below) */}
+
+              {isAuthenticated && isProfileOpen && (
+                <>
+                  <div style={{ position: 'fixed', inset: 0, zIndex: 900 }} onClick={() => setIsProfileOpen(false)} />
+                  <div style={{ position: 'absolute', top: 'calc(100% + 12px)', right: 0, width: '240px', background: '#fff', borderRadius: '20px', boxShadow: '0 20px 50px rgba(0,0,0,0.12)', border: '1px solid #f1f5f9', zIndex: 1000, overflow: 'hidden', padding: '0.75rem', animation: 'dropdownFade 0.2s ease-out' }}>
+                    <div style={{ padding: '0.75rem', borderBottom: '1px solid #f1f5f9', marginBottom: '0.5rem' }}>
+                      <div style={{ fontWeight: 800, fontSize: '0.95rem', color: '#111' }}>{userName}</div>
+                      <div style={{ fontSize: '0.8rem', color: '#64748b', fontWeight: 600 }}>+91 {userMobile}</div>
+                    </div>
+                    <Link to="/profile" onClick={() => setIsProfileOpen(false)} style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.75rem', borderRadius: '12px', textDecoration: 'none', color: '#475569', fontWeight: 600, fontSize: '0.9rem' }} className="profile-item"><User size={18} /> My Profile</Link>
+                    <Link to="/profile" onClick={() => setIsProfileOpen(false)} style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.75rem', borderRadius: '12px', textDecoration: 'none', color: '#475569', fontWeight: 600, fontSize: '0.9rem' }} className="profile-item"><Package size={18} /> My Bookings</Link>
+                    <div style={{ height: '1px', background: '#f1f5f9', margin: '0.5rem 0' }} />
+                    <button onClick={() => { logout(); setIsProfileOpen(false); navigate('/'); }} style={{ width: '100%', display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.75rem', borderRadius: '12px', border: 'none', background: 'transparent', color: '#ef4444', fontWeight: 600, fontSize: '0.9rem', cursor: 'pointer' }} className="profile-logout"><LogOut size={18} /> Logout</button>
+                  </div>
+                </>
+              )}
             </div>
 
-            {/* Cart */}
             <button className="icon-btn" onClick={() => navigate('/shop/cart')} style={{ position: 'relative' }}>
               <ShoppingCart size={26} />
               {totalItems > 0 && (
@@ -326,281 +323,72 @@ const Navbar = () => {
         </div>
       </div>
 
-            {/* Profile Dropdown */}
-            {isAuthenticated && isProfileOpen && (
-              <>
-                <div
-                  style={{ position: 'fixed', inset: 0, zIndex: 900 }}
-                  onClick={() => setIsProfileOpen(false)}
-                />
-                <div
-                  style={{
-                    position: 'absolute', top: 'calc(100% + 12px)', right: 0,
-                    width: '240px', background: '#fff', borderRadius: '20px',
-                    boxShadow: '0 20px 50px rgba(0,0,0,0.12)', border: '1px solid #f1f5f9',
-                    zIndex: 1000, overflow: 'hidden', padding: '0.75rem',
-                    animation: 'dropdownFade 0.2s ease-out'
-                  }}
-                  onMouseLeave={() => setIsProfileOpen(false)}
-                >
-                  <div style={{ padding: '0.75rem', borderBottom: '1px solid #f1f5f9', marginBottom: '0.5rem' }}>
-                    <div style={{ fontWeight: 800, fontSize: '0.95rem', color: '#111' }}>{userName}</div>
-                    <div style={{ fontSize: '0.8rem', color: '#64748b', fontWeight: 600 }}>+91 {userMobile}</div>
-                  </div>
-
-                  <Link to="/profile" onClick={() => setIsProfileOpen(false)} style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.75rem', borderRadius: '12px', textDecoration: 'none', color: '#475569', fontWeight: 600, fontSize: '0.9rem', transition: 'background 0.2s' }} className="profile-item">
-                    <User size={18} /> My Profile
-                  </Link>
-                  <Link to="/profile" onClick={() => setIsProfileOpen(false)} style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.75rem', borderRadius: '12px', textDecoration: 'none', color: '#475569', fontWeight: 600, fontSize: '0.9rem', transition: 'background 0.2s' }} className="profile-item">
-                    <Package size={18} /> My Bookings
-                  </Link>
-
-                  <div style={{ height: '1px', background: '#f1f5f9', margin: '0.5rem 0' }} />
-
-                  <button onClick={() => { logout(); setIsProfileOpen(false); navigate('/'); }} style={{ width: '100%', display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.75rem', borderRadius: '12px', border: 'none', background: 'transparent', color: '#ef4444', fontWeight: 600, fontSize: '0.9rem', cursor: 'pointer', transition: 'background 0.2s' }} className="profile-logout">
-                    <LogOut size={18} /> Logout
-                  </button>
-                </div>
-                <style>{`
-                  @keyframes dropdownFade {
-                    from { opacity: 0; transform: translateY(10px); }
-                    to { opacity: 1; transform: translateY(0); }
-                  }
-                  .profile-item:hover { background: #f8fafc; color: #2563eb; }
-                  .profile-logout:hover { background: #fef2f2; }
-                `}</style>
-              </>
-            )}
-          </div>
-
-          {/* Cart */}
-          <button className="icon-btn" onClick={() => navigate('/shop/cart')} aria-label="Cart" style={{ position: 'relative' }}>
-            <ShoppingCart size={22} />
-            {totalItems > 0 && (
-              <span style={{ position: 'absolute', top: '4px', right: '4px', background: '#2563eb', color: '#fff', borderRadius: '50%', width: '18px', height: '18px', fontSize: '10px', fontWeight: 800, display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 6px rgba(37,99,235,0.4)' }}>
-                {totalItems}
-              </span>
-            )}
-          </button>
-
-        </nav>
-
-        {/* MOBILE: Location Bar */}
-        <div className="mobile-only" onClick={() => setShowLocationModal(true)} style={{ padding: '0.5rem 5%', borderTop: '1px solid #f1f5f9', display: 'flex', alignItems: 'center', gap: '0.5rem', background: '#fafafa', cursor: 'pointer' }}>
-          <MapPin size={14} color="#2563eb" />
-          <span style={{ fontSize: '13px', fontWeight: 600, color: '#374151', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{locationLabel}</span>
-          {locationSubtext && <span style={{ fontSize: '12px', color: '#9ca3af' }}>{locationSubtext}</span>}
-          <ChevronDown size={12} color="#6b7280" />
-        </div>
-      </div>
-
-      {/* ══════════════════════════════════════════
-          LOCATION MODAL (Urban Company style)
-      ══════════════════════════════════════════ */}
+      {/* LOCATION MODAL */}
       {showLocationModal && (
         <>
-          {/* Backdrop */}
-          <div
-            onClick={() => setShowLocationModal(false)}
-            style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.55)', zIndex: 2000, backdropFilter: 'blur(3px)' }}
-          />
-          {/* Modal Card */}
-          <div style={{
-            position: 'fixed', top: '50%', left: '50%',
-            transform: 'translate(-50%, -50%)',
-            background: '#fff', borderRadius: '20px',
-            width: '92%', maxWidth: '520px',
-            zIndex: 2100,
-            overflow: 'hidden',
-            boxShadow: '0 24px 80px rgba(0,0,0,0.18)',
-          }}>
-            {/* Close button */}
-            <button
-              onClick={() => setShowLocationModal(false)}
-              style={{ position: 'absolute', top: '14px', right: '14px', background: '#f3f4f6', border: 'none', borderRadius: '50%', width: '36px', height: '36px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1 }}
-            >
-              <X size={18} color="#374151" />
-            </button>
-
-            {/* Search field */}
+          <div onClick={() => setShowLocationModal(false)} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.55)', zIndex: 2000, backdropFilter: 'blur(3px)' }} />
+          <div style={{ position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', background: '#fff', borderRadius: '20px', width: '92%', maxWidth: '520px', zIndex: 2100, overflow: 'hidden', boxShadow: '0 24px 80px rgba(0,0,0,0.18)' }}>
+            <button onClick={() => setShowLocationModal(false)} style={{ position: 'absolute', top: '14px', right: '14px', background: '#f3f4f6', border: 'none', borderRadius: '50%', width: '36px', height: '36px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1 }}><X size={18} color="#374151" /></button>
             <div style={{ padding: '1.5rem 1.5rem 1rem' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', background: '#fff', border: '1.5px solid #d1d5db', borderRadius: '12px', padding: '0.85rem 1.25rem' }}>
-                <button
-                  onClick={() => setShowLocationModal(false)}
-                  style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', color: '#6b7280', padding: 0, flexShrink: 0 }}
-                >
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5M12 5l-7 7 7 7" /></svg>
-                </button>
-                <input
-                  ref={locationInputRef}
-                  type="text"
-                  placeholder="Search for your location/society/apartment"
-                  value={locationSearchQuery}
-                  onChange={e => setLocationSearchQuery(e.target.value)}
-                  style={{ background: 'none', border: 'none', outline: 'none', fontSize: '15px', fontWeight: 500, color: '#111', width: '100%' }}
-                />
+                <button onClick={() => setShowLocationModal(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', color: '#6b7280', padding: 0, flexShrink: 0 }}><ChevronLeft size={20} /></button>
+                <input ref={locationInputRef} type="text" placeholder="Search for location..." value={locationSearchQuery} onChange={e => setLocationSearchQuery(e.target.value)} style={{ background: 'none', border: 'none', outline: 'none', fontSize: '15px', fontWeight: 500, color: '#111', width: '100%' }} />
               </div>
             </div>
-
-            {/* Use current location */}
             <div style={{ padding: '0 1.5rem 1rem' }}>
-              <button
-                className="loc-use-btn"
-                onClick={() => {
-                  setShowLocationModal(false);
-                  detectLocation();
-                }}
-                style={{
-                  display: 'flex', alignItems: 'center', gap: '0.75rem',
-                  background: 'none', border: 'none', cursor: 'pointer',
-                  padding: '0.75rem', borderRadius: '12px', width: '100%',
-                  transition: 'background 0.15s'
-                }}
-              >
-                <div style={{ width: '36px', height: '36px', borderRadius: '50%', background: '#ede9fe', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                  {/* Target/crosshair icon */}
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#6d28d9" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <circle cx="12" cy="12" r="3" />
-                    <path d="M12 2v4M12 18v4M2 12h4M18 12h4" />
-                    <circle cx="12" cy="12" r="9" stroke="#6d28d9" strokeOpacity="0.3" />
-                  </svg>
-                </div>
-                <div style={{ textAlign: 'left' }}>
-                  <p style={{ fontWeight: 700, fontSize: '15px', color: '#4c1d95', margin: 0 }}>Use current location</p>
-                  {locating && <p style={{ fontSize: '12px', color: '#9ca3af', margin: '2px 0 0' }}>Detecting…</p>}
-                </div>
+              <button className="loc-use-btn" onClick={() => { setShowLocationModal(false); detectLocation(); }} style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', background: 'none', border: 'none', cursor: 'pointer', padding: '0.75rem', borderRadius: '12px', width: '100%' }}>
+                <div style={{ width: '36px', height: '36px', borderRadius: '50%', background: '#ede9fe', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><MapPin size={20} color="#6d28d9" /></div>
+                <div style={{ textAlign: 'left' }}><p style={{ fontWeight: 700, fontSize: '15px', color: '#4c1d95', margin: 0 }}>Use current location</p>{locating && <p style={{ fontSize: '12px', color: '#9ca3af', margin: '2px 0 0' }}>Detecting…</p>}</div>
               </button>
             </div>
-
-            {/* Divider */}
             <div style={{ height: '1px', background: '#f3f4f6', margin: '0 1.5rem' }} />
-
-            {/* Powered by Google */}
-            <div style={{ padding: '1rem 1.5rem', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '6px' }}>
-              <span style={{ fontSize: '13px', color: '#9ca3af', fontWeight: 500 }}>powered by</span>
-              <span style={{ fontWeight: 700, fontSize: '14px' }}>
-                <span style={{ color: '#4285F4' }}>G</span>
-                <span style={{ color: '#EA4335' }}>o</span>
-                <span style={{ color: '#FBBC05' }}>o</span>
-                <span style={{ color: '#4285F4' }}>g</span>
-                <span style={{ color: '#34A853' }}>l</span>
-                <span style={{ color: '#EA4335' }}>e</span>
-              </span>
-            </div>
+            <div style={{ padding: '1rem 1.5rem', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '6px' }}><span style={{ fontSize: '13px', color: '#9ca3af', fontWeight: 500 }}>powered by</span><span style={{ fontWeight: 700, fontSize: '14px' }}><span style={{ color: '#4285F4' }}>G</span><span style={{ color: '#EA4335' }}>o</span><span style={{ color: '#FBBC05' }}>o</span><span style={{ color: '#4285F4' }}>g</span><span style={{ color: '#34A853' }}>l</span><span style={{ color: '#EA4335' }}>e</span></span></div>
           </div>
         </>
       )}
 
-      {/* ── MOBILE: Sidebar Menu ── */}
+      {/* MOBILE SIDEBAR MENU */}
       {isMenuOpen && (
         <>
           <div onClick={() => setIsMenuOpen(false)} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', zIndex: 1100, backdropFilter: 'blur(2px)' }} />
           <div style={{ position: 'fixed', top: 0, left: 0, bottom: 0, width: '280px', background: '#fff', zIndex: 1200, display: 'flex', flexDirection: 'column', boxShadow: '8px 0 32px rgba(0,0,0,0.12)' }}>
             <div style={{ padding: '1.5rem', borderBottom: '1px solid #f1f5f9', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <Link to="/" onClick={() => setIsMenuOpen(false)} style={{ textDecoration: 'none', display: 'flex', alignItems: 'center' }}>
-                <img src="/logo.png" alt="Dhoond" style={{ height: '80px', width: 'auto', objectFit: 'contain' }} />
-              </Link>
+              <Link to="/" onClick={() => setIsMenuOpen(false)}><img src="/logo.png" alt="Dhoond" style={{ height: '60px', width: 'auto' }} /></Link>
               <button className="icon-btn" onClick={() => setIsMenuOpen(false)}><X size={22} /></button>
             </div>
-            <div style={{ padding: '1rem', borderBottom: '1px solid #f1f5f9' }}>
-              <div
-                onClick={() => { setIsMenuOpen(false); setShowLocationModal(true); }}
-                style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.65rem 1rem', background: '#f0f9ff', borderRadius: '12px', cursor: 'pointer' }}
-              >
-                <MapPin size={16} color="#2563eb" />
-                <div style={{ flex: 1, overflow: 'hidden' }}>
-                  <p style={{ fontWeight: 700, fontSize: '14px', color: '#1e40af', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{locationLabel}</p>
-                  {locationSubtext && <p style={{ fontSize: '11px', color: '#60a5fa', margin: 0 }}>{locationSubtext}</p>}
-                </div>
-                <ChevronDown size={14} color="#2563eb" />
-              </div>
-            </div>
             <nav style={{ flex: 1, padding: '0.75rem', display: 'flex', flexDirection: 'column', gap: '0.2rem', overflowY: 'auto' }}>
-                <div style={{ padding: '0.5rem 0.5rem 1rem', borderBottom: '1px solid #f1f5f9', marginBottom: '0.75rem' }}>
-                  <Link to={isAuthenticated ? "/profile" : "/painting"} onClick={() => setIsMenuOpen(false)} style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', textDecoration: 'none', cursor: 'pointer' }}>
-                    <div style={{ width: '40px', height: '40px', background: '#eff6ff', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#2563eb', flexShrink: 0 }}>
-                      <User size={20} />
-                    </div>
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ fontWeight: 800, fontSize: '0.9rem', color: '#111', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                        {isAuthenticated ? userName : 'Login / Register'}
-                      </div>
-                      <div style={{ fontSize: '0.75rem', color: '#64748b', fontWeight: 600 }}>
-                        {isAuthenticated ? `+91 ${userMobile}` : 'Login to view profile'}
-                      </div>
-                    </div>
-                  </Link>
-                </div>
-
-              <p style={{ fontSize: '11px', fontWeight: 800, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.05em', padding: '0.5rem 1rem 0.25rem' }}>Explore Dhoond</p>
-
-              {NAV_LINKS.map(link => {
-                if (link.type === 'soon') {
-                  return (
-                    <button key={link.label} onClick={() => { setIsMenuOpen(false); openComingSoon(); }} style={{ textAlign: 'left', background: 'none', border: 'none', textDecoration: 'none', padding: '0.75rem 1rem', borderRadius: '10px', fontSize: '0.9rem', fontWeight: 700, color: '#475569', display: 'block' }}>
-                      {link.label}
-                    </button>
-                  );
-                }
-                return (
-                  <Link key={link.label} to={link.to} onClick={() => setIsMenuOpen(false)}
-                    style={{ textDecoration: 'none', padding: '0.75rem 1rem', borderRadius: '10px', fontSize: '0.9rem', fontWeight: 700, color: link.badge ? '#d97706' : '#111', background: location.pathname === link.to ? '#eff6ff' : 'transparent', display: 'block', transition: 'background 0.15s' }}>
-                    {link.label}
-                  </Link>
-                );
-              })}
-
-              {isAuthenticated && (
-                <Link to="/profile" onClick={() => setIsMenuOpen(false)} style={{ textDecoration: 'none', padding: '0.75rem 1rem', borderRadius: '10px', fontSize: '0.9rem', fontWeight: 700, color: '#111', display: 'flex', alignItems: 'center', gap: '0.75rem', background: location.pathname === '/profile' ? '#eff6ff' : 'transparent' }}>
-                  <Package size={18} color="#64748b" /> My Bookings
-                </Link>
-              )}
+              <Link to={isAuthenticated ? "/profile" : "/painting"} onClick={() => setIsMenuOpen(false)} style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.75rem', textDecoration: 'none' }}>
+                <div style={{ width: '40px', height: '40px', background: '#eff6ff', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#2563eb' }}><User size={20} /></div>
+                <div><div style={{ fontWeight: 800, fontSize: '0.9rem', color: '#111' }}>{isAuthenticated ? userName : 'Login / Register'}</div><div style={{ fontSize: '0.75rem', color: '#64748b' }}>{isAuthenticated ? `+91 ${userMobile}` : 'View Profile'}</div></div>
+              </Link>
+              {NAV_LINKS.map(link => (
+                <Link key={link.label} to={link.to || '#'} onClick={() => { setIsMenuOpen(false); if(link.type==='soon') openComingSoon(); }} style={{ textDecoration: 'none', padding: '0.75rem 1rem', borderRadius: '10px', fontSize: '0.9rem', fontWeight: 700, color: '#111' }}>{link.label}</Link>
+              ))}
             </nav>
-            <div style={{ padding: '1.5rem', borderTop: '1px solid #f1f5f9' }}>
-              <button onClick={() => { navigate('/painting'); setIsMenuOpen(false); }} style={{ width: '100%', background: '#2563eb', color: '#fff', padding: '1rem', borderRadius: '14px', fontWeight: 800, fontSize: '1rem', border: 'none', cursor: 'pointer' }}>
-                Book a Service
-              </button>
-            </div>
           </div>
         </>
       )}
 
-      {/* ── MOBILE: Full-screen Search Modal ── */}
+      {/* MOBILE SEARCH MODAL */}
       {isSearchOpen && (
         <div style={{ position: 'fixed', inset: 0, background: '#fff', zIndex: 1300, display: 'flex', flexDirection: 'column' }}>
-          <div style={{ padding: '1rem 1.25rem', display: 'flex', alignItems: 'center', gap: '1rem', borderBottom: '1px solid #f1f5f9' }}>
+          <div style={{ padding: '1rem', display: 'flex', alignItems: 'center', gap: '1rem', borderBottom: '1px solid #f1f5f9' }}>
             <button className="icon-btn" onClick={() => setIsSearchOpen(false)}><X size={24} /></button>
             <div style={{ flex: 1, display: 'flex', alignItems: 'center', background: '#f3f4f6', borderRadius: '99px', padding: '0.65rem 1rem' }}>
               <Search size={18} color="#6b7280" />
-              <input
-                autoFocus type="text" placeholder="Search for services..."
-                value={searchQuery}
-                onChange={e => setSearchQuery(e.target.value)}
-                onKeyDown={e => e.key === 'Enter' && handleSearchSubmit()}
-                style={{ background: 'none', border: 'none', outline: 'none', marginLeft: '8px', fontSize: '16px', fontWeight: 500, color: '#111', width: '100%' }}
-              />
+              <input autoFocus type="text" placeholder="Search..." value={searchQuery} onChange={e => setSearchQuery(e.target.value)} onKeyDown={e => e.key === 'Enter' && handleSearchSubmit()} style={{ background: 'none', border: 'none', outline: 'none', marginLeft: '8px', fontSize: '16px', width: '100%' }} />
             </div>
           </div>
           <div style={{ flex: 1, overflow: 'auto', padding: '1rem' }}>
-            <p style={{ fontSize: '12px', fontWeight: 700, color: '#9ca3af', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '0.75rem', padding: '0 0.25rem' }}>Popular Searches</p>
             {filteredSuggestions.map(s => (
-              <div key={s} onClick={() => handleSearchSubmit(s)} className="suggest-item"
-                style={{ padding: '1rem', borderRadius: '14px', cursor: 'pointer', fontSize: '15px', fontWeight: 600, color: '#111', display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.25rem' }}>
-                <div style={{ width: '36px', height: '36px', background: '#eff6ff', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <Search size={16} color="#2563eb" />
-                </div>
-                {s}
-              </div>
+              <div key={s} onClick={() => handleSearchSubmit(s)} style={{ padding: '1rem', fontSize: '15px', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.75rem' }}><Search size={16} color="#2563eb" />{s}</div>
             ))}
           </div>
         </div>
       )}
-
-
     </>
   );
 };
-
 
 const MainLayout = () => {
   const { showComingSoon, closeComingSoon } = useUI();
