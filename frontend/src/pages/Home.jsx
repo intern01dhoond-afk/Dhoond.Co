@@ -363,7 +363,7 @@ const Home = () => {
                         display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px',
                         transition: 'opacity 0.2s',
                       }}>
-                        {isConsult ? 'Book Consultation' : 'Book Free Visit'}
+                        Book Consultation now
                         <ChevronRight size={15} />
                       </button>
                     </div>

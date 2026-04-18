@@ -473,7 +473,7 @@ const PaintingServiceList = ({ service, onClose }) => {
               flexShrink: 0, whiteSpace: 'nowrap',
             }}
           >
-            Book Free Consultation <ArrowRight size={17} />
+            Book Consultation now <ArrowRight size={17} />
           </button>
         </div>
       )}

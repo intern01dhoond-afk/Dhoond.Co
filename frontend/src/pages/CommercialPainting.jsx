@@ -138,7 +138,7 @@ const CommercialPainting = () => {
                 boxShadow: '0 10px 25px rgba(59,130,246,0.3)'
               }}
             >
-              {isAdded ? 'Manage in Cart' : 'Book a Consultation Now'}
+              {isAdded ? 'Manage in Cart' : 'Book Consultation now'}
             </button>
           </div>
         </div>
@@ -173,7 +173,7 @@ const CommercialPainting = () => {
           onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.02)'}
           onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'}
         >
-          {isAdded ? 'Go to Cart' : 'Book Consultation'} <ArrowRight size={20} />
+          {isAdded ? 'Go to Cart' : 'Book Consultation now'} <ArrowRight size={20} />
         </button>
       </div>
     </div>
