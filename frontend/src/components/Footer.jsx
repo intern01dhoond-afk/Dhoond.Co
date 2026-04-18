@@ -62,50 +62,68 @@ const Footer = () => {
         </div>
       </div>
 
-      {/* Main links */}
-      <div className="mobile-stack mobile-text-center" style={{ maxWidth: '1440px', margin: '0 auto', padding: '5rem 5%', display: 'flex', flexWrap: 'nowrap', gap: '3rem', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-        <div style={{ flex: '0 0 300px', display: 'flex', flexDirection: 'column', alignItems: 'inherit' }}>
-          <Link to="/" style={{ display: 'inline-block', marginBottom: '1.5rem' }}>
-            <img src="/logo.png" alt="Dhoond" style={{ height: '45px', width: 'auto', objectFit: 'contain' }} />
-          </Link>
-          <p style={{ color: '#94a3b8', fontSize: '0.9rem', lineHeight: 1.7, maxWidth: '280px', fontWeight: 500 }}>
-            India's fastest growing premium home services marketplace. Quality craftsmanship delivered to your doorstep.
-          </p>
-        </div>
-        {[
-          { title: 'Company', links: ['About Us', 'Careers', 'Blog', 'Press'] },
-          { title: 'Services', links: ['Painting', 'AC Tech', 'Plumbing', 'Electrician', 'Deep Cleaning'] },
-          { title: 'Partners', links: ['Join as Expert', 'Partner with Us', 'Training Center'] },
-          { title: 'Support', links: ['Help Center', 'Privacy Policy', 'Terms of Service', 'Refund Policy'] },
-        ].map(col => (
-          <div key={col.title} style={{ flex: '1 1 0px', minWidth: '130px' }}>
-            <h4 style={{ fontWeight: 800, fontSize: '0.95rem', color: '#fff', marginBottom: '1.25rem', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{col.title}</h4>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-              {col.links.map(l => {
-                const isPainting = l.toLowerCase() === 'painting' && col.title === 'Services';
-                const isOtherService = col.title === 'Services' && !isPainting;
-                
-                return (
-                  <Link 
-                    key={l} 
-                    to={isPainting ? "/painting" : "#"} 
-                    onClick={(e) => {
-                      if (isOtherService) {
-                        e.preventDefault();
-                        openComingSoon();
-                      }
-                    }}
-                    style={{ color: '#94a3b8', fontSize: '0.95rem', fontWeight: 500, transition: 'color 0.2s', textDecoration: 'none' }}
-                    onMouseEnter={e => e.currentTarget.style.color = '#facc15'}
-                    onMouseLeave={e => e.currentTarget.style.color = '#94a3b8'}
-                  >
-                    {l}
-                  </Link>
-                );
-              })}
-            </div>
+      {/* Main links section */}
+      <div style={{ maxWidth: '1400px', margin: '0 auto', padding: '5rem 5% 4rem' }}>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4rem' }}>
+          
+          {/* Brand Column */}
+          <div style={{ flex: '1 1 300px', maxWidth: '350px' }} className="mobile-text-center">
+            <Link to="/" style={{ display: 'inline-block', marginBottom: '1.5rem' }}>
+              <img src="/logo.png" alt="Dhoond" style={{ height: '55px', width: 'auto', objectFit: 'contain' }} />
+            </Link>
+            <p style={{ color: '#94a3b8', fontSize: '0.95rem', lineHeight: 1.8, fontWeight: 500, marginBottom: '2rem' }}>
+              India's fastest growing premium home services marketplace. Quality craftsmanship delivered to your doorstep.
+            </p>
           </div>
-        ))}
+
+          {/* Links Columns - Responsive Grid */}
+          <div style={{ 
+            flex: '2 1 600px', 
+            display: 'grid', 
+            gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', 
+            gap: '3rem' 
+          }} className="mobile-text-center">
+            {[
+              { title: 'Company', links: ['About Us', 'Careers', 'Blog', 'Press'] },
+              { title: 'Services', links: ['Painting', 'AC Tech', 'Plumbing', 'Electrician', 'Deep Cleaning'] },
+              { title: 'Partners', links: ['Join as Expert', 'Partner with Us', 'Training Center'] },
+              { title: 'Support', links: ['Help Center', 'Privacy Policy', 'Terms of Service', 'Refund Policy'] },
+            ].map(col => (
+              <div key={col.title}>
+                <h4 style={{ fontWeight: 800, fontSize: '0.9rem', color: '#fff', marginBottom: '1.5rem', textTransform: 'uppercase', letterSpacing: '0.12em' }}>
+                  {col.title}
+                </h4>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '1.1rem' }}>
+                  {col.links.map(l => {
+                    const isPainting = l.toLowerCase() === 'painting' && col.title === 'Services';
+                    const isOtherService = col.title === 'Services' && !isPainting;
+                    return (
+                      <Link 
+                        key={l} 
+                        to={isPainting ? "/painting" : "#"} 
+                        onClick={(e) => {
+                          if (isOtherService) { e.preventDefault(); openComingSoon(); }
+                        }}
+                        style={{ color: '#94a3b8', fontSize: '0.95rem', fontWeight: 500, transition: 'all 0.2s', textDecoration: 'none' }}
+                        onMouseEnter={e => {
+                          e.currentTarget.style.color = '#facc15';
+                          e.currentTarget.style.transform = 'translateX(4px)';
+                        }}
+                        onMouseLeave={e => {
+                          e.currentTarget.style.color = '#94a3b8';
+                          e.currentTarget.style.transform = 'translateX(0)';
+                        }}
+                      >
+                        {l}
+                      </Link>
+                    );
+                  })}
+                </div>
+              </div>
+            ))}
+          </div>
+
+        </div>
       </div>
 
       {/* Bottom bar */}
