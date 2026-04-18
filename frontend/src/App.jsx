@@ -248,7 +248,7 @@ const Navbar = () => {
 
             <div className="desktop-only" style={{ display: 'flex', gap: '1.75rem', alignItems: 'center', marginLeft: '1rem' }}>
               {NAV_LINKS.map(link => (
-                <Link key={link.label} to={link.to || '#'} 
+                <Link key={link.label} to={link.to || '#'}
                   onClick={link.type === 'soon' ? (e) => { e.preventDefault(); openComingSoon(); } : undefined}
                   className={`nav-link ${link.badge ? 'highlight' : ''} ${location.pathname === link.to ? 'active' : ''}`}>
                   {link.label}
@@ -362,7 +362,7 @@ const Navbar = () => {
                 <div><div style={{ fontWeight: 800, fontSize: '0.9rem', color: '#111' }}>{isAuthenticated ? userName : 'Login / Register'}</div><div style={{ fontSize: '0.75rem', color: '#64748b' }}>{isAuthenticated ? `+91 ${userMobile}` : 'View Profile'}</div></div>
               </Link>
               {NAV_LINKS.map(link => (
-                <Link key={link.label} to={link.to || '#'} onClick={() => { setIsMenuOpen(false); if(link.type==='soon') openComingSoon(); }} style={{ textDecoration: 'none', padding: '0.75rem 1rem', borderRadius: '10px', fontSize: '0.9rem', fontWeight: 700, color: '#111' }}>{link.label}</Link>
+                <Link key={link.label} to={link.to || '#'} onClick={() => { setIsMenuOpen(false); if (link.type === 'soon') openComingSoon(); }} style={{ textDecoration: 'none', padding: '0.75rem 1rem', borderRadius: '10px', fontSize: '0.9rem', fontWeight: 700, color: '#111' }}>{link.label}</Link>
               ))}
             </nav>
           </div>
