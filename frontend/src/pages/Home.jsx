@@ -321,7 +321,7 @@ const Home = () => {
                     onClick={() => {
                       const title = s.title?.toLowerCase() || '';
                       if (title.includes('commercial')) {
-                        navigate('/commercial-painting');
+                        navigate(`/painting?service=${encodeURIComponent('Commercial Painting')}&sub=${encodeURIComponent('Offices, Colleges/Schools & warehouses')}&filter=commercial`);
                       } else if (title.includes('exterior')) {
                         navigate(`/painting?service=${encodeURIComponent('Exterior Painting')}&sub=${encodeURIComponent('Weather-resistant finishes')}&filter=exterior`);
                       } else {
@@ -403,7 +403,7 @@ const Home = () => {
                         e.stopPropagation();
                         const title = s.title?.toLowerCase() || '';
                         if (title.includes('commercial')) {
-                          navigate('/commercial-painting');
+                          navigate(`/painting?service=${encodeURIComponent('Commercial Painting')}&sub=${encodeURIComponent('Offices, Colleges/Schools & warehouses')}&filter=commercial`);
                         } else if (title.includes('exterior')) {
                           navigate(`/painting?service=${encodeURIComponent('Exterior Painting')}&sub=${encodeURIComponent('Weather-resistant finishes')}&filter=exterior`);
                         } else {
