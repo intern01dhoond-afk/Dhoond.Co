@@ -25,6 +25,29 @@ const Home = () => {
       scrollContainerRef.current.scrollBy({ left: 320, behavior: 'smooth' });
     }
   };
+  const handleGeneralBooking = async () => {
+    try {
+      const apiUrl = import.meta.env.VITE_API_URL || '';
+      const res = await fetch(`${apiUrl}/api/services?category=painter`);
+      const data = await res.json();
+      const services = Array.isArray(data) ? data : (data.services || data.data || []);
+      const consult = services.find(s => s.title.toLowerCase().includes('painting expert'));
+      if (consult) {
+        addToCart({
+          id: consult.id,
+          title: consult.title,
+          discountPrice: Number(consult.discount_price),
+          originalPrice: Number(consult.original_price),
+          image: consult.image,
+          category: 'painter',
+          quantity: 1,
+        });
+      }
+      navigate('/cart');
+    } catch (e) {
+      navigate('/cart');
+    }
+  };
   useEffect(() => {
     // Detect Location for Service Availability
     if (navigator.geolocation) {
@@ -189,7 +212,11 @@ const Home = () => {
                 </p>
                 
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem', marginBottom: '1.5rem' }}>
-                  <button onClick={() => navigate('/painting')} style={{ background: '#facc15', color: '#111', padding: '1.1rem 2rem', borderRadius: '99px', fontWeight: 800, fontSize: '1.05rem', border: 'none', cursor: 'pointer' }} className="btn-hover cta-glow">
+                  <button 
+                    onClick={handleGeneralBooking}
+                    style={{ background: '#facc15', color: '#111', padding: '1.1rem 2rem', borderRadius: '99px', fontWeight: 800, fontSize: '1.05rem', border: 'none', cursor: 'pointer' }} 
+                    className="btn-hover cta-glow"
+                  >
                     Book a Service <ArrowUpRight size={20} strokeWidth={3} />
                   </button>
                   <button onClick={() => navigate('/painting')} style={{ background: '#fff', color: '#111', padding: '1.1rem 2rem', borderRadius: '99px', fontWeight: 700, fontSize: '1.05rem', border: '2px solid #e5e7eb', cursor: 'pointer' }} className="btn-hover">
@@ -236,7 +263,7 @@ const Home = () => {
                     <div 
                       key={item.label} 
                       onClick={() => {
-                        if (isAvailable) { navigate('/painting'); }
+                        if (isAvailable) { handleGeneralBooking(); }
                         else { 
                           setShakingId(item.label);
                           setTimeout(() => {
@@ -471,7 +498,7 @@ const Home = () => {
                 </div>
 
                 <button
-                  onClick={() => navigate('/painting')}
+                  onClick={handleGeneralBooking}
                   style={{ background: 'linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)', color: '#fff', border: 'none', padding: '1.1rem 2.5rem', borderRadius: '14px', fontWeight: 800, fontSize: '1rem', cursor: 'pointer', boxShadow: '0 8px 32px rgba(99,102,241,0.35)', display: 'inline-flex', alignItems: 'center', gap: '0.5rem', transition: 'all 0.2s' }}
                   className="btn-hover"
                 >
@@ -520,7 +547,7 @@ const Home = () => {
 
 
         <div className="mobile-only fade-up" style={{ position: 'fixed', bottom: 0, left: 0, right: 0, padding: '1rem', background: '#fff', borderTop: '1px solid #e5e7eb', zIndex: 50 }}>
-          <button onClick={() => navigate('/painting')} style={{ width: '100%', background: '#facc15', color: '#111', padding: '1.25rem 1.5rem', borderRadius: '16px', border: 'none', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }} className="btn-hover cta-glow">
+          <button onClick={handleGeneralBooking} style={{ width: '100%', background: '#facc15', color: '#111', padding: '1.25rem 1.5rem', borderRadius: '16px', border: 'none', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }} className="btn-hover cta-glow">
             <span style={{ fontWeight: 900, fontSize: '1.15rem' }}>Book a Service</span>
             <span style={{ fontSize: '1.1rem', fontWeight: 900 }}>₹99</span>
           </button>
