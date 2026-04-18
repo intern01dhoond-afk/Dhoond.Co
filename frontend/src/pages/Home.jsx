@@ -319,16 +319,14 @@ const Home = () => {
                   <div
                     key={s.id}
                     onClick={() => {
-                      addToCart({
-                        id: s.id,
-                        title: s.title,
-                        discountPrice: Number(discountPrice),
-                        originalPrice: Number(originalPrice),
-                        image: s.image,
-                        category: 'painter',
-                        quantity: 1
-                      });
-                      navigate('/cart');
+                      const title = s.title?.toLowerCase() || '';
+                      if (title.includes('commercial')) {
+                        navigate('/commercial-painting');
+                      } else if (title.includes('exterior')) {
+                        navigate(`/painting?service=${encodeURIComponent('Exterior Painting')}&sub=${encodeURIComponent('Weather-resistant finishes')}&filter=exterior`);
+                      } else {
+                        navigate(`/painting?service=${encodeURIComponent('Interior Painting')}&sub=${encodeURIComponent('Walls, ceilings & trims')}&filter=interior`);
+                      }
                     }}
                     style={{
                       flex: '0 0 auto', width: '260px',
@@ -403,16 +401,14 @@ const Home = () => {
                       }}
                       onClick={(e) => {
                         e.stopPropagation();
-                        addToCart({
-                          id: s.id,
-                          title: s.title,
-                          discountPrice: Number(discountPrice),
-                          originalPrice: Number(originalPrice),
-                          image: s.image,
-                          category: 'painter',
-                          quantity: 1
-                        });
-                        navigate('/cart');
+                        const title = s.title?.toLowerCase() || '';
+                        if (title.includes('commercial')) {
+                          navigate('/commercial-painting');
+                        } else if (title.includes('exterior')) {
+                          navigate(`/painting?service=${encodeURIComponent('Exterior Painting')}&sub=${encodeURIComponent('Weather-resistant finishes')}&filter=exterior`);
+                        } else {
+                          navigate(`/painting?service=${encodeURIComponent('Interior Painting')}&sub=${encodeURIComponent('Walls, ceilings & trims')}&filter=interior`);
+                        }
                       }}
                     >
                         Book Consultation now
