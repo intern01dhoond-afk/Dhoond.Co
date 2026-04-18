@@ -57,7 +57,21 @@ const getOrdersController = async (req, res) => {
   }
 };
 
+const updateOrderController = async (req, res) => {
+  try {
+    const { id, status } = req.body;
+    if (!id || !status) {
+      return res.status(400).json({ success: false, message: "id and status are required" });
+    }
+    const order = await orderModel.updateOrderStatus(id, status);
+    res.json({ success: true, data: order });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
 module.exports = {
   createOrderController,
   getOrdersController,
+  updateOrderController,
 };

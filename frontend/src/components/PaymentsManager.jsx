@@ -5,8 +5,9 @@ import { formatOrderId } from '../utils/formatOrderId';
 const PAYMENT_STATUS_STYLES = {
   success: { bg: '#f0fdf4', color: '#16a34a', label: 'Success' },
   paid:    { bg: '#f0fdf4', color: '#16a34a', label: 'Paid' },
-  pending: { bg: '#fff7ed', color: '#ea580c', label: 'Pending' },
-  failed:  { bg: '#fef2f2', color: '#dc2626', label: 'Failed' },
+  pending:   { bg: '#fff7ed', color: '#ea580c', label: 'Pending' },
+  failed:    { bg: '#fef2f2', color: '#dc2626', label: 'Failed' },
+  cancelled: { bg: '#f1f5f9', color: '#64748b', label: 'Cancelled' },
 };
 
 const getPayStyle = (s) => PAYMENT_STATUS_STYLES[s?.toLowerCase()] || { bg: '#f1f5f9', color: '#64748b', label: s || '—' };
@@ -55,10 +56,11 @@ const PaymentsManager = () => {
     return matchSearch && matchFilter;
   });
 
-  const statusCounts = { success: 0, pending: 0, failed: 0 };
+  const statusCounts = { success: 0, pending: 0, failed: 0, cancelled: 0 };
   payments.forEach(p => {
     const s = p.payment_status?.toLowerCase();
     if (s === 'success' || s === 'paid') statusCounts.success++;
+    else if (s === 'cancelled') statusCounts.cancelled++;
     else if (s === 'pending') statusCounts.pending++;
     else statusCounts.failed++;
   });
@@ -112,9 +114,10 @@ const PaymentsManager = () => {
       <div style={{ display: 'flex', gap: '8px', marginBottom: '20px' }}>
         {[
           { k: 'all', label: 'All', count: payments.length },
-          { k: 'success', label: 'Successful', count: statusCounts.success },
-          { k: 'pending', label: 'Pending', count: statusCounts.pending },
-          { k: 'failed',  label: 'Failed',  count: statusCounts.failed },
+          { k: 'success',   label: 'Successful', count: statusCounts.success },
+          { k: 'pending',   label: 'Pending',    count: statusCounts.pending },
+          { k: 'failed',    label: 'Failed',     count: statusCounts.failed },
+          { k: 'cancelled', label: 'Cancelled',  count: statusCounts.cancelled || 0 },
         ].map(({ k, label, count }) => {
           const active = filter === k;
           const style  = getPayStyle(k === 'all' ? '' : k);

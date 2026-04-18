@@ -16,7 +16,8 @@ const PAYMENT_STYLES = {
   Paid:    { bg: '#f0fdf4', color: '#16a34a' },
   Success: { bg: '#f0fdf4', color: '#16a34a' },
   Unpaid:  { bg: '#fef2f2', color: '#dc2626' },
-  Pending: { bg: '#fff7ed', color: '#ea580c' },
+  Pending:   { bg: '#fff7ed', color: '#ea580c' },
+  Cancelled: { bg: '#f1f5f9', color: '#64748b' },
 };
 
 const getPaymentStyle = (s) => PAYMENT_STYLES[s] || { bg: '#f1f5f9', color: '#64748b' };

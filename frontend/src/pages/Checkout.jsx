@@ -160,44 +160,28 @@ const Checkout = () => {
   }
 
   // ─── RAZORPAY CHECKOUT ─────────────────────────────────────────────────────
-  const processFinalBooking = async (paymentId) => {
+  const processFinalBooking = async (dhoondOrderId, paymentId) => {
     try {
       const apiUrl = import.meta.env.VITE_API_URL || '';
       
-      console.log("[Checkout] Starting backend sync for payment:", paymentId);
+      console.log("[Checkout] Finalizing booking for Order:", dhoondOrderId, "Payment:", paymentId);
 
-      // 1. Create Order
-      const orderResponse = await fetch(`${apiUrl}/api/V1/orders/create`, {
+      // 1. Update Order Status to Confirmed
+      await fetch(`${apiUrl}/api/V1/orders/update`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          user_id: user?.id || null,
-          address: formData.address,
-          price: finalAmountToPay,
-          platform_fee: 0, // Placeholder
-          category_id: null, // Optional for now
-          partner_id: null,
-          items: cartItems.map(i => ({
-            id: i.id,
-            title: i.title,
-            quantity: i.quantity,
-            price: i.discountPrice
-          }))
+          id: dhoondOrderId,
+          status: 'Confirmed'
         })
       });
 
-      const orderResult = await orderResponse.json();
-      if (!orderResult.success) throw new Error(orderResult.message || "Failed to create order");
-      
-      const newOrderId = orderResult.data.id;
-      console.log("[Checkout] Order created:", newOrderId);
-
-      // 2. Create Payment Record
+      // 2. Create Payment Record (Success)
       const paymentResponse = await fetch(`${apiUrl}/api/V1/payments/create`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          order_id: newOrderId,
+          order_id: dhoondOrderId,
           amount: finalAmountToPay,
           payment_method: selectedPayment,
           payment_status: 'success',
@@ -221,13 +205,46 @@ const Checkout = () => {
         clearCart();
       }
 
-      console.log("[Checkout] Sync complete.");
+      console.log("[Checkout] Sync complete. Success screen triggered.");
 
     } catch (err) {
-      console.error("[Checkout Error]", err);
-      setPaymentError(err.message || 'Something went wrong processing your booking.');
+      console.error("[Checkout Finalization Error]", err);
+      setPaymentError('Payment was successful but we couldn\'t update your order. Please contact support.');
+      setStatus('idle');
+    }
+  };
+
+  const handlePaymentCancellation = async (dhoondOrderId, reason = "Payment Cancelled") => {
+    try {
+      const apiUrl = import.meta.env.VITE_API_URL || '';
+      console.log("[Checkout] Handling Cancellation for Order:", dhoondOrderId, "Reason:", reason);
+
+      // 1. Update Order to Cancelled
+      await fetch(`${apiUrl}/api/V1/orders/update`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: dhoondOrderId, status: 'Cancelled' })
+      });
+
+      // 2. Create Failed Payment Record
+      await fetch(`${apiUrl}/api/V1/payments/create`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          order_id: dhoondOrderId,
+          amount: finalAmountToPay,
+          payment_method: selectedPayment,
+          payment_status: 'cancelled',
+          transaction_id: `CANCELLED_${Date.now()}`
+        })
+      });
+
+      setPaymentError(`Booking request cancelled. No amount was charged.`);
       setStatus('idle');
       setIsPaymentModalOpen(false);
+    } catch (err) {
+      console.error("[Cancellation Handler Error]", err);
+      setStatus('idle');
     }
   };
 
@@ -248,8 +265,35 @@ const Checkout = () => {
     const apiUrl = import.meta.env.VITE_API_URL || '';
 
     try {
-      // 1. Create Order on Backend
-      console.log("[Checkout] Creating Razorpay Order...");
+      // 1. Create Dhoond Order FIRST (Status: Pending)
+      console.log("[Checkout] Creating Dhoond Order record...");
+      const dhoondOrderRes = await fetch(`${apiUrl}/api/V1/orders/create`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          user_id: user?.id || null,
+          address: formData.address,
+          price: finalAmountToPay,
+          platform_fee: 0,
+          category_id: null,
+          partner_id: null,
+          items: cartItems.map(i => ({
+            id: i.id,
+            title: i.title,
+            quantity: i.quantity,
+            price: i.discountPrice
+          }))
+        })
+      });
+      const dhoondOrderData = await dhoondOrderRes.json();
+      if (!dhoondOrderRes.ok || !dhoondOrderData.success) {
+        throw new Error(dhoondOrderData.message || 'Failed to initiate order in system');
+      }
+      const dhoondOrderId = dhoondOrderData.data.id;
+      console.log("[Checkout] Dhoond Order Created (Pending):", dhoondOrderId);
+
+      // 2. Create Razorpay Order
+      console.log("[Checkout] Creating Razorpay matching order...");
       const orderRes = await fetch(`${apiUrl}/api/V1/payments/razorpay-order`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -261,9 +305,9 @@ const Checkout = () => {
         throw new Error(orderData.message || 'Failed to create payment order');
       }
 
-      console.log("[Checkout] Order Created:", orderData.order_id);
+      console.log("[Checkout] Razorpay Order ID:", orderData.order_id);
 
-      // 2. Open Razorpay with the Order ID
+      // 3. Open Razorpay with both IDs
       const options = {
         key: import.meta.env.VITE_RAZORPAY_KEY_ID || "rzp_test_Sdh2WaT4aYxo9E",
         amount: Math.round(finalAmountToPay * 100),
@@ -271,9 +315,14 @@ const Checkout = () => {
         name: "Dhoond Services",
         description: "Service Booking Transaction",
         image: "https://dhoond.vercel.app/vite.svg",
-        order_id: orderData.order_id, // IMPORTANT: Link the order
+        order_id: orderData.order_id,
         handler: function (response) {
-          processFinalBooking(response.razorpay_payment_id);
+          processFinalBooking(dhoondOrderId, response.razorpay_payment_id);
+        },
+        modal: {
+          ondismiss: function() {
+            handlePaymentCancellation(dhoondOrderId, "User closed the payment modal");
+          }
         },
         prefill: {
           name: user?.name || "Customer",
@@ -284,19 +333,19 @@ const Checkout = () => {
           color: "#6e42e5"
         },
         notes: {
+          dhoond_order_id: String(dhoondOrderId),
           category: checkoutCategory || 'general'
         }
       };
 
       const rzp = new window.Razorpay(options);
       rzp.on('payment.failed', function (response){
-         console.error("[Razorpay] Payment Failed:", response.error);
-         setPaymentError(response.error.description || 'Payment Failed');
-         setStatus('idle');
+         console.error("[Razorpay] Payment Failed Callback:", response.error);
+         handlePaymentCancellation(dhoondOrderId, response.error.description || 'Payment failed at gateway');
       });
       rzp.open();
     } catch (err) {
-      console.error("[Razorpay] Init Error:", err);
+      console.error("[Razorpay Initialization Error]", err);
       setPaymentError(err.message || "Could not initialize payment gateway.");
       setStatus('idle');
     }

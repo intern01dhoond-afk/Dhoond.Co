@@ -15,13 +15,20 @@ const Footer = () => {
   return (
     <footer style={{ background: '#0f172a', color: '#f8fafc' }}>
       {/* Top contact bar */}
-      <div style={{ background: '#1e293b', borderBottom: '1px solid #334155', padding: '3.5rem 5%' }}>
+      <div style={{ background: '#1e293b', borderBottom: '1px solid #334155', padding: 'var(--footer-contact-pad, 3.5rem 5%)' }}>
+        <style>{`
+          @media (max-width: 768px) {
+            :root { --footer-contact-pad: 2.5rem 1.5rem; }
+            .mobile-centered-col { align-items: center !important; text-align: center !important; }
+            .mobile-bottom-links { flex-direction: column !important; gap: 1rem !important; }
+          }
+        `}</style>
         <div className="mobile-stack" style={{ maxWidth: '1280px', margin: '0 auto', display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', gap: '2rem' }}>
           <div className="mobile-text-center">
-            <p style={{ fontSize: '0.85rem', color: '#94a3b8', marginBottom: '0.4rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.1em' }}>Need Assistance?</p>
-            <h3 style={{ fontSize: '1.75rem', fontWeight: 900, color: '#fff', letterSpacing: '-0.02em' }}>We're here to help.</h3>
+            <p style={{ fontSize: '0.8rem', color: '#94a3b8', marginBottom: '0.4rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.15em' }}>Need Assistance?</p>
+            <h3 style={{ fontSize: 'clamp(1.5rem, 4vw, 1.75rem)', fontWeight: 900, color: '#fff', letterSpacing: '-0.02em' }}>We're here to help.</h3>
           </div>
-          <div className="mobile-stack mobile-text-center" style={{ display: 'flex', flexWrap: 'wrap', gap: '3rem' }}>
+          <div className="mobile-stack mobile-text-center" style={{ display: 'flex', flexWrap: 'wrap', gap: '2.5rem' }}>
             <div>
               <p style={{ fontSize: '0.8rem', color: '#64748b', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '0.5rem' }}>Call us</p>
               <a href="tel:+919102740274" style={{ fontWeight: 800, color: '#facc15', fontSize: '1.15rem' }}>+91 9102740274</a>
@@ -68,10 +75,13 @@ const Footer = () => {
           
           {/* Brand Column */}
           <div style={{ flex: '1 1 300px', maxWidth: '400px' }} className="mobile-text-center">
-            <Link to="/" style={{ display: 'inline-block', marginBottom: '1rem' }}>
-              <img src="/logo.png" alt="Dhoond" style={{ height: '70px', width: 'auto', objectFit: 'contain', filter: 'brightness(0) invert(1)' }} />
+            <Link to="/" style={{ display: 'inline-block', marginBottom: '1.25rem' }}>
+              <img src="/logo.png" alt="Dhoond" style={{ height: '70px', width: 'auto', objectFit: 'contain', filter: 'brightness(0) invert(1)', transition: 'transform 0.3s' }} 
+                onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.05)'}
+                onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'}
+              />
             </Link>
-            <p style={{ color: '#94a3b8', fontSize: '0.9rem', lineHeight: 1.7, fontWeight: 500, marginBottom: '2rem' }}>
+            <p style={{ color: '#94a3b8', fontSize: '0.9rem', lineHeight: 1.8, fontWeight: 500, marginBottom: '2.5rem' }}>
               India's fastest growing premium home services marketplace. Quality craftsmanship delivered to your doorstep.
             </p>
           </div>
