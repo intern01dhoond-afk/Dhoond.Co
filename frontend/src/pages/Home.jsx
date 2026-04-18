@@ -320,9 +320,9 @@ const Home = () => {
                     key={s.id}
                     onClick={() => {
                       const title = s.title?.toLowerCase() || '';
-                      if (title.includes('commercial')) {
+                      if (title.includes('commercial') || title.includes('office') || title.includes('school') || title.includes('warehouse')) {
                         navigate(`/painting?service=${encodeURIComponent('Commercial Painting')}&sub=${encodeURIComponent('Offices, Colleges/Schools & warehouses')}&filter=commercial`);
-                      } else if (title.includes('exterior')) {
+                      } else if (title.includes('exterior') || title.includes('weather')) {
                         navigate(`/painting?service=${encodeURIComponent('Exterior Painting')}&sub=${encodeURIComponent('Weather-resistant finishes')}&filter=exterior`);
                       } else {
                         navigate(`/painting?service=${encodeURIComponent('Interior Painting')}&sub=${encodeURIComponent('Walls, ceilings & trims')}&filter=interior`);
@@ -402,9 +402,9 @@ const Home = () => {
                       onClick={(e) => {
                         e.stopPropagation();
                         const title = s.title?.toLowerCase() || '';
-                        if (title.includes('commercial')) {
+                        if (title.includes('commercial') || title.includes('office') || title.includes('school') || title.includes('warehouse')) {
                           navigate(`/painting?service=${encodeURIComponent('Commercial Painting')}&sub=${encodeURIComponent('Offices, Colleges/Schools & warehouses')}&filter=commercial`);
-                        } else if (title.includes('exterior')) {
+                        } else if (title.includes('exterior') || title.includes('weather')) {
                           navigate(`/painting?service=${encodeURIComponent('Exterior Painting')}&sub=${encodeURIComponent('Weather-resistant finishes')}&filter=exterior`);
                         } else {
                           navigate(`/painting?service=${encodeURIComponent('Interior Painting')}&sub=${encodeURIComponent('Walls, ceilings & trims')}&filter=interior`);
