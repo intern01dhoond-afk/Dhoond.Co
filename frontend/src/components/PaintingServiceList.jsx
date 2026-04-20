@@ -279,7 +279,7 @@ const PaintingServiceList = ({ service, onClose }) => {
           </h2>
           <p style={{ color: 'rgba(255,255,255,0.75)', fontSize: '0.9rem', fontWeight: 500, margin: '0 0 1rem' }}>
             {services.length > 0 ? `${services.length} service${services.length !== 1 ? 's' : ''} available` : 'Loading...'}
-            {' \u00b7 '}Starting {'\u20b9'}1
+            {' \u00b7 '}Starting {'\u20b9'}{services.length > 0 ? Math.min(...services.map(s => Number(s.discount_price || 99))) : 99}
           </p>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
             <Star size={14} fill="#facc15" color="#facc15" />

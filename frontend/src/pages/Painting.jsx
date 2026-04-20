@@ -211,7 +211,7 @@ export default function Painting() {
   }, []);
 
   const services = [
-    { n: 'Painting', p: 'from ₹1' },
+    { n: 'Painting', p: 'from ₹99' },
   ];
 
   return (

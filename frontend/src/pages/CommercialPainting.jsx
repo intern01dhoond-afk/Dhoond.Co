@@ -12,7 +12,7 @@ const CommercialPainting = () => {
     title: 'Commercial Painting Expert Consultation',
     category: 'Commercial',
     price: 499,
-    discountPrice: 1,
+    discountPrice: 99,
     image: '/commercial_painting.jpg'
   };
 
@@ -129,7 +129,7 @@ const CommercialPainting = () => {
             background: '#fff', padding: '2.5rem 4rem', borderRadius: '32px', boxShadow: '0 30px 60px rgba(0,0,0,0.06)' 
           }}>
             <div style={{ fontSize: '1rem', fontWeight: 800, color: '#64748b' }}>Consultation Fee</div>
-            <div style={{ fontSize: '3rem', fontWeight: 900, color: '#111' }}>₹1</div>
+            <div style={{ fontSize: '3rem', fontWeight: 900, color: '#111' }}>₹99</div>
             <button 
               onClick={handleBooking}
               style={{ 
@@ -158,7 +158,7 @@ const CommercialPainting = () => {
           </div>
           <div>
             <div style={{ fontSize: '0.75rem', fontWeight: 800, color: '#3b82f6', textTransform: 'uppercase' }}>Expert Visit</div>
-            <div style={{ fontSize: '1.25rem', fontWeight: 900, color: '#0f172a' }}>₹1 <span style={{ fontSize: '0.8rem', color: '#94a3b8', textDecoration: 'line-through', fontWeight: 500 }}>₹499</span></div>
+            <div style={{ fontSize: '1.25rem', fontWeight: 900, color: '#0f172a' }}>₹99 <span style={{ fontSize: '0.8rem', color: '#94a3b8', textDecoration: 'line-through', fontWeight: 500 }}>₹499</span></div>
           </div>
         </div>
         
