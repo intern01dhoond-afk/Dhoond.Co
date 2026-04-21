@@ -166,8 +166,23 @@ const PaintingServiceList = ({ service, onClose }) => {
   const handleBookConsultation = async () => {
     try {
       const res = await fetch(`${API_URL}/api/services?category=painter`);
-      const data = await res.json();
-      const consult = data.find(s => s.title.toLowerCase().includes('painting expert'));
+      if (!res.ok) throw new Error('Fetch failed');
+      const result = await res.json();
+      
+      // Handle the same response structures as fetchServices
+      const data = Array.isArray(result) ? result : (result.services || result.data || []);
+      
+      // If we are in commercial category, look for commercial consultation first
+      const isCommercial = service?.filter === 'commercial';
+      const targetTerm = isCommercial ? 'commercial painting' : 'painting expert';
+      
+      let consult = data.find(s => s.title.toLowerCase().includes(targetTerm));
+      
+      // Final fallback search
+      if (!consult) {
+        consult = data.find(s => s.title.toLowerCase().includes('consultation'));
+      }
+
       if (consult) {
         addToCart({
           id: consult.id,
@@ -180,7 +195,8 @@ const PaintingServiceList = ({ service, onClose }) => {
         });
       }
       navigate('/cart');
-    } catch {
+    } catch (err) {
+      console.error('Manual consultation add error:', err);
       navigate('/cart');
     }
   };
