@@ -24,7 +24,7 @@ const getCategoryLabel = (cat) =>
 
 const Cart = () => {
   const { cartItems, removeFromCart, updateQuantity, setCheckoutCategory } = useCart();
-  const { login, isAuthenticated } = useAuth();
+  const { login, isAuthenticated, loading: authLoading } = useAuth();
   const navigate = useNavigate();
 
   // Login Modal States
@@ -53,11 +53,13 @@ const Cart = () => {
   const categoryKeys = Object.keys(groups);
 
   const handleProceed = (category) => {
+    if (authLoading) return;
     setCheckoutCategory(category);
     if (isAuthenticated) {
       navigate(`/checkout?category=${encodeURIComponent(category)}`);
     } else {
       setPendingCategory(category);
+      setAuthStep('mobile');
       setShowLogin(true);
     }
   };

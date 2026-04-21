@@ -214,10 +214,31 @@ const Navbar = () => {
         
         @media(max-width: 900px) { 
           .desktop-only { display: none !important; }
-          .dhoond-logo { height: 44px !important; }
-          .mobile-nav-container { padding: 0 1.25rem !important; height: 80px !important; }
+          .dhoond-logo { 
+            height: 240% !important; 
+            width: 100% !important;
+            object-fit: contain;
+            flex-shrink: 0;
+          }
+          .mobile-nav-container { padding: 0 0.75rem !important; height: 72px !important; }
         }
-        @media(min-width: 901px) { .mobile-only { display: none !important; } }
+        @media(min-width: 901px) { 
+          .mobile-only { display: none !important; } 
+          .dhoond-logo-desktop {
+            height: 260% !important;
+            width: 100% !important;
+            object-fit: contain;
+          }
+        }
+        .dhoond-logo-container {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          height: 100%;
+          width: 150px;
+          overflow: hidden; /* This masks the vertical whitespace */
+          position: relative;
+        }
       `}</style>
 
       <div style={{
@@ -229,7 +250,7 @@ const Navbar = () => {
         <nav className="mobile-nav-container" style={{ maxWidth: '1400px', margin: '0 auto', padding: '0 5%', height: '72px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
 
           {/* LEFT */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem', flex: 1 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flex: 1 }}>
             <div className="mobile-only">
               {location.pathname !== '/' && !location.pathname.startsWith('/admin') ? (
                 <button className="icon-btn" onClick={() => navigate(-1)} aria-label="Go back">
@@ -243,7 +264,9 @@ const Navbar = () => {
             </div>
 
             <Link to="/" className="desktop-only" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center' }}>
-              <img src="/logo.png" alt="Dhoond" style={{ height: '48px', width: 'auto', objectFit: 'contain' }} />
+              <div className="dhoond-logo-container">
+                <img src="/logo.png" alt="Dhoond" className="dhoond-logo dhoond-logo-desktop" style={{ width: 'auto', objectFit: 'contain' }} />
+              </div>
             </Link>
 
             <div className="desktop-only" style={{ display: 'flex', gap: '1.75rem', alignItems: 'center', marginLeft: '1rem' }}>
@@ -259,9 +282,11 @@ const Navbar = () => {
           </div>
 
           {/* CENTER: Mobile Logo */}
-          <div className="mobile-only" style={{ position: 'absolute', left: '50%', transform: 'translateX(-50%)', display: 'flex', alignItems: 'center' }}>
-            <Link to="/" style={{ display: 'flex' }}>
-              <img src="/logo.png" alt="Dhoond" className="dhoond-logo" style={{ height: '44px', width: 'auto', objectFit: 'contain' }} />
+          <div className="mobile-only" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flex: 1.5, height: '100%' }}>
+            <Link to="/" style={{ display: 'flex', alignItems: 'center', height: '100%' }}>
+              <div className="dhoond-logo-container">
+                <img src="/logo.png" alt="Dhoond" className="dhoond-logo" />
+              </div>
             </Link>
           </div>
 

@@ -7,7 +7,7 @@ import { formatOrderId } from '../utils/formatOrderId';
 
 const Checkout = () => {
   const { cartItems: allCartItems, clearCart, clearCategoryFromCart, updateQuantity } = useCart();
-  const { user, login, isAuthenticated } = useAuth();
+  const { user, login, isAuthenticated, loading: authLoading } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -72,15 +72,15 @@ const Checkout = () => {
   const [confirmedOrder, setConfirmedOrder] = useState(null);
 
   useEffect(() => {
-    // Small delay to allow AuthContext to potentially hydrate from localStorage
-    const timer = setTimeout(() => {
-      setIsInitializing(false);
-      if (!isAuthenticated) {
-        setIsAuthModalOpen(true);
-      }
-    }, 100);
-    return () => clearTimeout(timer);
-  }, [isAuthenticated]);
+    if (authLoading) return;
+    
+    setIsInitializing(false);
+    if (!isAuthenticated) {
+      setIsAuthModalOpen(true);
+    } else {
+      setIsAuthModalOpen(false);
+    }
+  }, [isAuthenticated, authLoading]);
   
   // Tip State
   const [tipAmount, setTipAmount] = useState(0);

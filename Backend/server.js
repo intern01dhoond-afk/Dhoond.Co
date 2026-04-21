@@ -17,5 +17,5 @@ pool
     console.log("DB Connected ");
   })
   .catch((err) => {
-    console.log("DB Connection Failed ", err.message);
+    console.log("DB Connection Failed ", err);
   });

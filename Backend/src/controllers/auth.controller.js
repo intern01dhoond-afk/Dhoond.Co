@@ -6,7 +6,7 @@ const sendOtpController = async (req, res) => {
   if (digits.length !== 10) return res.status(400).json({ error: 'Valid 10-digit mobile required.' });
   
   const otp = Math.floor(1000 + Math.random() * 9000).toString();
-  otpStore.set(digits, { otp, expiry: Date.now() + 10*60*1000, attempts: 0 });
+  await authModel.storeOtp(digits, otp);
   
   // [SECURITY] OTP is NOT logged to prevent exposure in server logs
 
