@@ -373,7 +373,7 @@ const PaintingServiceList = ({ service, onClose }) => {
                       key={svc.id}
                       style={{
                         background: '#fff', borderRadius: '16px',
-                        border: qty > 0 && isConsultation ? '2px solid #2563eb' : '1px solid #e2e8f0',
+                        border: qty > 0 && isConsultation && group.key === 'consultation' ? '2px solid #2563eb' : '1px solid #e2e8f0',
                         padding: '1rem 1.25rem',
                         display: 'flex', alignItems: 'center', gap: '1rem',
                         boxShadow: '0 2px 8px rgba(0,0,0,0.04)',
@@ -408,15 +408,15 @@ const PaintingServiceList = ({ service, onClose }) => {
                               </span>
                             </>
                           )}
-                          {!isConsultation && (
-                            <span style={{ background: '#fef9c3', color: '#854d0e', fontSize: '0.7rem', fontWeight: 800, padding: '2px 7px', borderRadius: '100px' }}>
-                              Final price after consultation
-                            </span>
-                          )}
+                          {(!isConsultation || group.key !== 'consultation') && (
+    <span style={{ background: '#fef9c3', color: '#854d0e', fontSize: '0.7rem', fontWeight: 800, padding: '2px 7px', borderRadius: '100px' }}>
+      Final price after consultation
+    </span>
+  )}
                         </div>
                       </div>
 
-                      {isConsultation && (
+                      {isConsultation && group.key === 'consultation' && (
                         <div style={{ flexShrink: 0 }}>
                           {qty > 0 ? (
                             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px' }}>
