@@ -62,21 +62,23 @@ const Home = () => {
     // Map service titles to distinct local images by keyword
     const pickImage = (title = '') => {
       const t = title.toLowerCase();
-      if (t.includes('consultation') || t.includes('expert'))       return '/painting_banner.png';
-      if (t.includes('exterior') || t.includes('weather'))          return '/exterior.jpg';
-      if (t.includes('texture') || t.includes('stencil'))           return '/texture.png';
-      if (t.includes('commercial') || t.includes('office') || t.includes('school')) return '/paint.webp';
-      if (t.includes('kitchen') || t.includes('bathroom'))          return '/wall2.jpg';
-      if (t.includes('1bhk') || t.includes('1 bhk'))                return '/wall2.jpg';
-      if (t.includes('2bhk') || t.includes('2 bhk'))                return '/wall1.jpg';
-      if (t.includes('3bhk') || t.includes('3 bhk'))                return '/interior.jpg';
-      if (t.includes('4bhk') || t.includes('4 bhk') || t.includes('villa')) return '/wall3.jpg';
-      if (t.includes('primer') || t.includes('priming'))            return '/priming_specialist_painter.png';
-      if (t.includes('ceiling'))                                     return '/interior.jpg';
-      if (t.includes('touch') || t.includes('repair'))              return '/touch_up_painter.png';
-      if (t.includes('spray'))                                       return '/spray_painter.png';
-      if (t.includes('full') || t.includes('home'))                  return '/wall1.jpg';
-      return '/exterior.jpg'; // generic fallback — a real painting photo
+      if (t.includes('consultation') || t.includes('expert')) return '/painting_banner.png';
+      if (t.includes('single')) return '/images/single%20wall.jpg';
+      if (t.includes('exterior') || t.includes('weather')) return '/images/exterior_painting.webp';
+      if (t.includes('texture') || t.includes('stencil')) return '/texture.png';
+      if (t.includes('commercial') || t.includes('office') || t.includes('school')) return '/images/office%20space.jpg';
+      if (t.includes('warehouse') || t.includes('industrial')) return '/images/ware%20house.jpg';
+      if (t.includes('kitchen') || t.includes('bathroom')) return '/wall2.jpg';
+      if (t.includes('1bhk') || t.includes('1 bhk')) return '/wall2.jpg';
+      if (t.includes('2bhk') || t.includes('2 bhk')) return '/space.jpg';
+      if (t.includes('3bhk') || t.includes('3 bhk')) return '/interior.jpg';
+      if (t.includes('4bhk') || t.includes('4 bhk') || t.includes('villa')) return '/images/vila.jpg';
+      if (t.includes('primer') || t.includes('priming')) return '/priming_specialist_painter.png';
+      if (t.includes('ceiling')) return '/interior.jpg';
+      if (t.includes('touch') || t.includes('repair')) return '/touch_up_painter.png';
+      if (t.includes('spray')) return '/spray_painter.png';
+      if (t.includes('full') || t.includes('home')) return '/wall1.jpg';
+      return '/images/exterior_painting.webp'; // generic fallback — a real painting photo
     };
 
     const apiUrl = import.meta.env.VITE_API_URL || '';
@@ -97,10 +99,10 @@ const Home = () => {
         } else {
           // Fallback curated list of painting services for the launch
           setFeaturedServices([
-            { id: 'f1', title: 'Full Home Painting (2BHK)', discountPrice: 5999, originalPrice: 8999,   image: '/wall1.jpg' },
-            { id: 'f2', title: 'Full Home Painting (3BHK)', discountPrice: 7999, originalPrice: 11999,  image: '/interior.jpg' },
-            { id: 'f3', title: 'Exterior Weatherproof Coating', discountPrice: 12999, originalPrice: 18999, image: '/exterior.jpg' },
-            { id: 'f4', title: 'Specialty Texture Wall',    discountPrice: 2499, originalPrice: 3999,   image: '/texture.png' },
+            { id: 'f1', title: 'Full Home Painting (2BHK)', discountPrice: 5999, originalPrice: 8999, image: '/wall1.jpg' },
+            { id: 'f2', title: 'Full Home Painting (3BHK)', discountPrice: 7999, originalPrice: 11999, image: '/interior.jpg' },
+            { id: 'f3', title: 'Exterior Weatherproof Coating', discountPrice: 12999, originalPrice: 18999, image: '/images/exterior_painting.webp' },
+            { id: 'f4', title: 'Specialty Texture Wall', discountPrice: 2499, originalPrice: 3999, image: '/texture.png' },
             { id: 'f5', title: 'Kitchen & Bathroom Painting', discountPrice: 1999, originalPrice: 2999, image: '/wall2.jpg' },
             { id: 'f6', title: 'Commercial Office Painting', discountPrice: 9999, originalPrice: 14999, image: '/exterior_painter.png' },
           ]);
@@ -109,10 +111,10 @@ const Home = () => {
       .catch(() => {
         // Fallback on error
         setFeaturedServices([
-          { id: 'f1', title: 'Full Home Painting (2BHK)', discountPrice: 5999, originalPrice: 8999,   image: '/wall1.jpg' },
-          { id: 'f2', title: 'Full Home Painting (3BHK)', discountPrice: 7999, originalPrice: 11999,  image: '/interior.jpg' },
-          { id: 'f3', title: 'Exterior Weatherproof Coating', discountPrice: 12999, originalPrice: 18999, image: '/exterior.jpg' },
-          { id: 'f4', title: 'Specialty Texture Wall',    discountPrice: 2499, originalPrice: 3999,   image: '/texture.png' },
+          { id: 'f1', title: 'Full Home Painting (2BHK)', discountPrice: 5999, originalPrice: 8999, image: '/wall1.jpg' },
+          { id: 'f2', title: 'Full Home Painting (3BHK)', discountPrice: 7999, originalPrice: 11999, image: '/interior.jpg' },
+          { id: 'f3', title: 'Exterior Weatherproof Coating', discountPrice: 12999, originalPrice: 18999, image: '/images/exterior_painting.webp' },
+          { id: 'f4', title: 'Specialty Texture Wall', discountPrice: 2499, originalPrice: 3999, image: '/texture.png' },
           { id: 'f5', title: 'Kitchen & Bathroom Painting', discountPrice: 1999, originalPrice: 2999, image: '/wall2.jpg' },
           { id: 'f6', title: 'Commercial Office Painting', discountPrice: 9999, originalPrice: 14999, image: '/exterior_painter.png' },
         ]);
@@ -497,8 +499,8 @@ const Home = () => {
             {/* Stats strip */}
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', borderTop: '1px solid rgba(255,255,255,0.08)', borderBottom: '1px solid rgba(255,255,255,0.08)', marginBottom: '5rem' }}>
               {[
-                { number: '1L+',  label: 'Happy Customers' },
-                { number: '4.9',  label: 'Avg. Star Rating' },
+                { number: '1L+', label: 'Happy Customers' },
+                { number: '4.9', label: 'Avg. Star Rating' },
                 { number: '500+', label: 'Verified Experts' },
               ].map((stat, i) => (
                 <div key={i} style={{ padding: '2.5rem 1rem', textAlign: 'center', borderLeft: i > 0 ? '1px solid rgba(255,255,255,0.08)' : 'none' }}>
@@ -557,13 +559,13 @@ const Home = () => {
             </div>
             <div className="testi-scroll testi-grid fade-up" style={{ display: 'flex', gap: '1.5rem', overflowX: 'auto', paddingBottom: '3.5rem', WebkitOverflowScrolling: 'touch' }}>
               {[
-                { name: 'Hemanth',      role: 'Resident of Bengaluru', stars: 5, text: 'Absolutely brilliant service! The technician arrived on time, diagnosed the issue within minutes, and was done in under 30 mins. Will definitely book again.' },
-                { name: 'Rahul Mehta',  role: 'Business Owner',        stars: 4, text: 'Good experience overall. The painting team was professional and the work quality was solid. Took a bit longer than expected, but the result was worth it.' },
-                { name: 'Sunita Kapoor',role: 'House Owner',           stars: 3, text: 'Service was okay. The plumber did fix the leak but left without cleaning up. Could improve on punctuality and communication.' },
+                { name: 'Hemanth', role: 'Resident of Bengaluru', stars: 5, text: 'Absolutely brilliant service! The technician arrived on time, diagnosed the issue within minutes, and was done in under 30 mins. Will definitely book again.' },
+                { name: 'Rahul Mehta', role: 'Business Owner', stars: 4, text: 'Good experience overall. The painting team was professional and the work quality was solid. Took a bit longer than expected, but the result was worth it.' },
+                { name: 'Sunita Kapoor', role: 'House Owner', stars: 3, text: 'Service was okay. The plumber did fix the leak but left without cleaning up. Could improve on punctuality and communication.' },
               ].map(r => (
                 <div key={r.name} style={{ flex: '0 0 300px', minWidth: '260px', background: '#fff', padding: '2rem', borderRadius: '20px', border: '1px solid #f1f5f9', boxShadow: '0 4px 16px rgba(0,0,0,0.04)' }} className="card-hover-lift stagger-card">
                   <div style={{ display: 'flex', gap: '3px', marginBottom: '0.85rem' }}>
-                    {[1,2,3,4,5].map(i => (
+                    {[1, 2, 3, 4, 5].map(i => (
                       <svg key={i} width="16" height="16" viewBox="0 0 24 24" fill={i <= r.stars ? '#f59e0b' : 'none'} stroke={i <= r.stars ? '#f59e0b' : '#d1d5db'} strokeWidth="2">
                         <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26" />
                       </svg>

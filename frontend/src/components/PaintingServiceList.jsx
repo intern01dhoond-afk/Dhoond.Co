@@ -78,18 +78,18 @@ function groupServices(services) {
 // Maps each filter key -> keywords to match service titles from DB
 const FILTER_MAP = {
   consultation: ['consultation'],
-  interior:     ['interior', '1 bhk', '2 bhk', '3 bhk', '4 bhk', 'villa'],
-  exterior:     ['exterior'],
-  commercial:   ['office', 'school', 'college', 'warehouse', 'industrial', 'commercial'],
-  coatings:     ['specialty coatings', 'wood polishing', 'waterproofing', 'grill', 'gate', 'varnish', 'damp', 'stencil', 'wallpaper', 'texture', 'designer'],
+  interior: ['interior', '1 bhk', '2 bhk', '3 bhk', '4 bhk', 'villa'],
+  exterior: ['exterior'],
+  commercial: ['office', 'school', 'college', 'warehouse', 'industrial', 'commercial'],
+  coatings: ['specialty coatings', 'wood polishing', 'waterproofing', 'grill', 'gate', 'varnish', 'damp', 'stencil', 'wallpaper', 'texture', 'designer'],
 };
 
 const FILTER_TITLES = {
   consultation: 'Consultation Services',
-  interior:     'Interior Painting',
-  exterior:     'Exterior Painting',
-  commercial:   'Commercial Painting',
-  coatings:     'Specialty & Coatings',
+  interior: 'Interior Painting',
+  exterior: 'Exterior Painting',
+  commercial: 'Commercial Painting',
+  coatings: 'Specialty & Coatings',
 };
 
 const PaintingServiceList = ({ service, onClose }) => {
@@ -113,7 +113,7 @@ const PaintingServiceList = ({ service, onClose }) => {
         const res = await fetch(`${API_URL}/api/V1/services?category=painter`);
         if (!res.ok) throw new Error('Failed to fetch services');
         const result = await res.json();
-        
+
         // Handle different possible response structures
         const data = Array.isArray(result) ? result : (result.services || result.data || []);
 
@@ -123,11 +123,38 @@ const PaintingServiceList = ({ service, onClose }) => {
 
         const filtered = keywords
           ? data.filter(s =>
-              keywords.some(kw => s.title.toLowerCase().includes(kw))
-            )
+            keywords.some(kw => s.title.toLowerCase().includes(kw))
+          )
           : data; // no filter = show all
 
-        setServices(filtered);
+        // Map service titles to distinct local images by keyword
+        const pickImage = (title = '') => {
+          const t = title.toLowerCase();
+          if (t.includes('consultation') || t.includes('expert')) return '/painting_banner.png';
+          if (t.includes('single')) return '/images/single%20wall.jpg';
+          if (t.includes('exterior') || t.includes('weather')) return '/images/exterior_painting.webp';
+          if (t.includes('texture') || t.includes('stencil')) return '/texture.png';
+          if (t.includes('commercial') || t.includes('office') || t.includes('school')) return '/images/office%20space.jpg';
+          if (t.includes('warehouse') || t.includes('industrial')) return '/images/ware%20house.jpg';
+          if (t.includes('kitchen') || t.includes('bathroom')) return '/wall2.jpg';
+          if (t.includes('1bhk') || t.includes('1 bhk')) return '/bedroom.jpg';
+          if (t.includes('2bhk') || t.includes('2 bhk')) return '/space.jpg';
+          if (t.includes('3bhk') || t.includes('3 bhk')) return '/interior.jpg';
+          if (t.includes('4bhk') || t.includes('4 bhk') || t.includes('villa')) return '/images/vila.jpg';
+          if (t.includes('primer') || t.includes('priming')) return '/priming_specialist_painter.png';
+          if (t.includes('ceiling')) return '/interior.jpg';
+          if (t.includes('touch') || t.includes('repair')) return '/touch_up_painter.png';
+          if (t.includes('spray')) return '/spray_painter.png';
+          if (t.includes('full') || t.includes('home')) return '/wall1.jpg';
+          return '/images/exterior_painting.webp'; // generic fallback — a real painting photo
+        };
+
+        const filteredWithImages = filtered.map(s => ({
+          ...s,
+          image: pickImage(s.title)
+        }));
+
+        setServices(filteredWithImages);
 
         // Expand all groups by default
         const defaults = {};
@@ -168,16 +195,16 @@ const PaintingServiceList = ({ service, onClose }) => {
       const res = await fetch(`${API_URL}/api/V1/services?category=painter`);
       if (!res.ok) throw new Error('Fetch failed');
       const result = await res.json();
-      
+
       // Handle the same response structures as fetchServices
       const data = Array.isArray(result) ? result : (result.services || result.data || []);
-      
+
       // If we are in commercial category, look for commercial consultation first
       const isCommercial = service?.filter === 'commercial';
       const targetTerm = isCommercial ? 'commercial painting' : 'painting expert';
-      
+
       let consult = data.find(s => s.title.toLowerCase().includes(targetTerm));
-      
+
       // Final fallback search
       if (!consult) {
         consult = data.find(s => s.title.toLowerCase().includes('consultation'));
@@ -263,20 +290,12 @@ const PaintingServiceList = ({ service, onClose }) => {
           position: 'relative', overflow: 'hidden',
         }}
       >
-        <div
-          style={{
-            position: 'absolute', top: '-40px', right: '-40px',
-            width: '200px', height: '200px', borderRadius: '50%',
-            background: 'rgba(255,255,255,0.05)',
-          }}
-        />
-        <div
-          style={{
-            position: 'absolute', bottom: '-60px', left: '30%',
-            width: '150px', height: '150px', borderRadius: '50%',
-            background: 'rgba(250,204,21,0.08)',
-          }}
-        />
+        <style>{`
+          .psl-hero-img { position: absolute; right: 2%; top: 50%; transform: translateY(-50%); height: 90%; width: auto; object-fit: contain; pointer-events: none; user-select: none; }
+          @media (max-width: 600px) { .psl-hero-img { height: 55px; opacity: 0.6; } }
+        `}</style>
+        {/* Decorative image — visible on right */}
+        <img src="/images/cart nav.png" alt="" aria-hidden="true" className="psl-hero-img" />
         <div style={{ position: 'relative', zIndex: 1 }}>
           <div
             style={{
@@ -390,8 +409,10 @@ const PaintingServiceList = ({ service, onClose }) => {
                         <div style={{ fontWeight: 700, fontSize: '0.95rem', color: '#111', marginBottom: '0.2rem', lineHeight: 1.3 }}>
                           {svc.title}
                         </div>
-                        <div style={{ fontSize: '0.78rem', color: '#64748b', fontWeight: 500, marginBottom: '0.4rem', lineHeight: 1.4,
-                          display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+                        <div style={{
+                          fontSize: '0.78rem', color: '#64748b', fontWeight: 500, marginBottom: '0.4rem', lineHeight: 1.4,
+                          display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden'
+                        }}>
                           {svc.description}
                         </div>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
@@ -409,10 +430,10 @@ const PaintingServiceList = ({ service, onClose }) => {
                             </>
                           )}
                           {(!isConsultation || group.key !== 'consultation') && (
-    <span style={{ background: '#fef9c3', color: '#854d0e', fontSize: '0.7rem', fontWeight: 800, padding: '2px 7px', borderRadius: '100px' }}>
-      Final price after consultation
-    </span>
-  )}
+                            <span style={{ background: '#fef9c3', color: '#854d0e', fontSize: '0.7rem', fontWeight: 800, padding: '2px 7px', borderRadius: '100px' }}>
+                              Final price after consultation
+                            </span>
+                          )}
                         </div>
                       </div>
 
@@ -426,10 +447,10 @@ const PaintingServiceList = ({ service, onClose }) => {
                                 <span style={{ width: '24px', textAlign: 'center', fontWeight: 800, fontSize: '0.95rem', color: '#111' }}>{qty}</span>
                                 <button onClick={() => updateQuantity(svc.id, 1)}
                                   disabled={qty >= 1}
-                                  style={{ 
-                                    width: '32px', height: '32px', background: 'none', border: 'none', 
-                                    cursor: qty >= 1 ? 'not-allowed' : 'pointer', fontSize: '1.1rem', 
-                                    color: qty >= 1 ? '#cbd5e1' : '#16a34a', fontWeight: 900 
+                                  style={{
+                                    width: '32px', height: '32px', background: 'none', border: 'none',
+                                    cursor: qty >= 1 ? 'not-allowed' : 'pointer', fontSize: '1.1rem',
+                                    color: qty >= 1 ? '#cbd5e1' : '#16a34a', fontWeight: 900
                                   }}>+</button>
                               </div>
                               <span style={{ fontSize: '0.65rem', color: '#16a34a', fontWeight: 800 }}>In Cart</span>

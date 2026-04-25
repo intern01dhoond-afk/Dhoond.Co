@@ -23,7 +23,7 @@ export default function Painting() {
   const [galleryActive, setGalleryActive] = useState('after');
   const [activeService, setActiveService] = useState('Painting');
   const [selectedService, setSelectedService] = useState(null);
-  
+
   // Sync URL Params -> Local Modal State
   useEffect(() => {
     const params = new URLSearchParams(location.search);
@@ -39,8 +39,6 @@ export default function Painting() {
     }
   }, [location.search]);
 
-  const cursorRef = useRef(null);
-  const followerRef = useRef(null);
   const cleanupRef = useRef([]);
 
   useEffect(() => {
@@ -54,44 +52,6 @@ export default function Painting() {
       const { gsap, ScrollTrigger } = window;
       if (!gsap) return;
       gsap.registerPlugin(ScrollTrigger);
-
-      /* ── Custom cursor: desktop pointer-device only ── */
-      if (!touch && window.matchMedia('(pointer:fine)').matches) {
-        const cur = cursorRef.current;
-        const fol = followerRef.current;
-        if (cur && fol) {
-          let mx = 0, my = 0, fx = 0, fy = 0, visible = false;
-          let rafId;
-          const onMove = (e) => {
-            if (!visible) { gsap.to([cur, fol], { opacity: 1, duration: .3 }); visible = true; }
-            mx = e.clientX; my = e.clientY;
-            gsap.to(cur, { x: mx, y: my, duration: .1, ease: 'power2.out' });
-          };
-          document.addEventListener('mousemove', onMove);
-          const raf = () => {
-            fx += (mx - fx) * .09; fy += (my - fy) * .09;
-            gsap.set(fol, { x: fx, y: fy });
-            rafId = requestAnimationFrame(raf);
-          };
-          rafId = requestAnimationFrame(raf);
-
-          const hoverEls = document.querySelectorAll('a,button,.color-card,.gitem,.process-card,.witem');
-          const addHover = (el) => {
-            const enter = () => { document.body.classList.add('cursor-hover'); gsap.to(cur, { scale: .5, duration: .2 }); };
-            const leave = () => { document.body.classList.remove('cursor-hover'); gsap.to(cur, { scale: 1, duration: .2 }); };
-            el.addEventListener('mouseenter', enter);
-            el.addEventListener('mouseleave', leave);
-            cleanupRef.current.push(() => { el.removeEventListener('mouseenter', enter); el.removeEventListener('mouseleave', leave); });
-          };
-          hoverEls.forEach(addHover);
-
-          cleanupRef.current.push(() => {
-            document.removeEventListener('mousemove', onMove);
-            cancelAnimationFrame(rafId);
-            document.body.classList.remove('cursor-hover');
-          });
-        }
-      }
 
       /* ── Scroll progress bar ── */
       const onScroll = () => {
@@ -211,7 +171,7 @@ export default function Painting() {
   }, []);
 
   const services = [
-    { n: 'Painting', p: 'from ₹99' },
+    { n: 'Consultation', p: 'at just ₹99' },
   ];
 
   return (
@@ -228,22 +188,10 @@ export default function Painting() {
           overflow-x: hidden;
           position: relative;
         }
-        /* Cursor only on true pointer devices */
-        @media (pointer: fine) {
-          .p-page { cursor: none; }
-          body.cursor-hover #p-cursor { background: #2563eb; }
-          body.cursor-hover #p-follower { width: 54px; height: 54px; opacity: .18; }
-        }
-        @media (pointer: coarse) {
-          #p-cursor, #p-follower { display: none !important; }
-        }
 
         /* ── Scroll progress ── */
         #paint-progress { position: fixed; top: 0; left: 0; height: 3px; background: linear-gradient(90deg, #2563eb, #facc15); z-index: 9999; width: 0; pointer-events: none; border-radius: 0 2px 2px 0; }
 
-        /* ── Cursor (desktop only) ── */
-        #p-cursor { position: fixed; width: 12px; height: 12px; border-radius: 50%; background: #2563eb; pointer-events: none; z-index: 9999; transform: translate(-50%,-50%); mix-blend-mode: multiply; opacity: 0; will-change: transform; }
-        #p-follower { position: fixed; width: 36px; height: 36px; border-radius: 50%; border: 1.5px solid #2563eb; pointer-events: none; z-index: 9998; transform: translate(-50%,-50%); opacity: 0; transition: width .3s, height .3s; will-change: transform; }
 
         /* ── HERO ── */
         .p-hero {
@@ -321,9 +269,7 @@ export default function Painting() {
           transition: color .3s; min-height: 52px;
           font-family: 'Inter', sans-serif;
         }
-        .p-btn-fill { position: absolute; inset: 0; background: #2563eb; transform: scaleX(0); transform-origin: left; transition: transform .38s cubic-bezier(.76,0,.24,1); border-radius: inherit; }
-        .p-btn-primary:hover { color: #fff; }
-        .p-btn-primary:hover .p-btn-fill { transform: scaleX(1); }
+        .p-btn-primary:hover { background: #2563eb; color: #fff; transform: translateY(-2px); box-shadow: 0 12px 24px rgba(37,99,235,0.25); }
         .p-btn-primary span, .p-btn-primary svg { position: relative; z-index: 1; }
         .p-btn-outline {
           color: #fff; padding: 14px 22px; border-radius: 100px; font-size: 14px;
@@ -527,7 +473,7 @@ export default function Painting() {
         }
         #p-ctaEl h2 { font-family: 'Inter', sans-serif; font-size: clamp(28px, 5vw, 52px); font-weight: 900; line-height: 1.1; color: #fff; margin: 0; }
         #p-ctaEl h2 em { color: #facc15; font-style: italic; }
-        #p-ctaEl > p { font-size: 15px; color: rgba(255,255,255,0.6); margin: 0; }
+        #p-ctaEl p { font-size: 15px; color: rgba(255,255,255,0.6); margin: 0; }
         .p-cta-btns { display: flex; flex-direction: column; gap: 14px; }
         .p-btn-cta {
           background: #facc15; color: #111; padding: 16px 36px; border-radius: 100px;
@@ -584,9 +530,7 @@ export default function Painting() {
       `}</style>
 
       <div id="paint-progress" />
-      {/* Cursor — hidden on touch via CSS */}
-      <div id="p-cursor" ref={cursorRef} />
-      <div id="p-follower" ref={followerRef} />
+
 
 
 
@@ -625,7 +569,6 @@ export default function Painting() {
 
             <div className="p-hero-actions">
               <button onClick={() => navigate(`?service=${encodeURIComponent('Book your Consultation')}&sub=${encodeURIComponent('Talk to an expert')}`)} className="p-btn-primary">
-                <span className="p-btn-fill" />
                 <span>Book a consultant</span>
               </button>
               <a href="#p-gallery" className="p-btn-outline">View Our Work</a>
@@ -658,11 +601,11 @@ export default function Painting() {
         <div style={{ background: '#fff', paddingTop: '12px', paddingBottom: '8px' }}>
           <div className="p-services-strip" id="p-sstrip" role="list">
             {[
-              { img: '/consultation.png',       title: 'Book Consultation',  sub: 'Talk to an expert — ₹99',                               filter: 'consultation', badge: 'Popular' },
-              { img: '/commercial_painting.jpg', title: 'Commercial Painting', sub: 'Offices, Schools & warehouses',                         filter: 'commercial',   badge: null },
-              { img: '/interior.jpg',            title: 'Interior Painting',   sub: 'Walls, ceilings & trims',                               filter: 'interior',     badge: null },
-              { img: '/exterior_painting.webp',  title: 'Exterior Painting',   sub: 'Weather-resistant finishes',                            filter: 'exterior',     badge: null },
-              { img: '/grill_gate.png',          title: 'Specialty Coatings',  sub: 'Epoxy for Grills, Gates & Doors',                       filter: 'coatings',     badge: null },
+              { img: '/consultation.png', title: 'Book Consultation', sub: 'Talk to an expert — ₹99', filter: 'consultation', badge: 'Popular' },
+              { img: '/commercial_painting.jpg', title: 'Commercial Painting', sub: 'Offices, Schools & warehouses', filter: 'commercial', badge: null },
+              { img: '/interior.jpg', title: 'Interior Painting', sub: 'Walls, ceilings & trims', filter: 'interior', badge: null },
+              { img: '/exterior_painting.webp', title: 'Exterior Painting', sub: 'Weather-resistant finishes', filter: 'exterior', badge: null },
+              { img: '/grill_gate.png', title: 'Specialty Coatings', sub: 'Epoxy for Grills, Gates & Doors', filter: 'coatings', badge: null },
             ].map(s => (
               <div key={s.title} className="p-service-item" role="listitem" style={{ cursor: 'pointer', position: 'relative' }} onClick={() => {
                 navigate(`?service=${encodeURIComponent(s.title)}&sub=${encodeURIComponent(s.sub)}&filter=${s.filter}`);
@@ -770,10 +713,10 @@ export default function Painting() {
           </div>
           <div className="p-gallery-grid">
             {[
-              { bg: 'url(/space.jpg)', title: 'Living Room Makeover', loc: 'Nagpur', tag: 'Luxury', price: '₹18,000' },
-              { bg: galleryActive === 'before' ? 'url(/wall2.jpg)' : 'url(/bedroom_painting.png)', title: 'Bedroom Retreat', loc: 'Hyderabad', tag: galleryActive === 'before' ? 'Before' : 'After', price: '₹12,000' },
-              { bg: 'url(/interior.jpg)', title: 'Full Home Painting', loc: 'Bengaluru', tag: 'Elite', price: '₹45,000' },
-              { bg: 'url(/exterior.jpg)', title: 'Exterior Excellence', loc: 'Mumbai', tag: 'Premium', price: '₹32,000' },
+              { bg: 'url(/Gemini_Generated_Image_nixczynixczynixc.png)', title: 'Living Room Makeover', loc: 'Nagpur', tag: 'Luxury', price: '₹18,000' },
+              { bg: galleryActive === 'before' ? 'url(/wall2.jpg)' : 'url(/images/interior.jpg)', title: 'Bedroom Retreat', loc: 'Bengaluru, HSR Layout Sector 1', tag: galleryActive === 'before' ? 'Before' : 'After', price: '₹12,000' },
+              { bg: 'url(/space.jpg)', title: 'Full Home Painting', loc: 'Bengaluru, Koramangala', tag: 'Elite', price: '₹45,000' },
+              { bg: 'url(/Gemini_Generated_Image_nixczynixczynixc.png)', title: 'Exterior Excellence', loc: 'Nagpur, Ramdaspeth', tag: 'Premium', price: '₹32,000' },
             ].map(g => (
               <div key={g.title} className="gitem" tabIndex={0} role="img" aria-label={`${g.title}, ${g.loc}`}>
                 <div className="p-gbg" style={{ background: `${g.bg} center/cover no-repeat`, filter: galleryActive === 'before' ? 'grayscale(0.4) contrast(1.05)' : 'none', transition: 'filter .6s' }} />
@@ -782,7 +725,7 @@ export default function Painting() {
                 <div className="p-glabel">
                   <span>{g.title}</span>
                   <p>
-                    <svg className="p-g-loc-icon" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.8)" strokeWidth="2"><path d="M12 21s-8-5.5-8-11a8 8 0 1 1 16 0c0 5.5-8 11-8 11z"/><circle cx="12" cy="10" r="2"/></svg>
+                    <svg className="p-g-loc-icon" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.8)" strokeWidth="2"><path d="M12 21s-8-5.5-8-11a8 8 0 1 1 16 0c0 5.5-8 11-8 11z" /><circle cx="12" cy="10" r="2" /></svg>
                     {g.loc} &nbsp;·&nbsp; {g.price}
                   </p>
                 </div>
@@ -800,9 +743,9 @@ export default function Painting() {
           </div>
           <div className="p-tgrid">
             {[
-              { name: 'Hemanth', role: 'Resident of Bengaluru', text: 'The painting team arrived exactly on time, covered all furniture, and the finish is just flawless. Our living room looks like a magazine spread now!', featured: true },
-              { name: 'Rahul Mehta', role: 'Business Owner', text: 'Booked a full house painting. The team was clean, fast, and the finish is premium quality.' },
-              { name: 'Sunita Kapoor', role: 'House Owner', text: 'A waterproofing issue that\'d lingered for 2 years — Dhoond fixed it instantly.' },
+              { name: 'Hemanth', role: 'HSR Layout, Bengaluru', text: 'Absolutely brilliant painting service! The team arrived on time, covered all furniture, and finished the job ahead of schedule. The walls look flawless!', featured: true },
+              { name: 'Rahul Mehta', role: 'Business Owner, Bengaluru', text: 'Good experience overall. The painting team was professional and the work quality was solid. The final finish on our exterior walls is exactly what we wanted.' },
+              { name: 'Sunita Kapoor', role: 'House Owner, Nagpur', text: 'Amazing transformation! The painters fixed our long-standing dampness issues and the new interior colors look stunning. Highly recommend for home painting.' },
             ].map(t => (
               <div key={t.name} className={`p-tcard${t.featured ? ' p-tcard-featured' : ''}`}>
                 <div className="p-tstars">★★★★★</div>
@@ -860,10 +803,10 @@ export default function Painting() {
         <div className="mobile-sticky-cta" role="complementary" aria-label="Book now">
           <button onClick={() => navigate(`?service=${encodeURIComponent('Book your Consultation')}&sub=${encodeURIComponent('Talk to an expert')}`)} className="mobile-sticky-cta-call" style={{ width: '100%', margin: 0, border: 'none', background: '#facc15' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-               <div style={{ width: '42px', height: '42px', background: 'rgba(0,0,0,0.1)', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                 <svg viewBox="0 0 24 24" stroke="#111" fill="none" width="20" height="20" strokeWidth="2.5"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2z" /></svg>
-               </div>
-               <div style={{ textAlign: 'left' }}>
+              <div style={{ width: '42px', height: '42px', background: 'rgba(0,0,0,0.1)', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <svg viewBox="0 0 24 24" stroke="#111" fill="none" width="20" height="20" strokeWidth="2.5"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2z" /></svg>
+              </div>
+              <div style={{ textAlign: 'left' }}>
                 <div style={{ fontWeight: 800, fontSize: '1.05rem', color: '#111' }}>Book a Service</div>
                 <div style={{ fontSize: '0.8rem', color: 'rgba(0,0,0,0.6)', marginTop: '2px' }}>Book your Consultation</div>
               </div>
@@ -878,9 +821,9 @@ export default function Painting() {
       </div>
 
       {selectedService && (
-        <PaintingServiceList 
-          service={selectedService} 
-          onClose={() => navigate(location.pathname)} 
+        <PaintingServiceList
+          service={selectedService}
+          onClose={() => navigate(location.pathname)}
         />
       )}
     </>

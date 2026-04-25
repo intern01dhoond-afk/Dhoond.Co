@@ -484,8 +484,23 @@ const Checkout = () => {
   return (
     <div style={{ background: '#fafafa', minHeight: '100vh', paddingBottom: '4rem', fontFamily: 'Inter, sans-serif' }}>
       {/* Header */}
-      <div style={{ background: '#fff', borderBottom: '1px solid #eee', padding: '1.25rem 5%', display: 'flex', alignItems: 'center', position: 'sticky', top: 0, zIndex: 100 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', fontWeight: 800, fontSize: '1.2rem', color: '#111', maxWidth: '1200px', margin: '0 auto', width: '100%' }}>
+      <style>{`
+        .checkout-header-img { position: absolute; right: 2%; top: 50%; transform: translateY(-50%); height: 90%; width: auto; object-fit: contain; pointer-events: none; user-select: none; }
+        @media (max-width: 600px) { .checkout-header-img { height: 50px; opacity: 0.6; } }
+      `}</style>
+      {/* Header — dark background + image pinned to the right */}
+      <div style={{
+        position: 'sticky', top: 0, zIndex: 100, overflow: 'hidden',
+        padding: '1.25rem 5%',
+        background: 'linear-gradient(135deg,#0f172a 0%,#1e3a8a 60%,#2563eb 100%)',
+      }}>
+        <img
+          src="/images/cart nav.png"
+          alt=""
+          aria-hidden="true"
+          className="checkout-header-img"
+        />
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', fontWeight: 800, fontSize: '1.2rem', color: '#fff', maxWidth: '1200px', margin: '0 auto', width: '100%', position: 'relative', zIndex: 1 }}>
           Checkout
         </div>
       </div>

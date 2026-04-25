@@ -127,20 +127,40 @@ const Cart = () => {
 
   return (
     <div style={{ background: 'linear-gradient(160deg,#f0f4ff 0%,#f8fafc 60%)', minHeight: '100vh', paddingBottom: '5rem', fontFamily: "'Inter',sans-serif" }}>
-      {/* Header */}
-      <div style={{ background: 'linear-gradient(135deg,#0f172a 0%,#1e3a8a 60%,#2563eb 100%)', padding: '2.5rem 5% 4rem', color: '#fff', position: 'relative', overflow: 'hidden' }}>
-        <div style={{ position: 'absolute', top: '-60px', right: '-60px', width: '260px', height: '260px', borderRadius: '50%', background: 'rgba(96,165,250,0.10)', pointerEvents: 'none' }} />
-        <div style={{ maxWidth: '860px', margin: '0 auto', position: 'relative' }}>
-          <div style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.5)', fontWeight: 600, marginBottom: '1rem' }}>
-            <Link to="/" style={{ color: 'rgba(255,255,255,0.5)', textDecoration: 'none' }}>Home</Link> <span style={{ opacity: 0.4 }}>/</span> <span style={{ color: '#fff' }}>Cart</span>
+      <style>{`
+        .cart-header-img { position: absolute; right: 2%; top: 50%; transform: translateY(-50%); height: 90%; width: auto; object-fit: contain; pointer-events: none; user-select: none; }
+        @media (max-width: 600px) { .cart-header-img { height: 60px; opacity: 0.6; } }
+      `}</style>
+      {/* Header — dark background + image pinned to the right */}
+      <div style={{
+        position: 'relative', overflow: 'hidden',
+        padding: 'clamp(1.25rem, 4vw, 2.5rem) 5% clamp(2.5rem, 6vw, 4rem)',
+        color: '#fff',
+        background: 'linear-gradient(135deg,#0f172a 0%,#1e3a8a 60%,#2563eb 100%)',
+      }}>
+        <img
+          src="/images/cart nav.png"
+          alt=""
+          aria-hidden="true"
+          className="cart-header-img"
+        />
+        <div style={{ maxWidth: '860px', margin: '0 auto', position: 'relative', zIndex: 1 }}>
+          <div style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.6)', fontWeight: 600, marginBottom: '1rem' }}>
+            <Link to="/" style={{ color: 'rgba(255,255,255,0.6)', textDecoration: 'none' }}>Home</Link>
+            <span style={{ opacity: 0.4, margin: '0 0.4rem' }}>/</span>
+            <span style={{ color: '#fff' }}>Cart</span>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '0.5rem' }}>
-            <div style={{ width: '52px', height: '52px', background: 'rgba(255,255,255,0.12)', backdropFilter: 'blur(12px)', borderRadius: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid rgba(255,255,255,0.2)' }}>
+            <div style={{ width: '52px', height: '52px', background: 'rgba(255,255,255,0.12)', backdropFilter: 'blur(12px)', borderRadius: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid rgba(255,255,255,0.25)' }}>
               <ShoppingBag size={26} color="#fff" />
             </div>
-            <h1 style={{ fontSize: 'clamp(1.8rem,5vw,2.6rem)', margin: 0, fontWeight: 900, letterSpacing: '-0.03em' }}>My Cart</h1>
+            <h1 style={{ fontSize: 'clamp(1.4rem,5vw,2.6rem)', margin: 0, fontWeight: 900, letterSpacing: '-0.03em' }}>My Cart</h1>
           </div>
-          {cartItems.length > 0 && <p style={{ margin: 0, color: 'rgba(255,255,255,0.6)', fontWeight: 600, fontSize: '0.9rem' }}>{cartItems.length} item{cartItems.length !== 1 ? 's' : ''} · {categoryKeys.length} service categor{categoryKeys.length !== 1 ? 'ies' : 'y'}</p>}
+          {cartItems.length > 0 && (
+            <p style={{ margin: 0, color: 'rgba(255,255,255,0.75)', fontWeight: 600, fontSize: '0.9rem' }}>
+              {cartItems.length} item{cartItems.length !== 1 ? 's' : ''} · {categoryKeys.length} service categor{categoryKeys.length !== 1 ? 'ies' : 'y'}
+            </p>
+          )}
         </div>
       </div>
 

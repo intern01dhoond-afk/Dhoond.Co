@@ -48,12 +48,12 @@ const Footer = () => {
                   { name: 'Youtube', url: 'https://www.youtube.com/@Dhoond/shorts', color: '#ff0000', path: 'M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z' },
                 ].map((s, idx) => (
                   <a key={idx} href={s.url} target="_blank" rel="noopener noreferrer" style={{ width: '40px', height: '40px', background: 'rgba(255,255,255,0.08)', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.3s ease', textDecoration: 'none' }}
-                    onMouseEnter={e => { 
+                    onMouseEnter={e => {
                       e.currentTarget.style.background = s.color;
                       e.currentTarget.style.transform = 'translateY(-4px)';
                       e.currentTarget.style.boxShadow = `0 8px 20px ${s.color}44`;
                     }}
-                    onMouseLeave={e => { 
+                    onMouseLeave={e => {
                       e.currentTarget.style.background = 'rgba(255,255,255,0.08)';
                       e.currentTarget.style.transform = 'translateY(0)';
                       e.currentTarget.style.boxShadow = 'none';
@@ -72,26 +72,26 @@ const Footer = () => {
       {/* Main links section */}
       <div style={{ maxWidth: '1400px', margin: '0 auto', padding: '5rem 5% 4rem' }}>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4rem' }}>
-          
+
           {/* Brand Column */}
           <div style={{ flex: '1 1 300px', maxWidth: '400px' }} className="mobile-text-center">
             <Link to="/" style={{ display: 'inline-block', marginBottom: '1.25rem' }}>
-              <img src="/logo.png" alt="Dhoond" style={{ height: '70px', width: 'auto', objectFit: 'contain', filter: 'brightness(0) invert(1)', transition: 'transform 0.3s' }} 
+              <img src="/images/cart%20nav.png" alt="Dhoond" style={{ height: '100px', width: 'auto', objectFit: 'contain', transition: 'transform 0.3s' }}
                 onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.05)'}
                 onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'}
               />
             </Link>
             <p style={{ color: '#94a3b8', fontSize: '0.9rem', lineHeight: 1.8, fontWeight: 500, marginBottom: '2.5rem' }}>
-              India's fastest growing premium home services marketplace. Quality craftsmanship delivered to your doorstep.
+              India's fastest growing premium Commercial and home services marketplace. Quality craftsmanship delivered to your doorstep.
             </p>
           </div>
 
           {/* Links Columns - Responsive Grid */}
-          <div style={{ 
-            flex: '2 1 500px', 
-            display: 'grid', 
-            gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', 
-            gap: '2.5rem' 
+          <div style={{
+            flex: '2 1 500px',
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))',
+            gap: '2.5rem'
           }} className="mobile-text-center">
             {[
               { title: 'Company', links: ['About Us', 'Careers', 'Blog', 'Press'] },
@@ -108,9 +108,9 @@ const Footer = () => {
                     const isPainting = l.toLowerCase() === 'painting' && col.title === 'Services';
                     const isOtherService = col.title === 'Services' && !isPainting;
                     return (
-                      <Link 
-                        key={l} 
-                        to={isPainting ? "/painting" : "#"} 
+                      <Link
+                        key={l}
+                        to={isPainting ? "/painting" : "#"}
                         onClick={(e) => {
                           if (isOtherService) { e.preventDefault(); openComingSoon(); }
                         }}
