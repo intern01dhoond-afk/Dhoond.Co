@@ -3,7 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import {
   Trash2, ArrowRight, ShieldCheck, ShoppingBag, ChevronLeft,
-  Sparkles, X, Phone, User, Lock, Package, Info
+  Sparkles, X, Phone, User, Lock, Package, Info, CheckCircle
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
@@ -27,6 +27,15 @@ const Cart = () => {
   const { cartItems, removeFromCart, updateQuantity, setCheckoutCategory } = useCart();
   const { login, isAuthenticated, loading: authLoading } = useAuth();
   const navigate = useNavigate();
+
+  // Responsive state
+  const [isMobile, setIsMobile] = React.useState(window.innerWidth < 1024);
+
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 1024);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   // Login Modal States
   const [showLogin, setShowLogin] = React.useState(false);
@@ -126,134 +135,239 @@ const Cart = () => {
   };
 
   return (
-    <div style={{ background: '#f8fafc', minHeight: '100vh', paddingBottom: '5rem', fontFamily: "'Inter', sans-serif" }}>
+    <div style={{ background: '#f8fafc', minHeight: '100vh', paddingBottom: '5rem', fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif" }}>
       <style>{`
-        .cart-header-img { position: absolute; right: 2%; top: 50%; transform: translateY(-50%); height: 110%; width: auto; object-fit: contain; pointer-events: none; user-select: none; opacity: 0.9; }
-        .cart-card { background: #fff; border-radius: 24px; border: 1px solid rgba(226, 232, 240, 0.8); box-shadow: 0 10px 40px -10px rgba(0,0,0,0.04); overflow: hidden; transition: transform 0.3s ease, box-shadow 0.3s ease; }
-        .cart-card:hover { box-shadow: 0 20px 40px -10px rgba(0,0,0,0.08); transform: translateY(-2px); }
-        .checkout-btn { background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); color: #fff; border: none; padding: 1rem 2rem; border-radius: 16px; font-weight: 800; font-size: 1rem; cursor: pointer; display: flex; align-items: center; gap: 0.75rem; box-shadow: 0 8px 25px rgba(37,99,235,0.3); transition: all 0.25s; }
-        .checkout-btn:hover { transform: translateY(-2px); box-shadow: 0 12px 30px rgba(37,99,235,0.4); }
-        .qty-btn { background: #f1f5f9; border: none; width: 32px; height: 32px; border-radius: 10px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 1.2rem; font-weight: 600; color: #475569; transition: all 0.2s; }
-        .qty-btn:hover { background: #e2e8f0; color: #0f172a; }
-        .qty-btn.plus { background: #eff6ff; color: #2563eb; }
-        .qty-btn.plus:hover { background: #dbeafe; }
-        .trust-badge { display: flex; align-items: center; gap: 0.5rem; background: #fff; padding: 0.6rem 1rem; border-radius: 99px; border: 1px solid #f1f5f9; box-shadow: 0 2px 10px rgba(0,0,0,0.02); color: #475569; font-size: 0.8rem; font-weight: 600; }
-        @media (max-width: 600px) { 
-          .cart-header-img { height: 70px; opacity: 0.4; } 
-          .checkout-btn { width: 100%; justify-content: center; } 
-          .trust-badge { padding: 0.5rem 0.8rem; font-size: 0.75rem; } 
-          .cart-item-row { flex-wrap: wrap !important; }
-          .cart-item-controls { width: 100% !important; justify-content: space-between !important; margin-top: 0.5rem !important; border-top: 1px solid #f1f5f9 !important; padding-top: 0.75rem !important; }
+        * { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important; }
+        .cart-grid { display: grid; grid-template-columns: 1fr 360px; gap: 2.5rem; align-items: start; }
+        @media (max-width: 992px) {
+          .cart-grid { grid-template-columns: 1fr !important; gap: 1.75rem; }
+        }
+        .cart-card { background: #fff; border-radius: 24px; border: 1px solid rgba(226, 232, 240, 0.8); box-shadow: 0 4px 20px rgba(0,0,0,0.02); overflow: hidden; transition: all 0.3s ease; }
+        .cart-card:hover { box-shadow: 0 12px 30px rgba(0,0,0,0.04); }
+        .checkout-btn { background: #0a57d0; color: #fff; border: none; padding: 1rem 1.75rem; border-radius: 16px; font-weight: 500; font-size: 0.95rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 0.5rem; box-shadow: 0 4px 12px rgba(10,87,208,0.15); transition: all 0.25s; }
+        .checkout-btn:hover { background: #0845a3; box-shadow: 0 6px 20px rgba(10,87,208,0.25); }
+        .qty-btn { background: transparent; border: none; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 1.1rem; font-weight: 600; color: #475569; transition: all 0.2s; }
+        .qty-btn:hover { color: #0f172a; }
+        .qty-btn.plus { color: #0a57d0; }
+        .qty-btn.plus:hover { color: #0845a3; }
+        .sidebar-card { background: #fff; border-radius: 24px; border: 1px solid rgba(226, 232, 240, 0.8); padding: 1.75rem; box-shadow: 0 4px 20px rgba(0,0,0,0.02); }
+        .trust-item { display: flex; align-items: flex-start; gap: 1rem; padding: 0.85rem 0; }
+        .trust-item:not(:last-child) { border-bottom: 1px solid #f1f5f9; }
+        .trust-icon-wrapper { width: 36px; height: 36px; border-radius: 50%; background: #eff6ff; display: flex; align-items: center; justify-content: center; color: #0a57d0; flex-shrink: 0; }
+        
+        @keyframes slideUp {
+          from { transform: translateY(20px); opacity: 0; }
+          to { transform: translateY(0); opacity: 1; }
         }
       `}</style>
       
-      {/* Header */}
-      <div style={{
-        position: 'relative', overflow: 'hidden',
-        padding: 'clamp(2rem, 5vw, 3rem) 5% clamp(3rem, 7vw, 5rem)',
-        color: '#fff',
-        background: 'linear-gradient(135deg, #0f172a 0%, #1e3a8a 50%, #2563eb 100%)',
-      }}>
-        <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, background: 'radial-gradient(circle at top right, rgba(255,255,255,0.1) 0%, transparent 60%)' }} />
-        <img src="/images/cart nav.png" alt="" aria-hidden="true" className="cart-header-img" />
-        
-        <div style={{ maxWidth: '860px', margin: '0 auto', position: 'relative', zIndex: 1 }}>
-          <div style={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.7)', fontWeight: 600, marginBottom: '1.25rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            <Link to="/" style={{ color: 'rgba(255,255,255,0.7)', textDecoration: 'none', transition: 'color 0.2s' }} onMouseEnter={e => e.target.style.color = '#fff'} onMouseLeave={e => e.target.style.color = 'rgba(255,255,255,0.7)'}>Home</Link>
-            <span style={{ opacity: 0.5 }}>/</span>
-            <span style={{ color: '#fff' }}>Cart</span>
-          </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem', marginBottom: '0.75rem' }}>
-            <div style={{ width: '56px', height: '56px', background: 'rgba(255,255,255,0.1)', backdropFilter: 'blur(10px)', borderRadius: '18px', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid rgba(255,255,255,0.2)' }}>
-              <ShoppingBag size={28} color="#fff" strokeWidth={2.5} />
+      {/* Step Progress Tracker */}
+      <div style={{ padding: '2rem 5% 1.75rem', background: '#ffffff', borderBottom: '1px solid #f1f5f9', boxShadow: '0 2px 10px rgba(0,0,0,0.01)' }}>
+        <div style={{ maxWidth: '1280px', margin: '0 auto' }}>
+          {/* Breadcrumbs & Back Link Container */}
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', flexWrap: 'wrap', gap: '0.75rem' }}>
+            <div style={{ fontSize: '0.85rem', color: '#64748b', fontWeight: 500, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <Link to="/" style={{ color: '#64748b', textDecoration: 'none', transition: 'color 0.2s' }} onMouseEnter={e => e.target.style.color = '#0f172a'} onMouseLeave={e => e.target.style.color = '#64748b'}>Home</Link>
+              <span style={{ opacity: 0.5 }}>/</span>
+              <span style={{ color: '#0f172a', fontWeight: 500 }}>Cart</span>
             </div>
-            <h1 style={{ fontSize: 'clamp(1.75rem, 5vw, 2.75rem)', margin: 0, fontWeight: 900, letterSpacing: '-0.02em', textShadow: '0 2px 10px rgba(0,0,0,0.1)' }}>My Cart</h1>
+            <Link to="/painting?service=Expert%20Consultation%20on%20Site&sub=Talk%20to%20an%20expert%20%E2%80%94%20%E2%82%B949&filter=consultation" style={{ color: '#0a57d0', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '0.25rem', fontWeight: 500, fontSize: '0.9rem' }} onMouseEnter={e => e.target.style.color = '#0845a3'} onMouseLeave={e => e.target.style.color = '#0a57d0'}>
+              <ChevronLeft size={16} strokeWidth={2.5} /> Continue Shopping
+            </Link>
           </div>
-          {cartItems.length > 0 && (
-            <p style={{ margin: 0, color: 'rgba(255,255,255,0.8)', fontWeight: 500, fontSize: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <span style={{ background: 'rgba(255,255,255,0.15)', padding: '0.2rem 0.6rem', borderRadius: '6px', fontWeight: 700 }}>{cartItems.length}</span> items across {categoryKeys.length} categories
-            </p>
-          )}
+
+          {/* Title and Stepper Container */}
+          <div style={{ 
+            display: 'flex', 
+            flexDirection: isMobile ? 'column' : 'row', 
+            justifyContent: 'space-between', 
+            alignItems: isMobile ? 'flex-start' : 'center', 
+            gap: '1rem' 
+          }}>
+            <h1 style={{ fontSize: '2rem', fontWeight: 600, color: '#0f172a', margin: 0, letterSpacing: '-0.03em' }}>My Cart</h1>
+            
+            {/* Horizontal Stepper */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginTop: isMobile ? '0.25rem' : 0 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '26px', height: '26px', borderRadius: '50%', background: '#0a57d0', color: '#fff', fontSize: '0.75rem', fontWeight: 500 }}>1</span>
+                <span style={{ fontSize: '0.9rem', fontWeight: 500, color: '#0a57d0' }}>Cart</span>
+              </div>
+              <div style={{ width: '30px', height: '2px', background: '#e2e8f0' }} />
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '26px', height: '26px', borderRadius: '50%', background: '#f1f5f9', color: '#64748b', fontSize: '0.75rem', fontWeight: 500, border: '1px solid #e2e8f0' }}>2</span>
+                <span style={{ fontSize: '0.9rem', fontWeight: 500, color: '#64748b' }}>Details</span>
+              </div>
+              <div style={{ width: '30px', height: '2px', background: '#e2e8f0' }} />
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '26px', height: '26px', borderRadius: '50%', background: '#f1f5f9', color: '#64748b', fontSize: '0.75rem', fontWeight: 500, border: '1px solid #e2e8f0' }}>3</span>
+                <span style={{ fontSize: '0.9rem', fontWeight: 500, color: '#64748b' }}>Payment</span>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
-      <div style={{ maxWidth: '860px', margin: '-2.5rem auto 0', padding: '0 5%', position: 'relative', zIndex: 10 }}>
+      {/* Main Content Area */}
+      <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '2.5rem 5% 0' }}>
         {cartItems.length === 0 ? (
-          <div style={{ textAlign: 'center', padding: '5rem 2rem', background: '#fff', borderRadius: '24px', border: '1px solid #f1f5f9', boxShadow: '0 10px 40px -10px rgba(0,0,0,0.05)' }}>
+          <div style={{ textAlign: 'center', padding: '5rem 2rem', background: '#fff', borderRadius: '24px', border: '1px solid #f1f5f9', boxShadow: '0 10px 40px -10px rgba(0,0,0,0.05)', maxWidth: '600px', margin: '0 auto' }}>
             <div style={{ width: '96px', height: '96px', borderRadius: '50%', background: 'linear-gradient(135deg, #f8fafc, #f1f5f9)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 2rem', border: '4px solid #fff', boxShadow: '0 10px 20px rgba(0,0,0,0.03)' }}>
               <Package size={40} color="#94a3b8" strokeWidth={1.5} />
             </div>
-            <h2 style={{ fontSize: '1.75rem', fontWeight: 800, color: '#0f172a', marginBottom: '0.75rem' }}>Your cart is empty</h2>
+            <h2 style={{ fontSize: '1.75rem', fontWeight: 600, color: '#0f172a', marginBottom: '0.75rem' }}>Your cart is empty</h2>
             <p style={{ color: '#64748b', margin: '0 0 2.5rem', fontSize: '1.05rem', maxWidth: '300px', marginInline: 'auto' }}>Looks like you haven't added any services to your cart yet.</p>
-            <button onClick={() => navigate('/')} style={{ background: 'linear-gradient(135deg, #2563eb, #1d4ed8)', color: '#fff', padding: '1rem 2.5rem', borderRadius: '16px', fontWeight: 800, border: 'none', cursor: 'pointer', boxShadow: '0 8px 25px rgba(37,99,235,0.3)', fontSize: '1.05rem', transition: 'transform 0.2s, box-shadow 0.2s' }} onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 12px 30px rgba(37,99,235,0.4)'; }} onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 8px 25px rgba(37,99,235,0.3)'; }}>Explore Services</button>
+            <button onClick={() => navigate('/')} style={{ background: 'linear-gradient(135deg, #2563eb, #1d4ed8)', color: '#fff', padding: '1rem 2.5rem', borderRadius: '16px', fontWeight: 600, border: 'none', cursor: 'pointer', boxShadow: '0 8px 25px rgba(37,99,235,0.3)', fontSize: '1.05rem', transition: 'transform 0.2s, box-shadow 0.2s' }} onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 12px 30px rgba(37,99,235,0.4)'; }} onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 8px 25px rgba(37,99,235,0.3)'; }}>Explore Services</button>
           </div>
         ) : (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '2.5rem' }}>
-            {categoryKeys.map((cat) => {
-              const items = groups[cat];
-              const subtotal = items.reduce((acc, item) => acc + (item.discountPrice * item.quantity), 0);
-              
-              return (
-                <div key={cat} className="cart-card">
-                  <div style={{ padding: '1.25rem 1.75rem', background: '#fff', borderBottom: '1px solid #f1f5f9', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <h3 style={{ margin: 0, fontSize: '1.15rem', fontWeight: 800, color: '#0f172a', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                      <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#2563eb' }} />
-                      {getCategoryLabel(cat)}
-                    </h3>
-                    <span style={{ fontSize: '0.85rem', fontWeight: 700, color: '#2563eb', background: '#eff6ff', padding: '0.3rem 0.75rem', borderRadius: '99px' }}>{items.length} items</span>
-                  </div>
-                  
-                  <div style={{ padding: '0 1.75rem' }}>
-                    {items.map((item, idx) => (
-                      <div key={item.id} className="cart-item-row" style={{ display: 'flex', alignItems: 'center', gap: '1.25rem', padding: '1.5rem 0', borderBottom: idx === items.length - 1 ? 'none' : '1px solid #f1f5f9' }}>
-                        <div style={{ width: '70px', height: '70px', borderRadius: '16px', background: '#f8fafc', overflow: 'hidden', border: '1px solid #e2e8f0', flexShrink: 0 }}>
-                          <img src={item.image} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                        </div>
-                        <div style={{ flex: 1 }}>
-                          <h4 style={{ margin: '0 0 0.4rem', fontSize: '1.05rem', fontWeight: 700, color: '#0f172a', lineHeight: 1.3 }}>{item.title}</h4>
-                          <p style={{ margin: 0, fontSize: '1.1rem', fontWeight: 800, color: '#2563eb' }}>₹{item.discountPrice}</p>
-                        </div>
-                        <div className="cart-item-controls" style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                          <div style={{ display: 'flex', alignItems: 'center', background: '#fff', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '4px' }}>
-                            <button className="qty-btn" onClick={() => updateQuantity(item.id, -1)}>−</button>
-                            <span style={{ width: '32px', textAlign: 'center', fontSize: '0.95rem', fontWeight: 800, color: '#0f172a' }}>{item.quantity}</span>
-                            <button className="qty-btn plus" onClick={() => updateQuantity(item.id, 1)}>+</button>
-                          </div>
-                          <button onClick={() => removeFromCart(item.id)} style={{ background: '#fff', border: '1px solid #fee2e2', width: '40px', height: '40px', borderRadius: '12px', color: '#ef4444', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s' }} onMouseEnter={e => { e.currentTarget.style.background = '#fee2e2'; }} onMouseLeave={e => { e.currentTarget.style.background = '#fff'; }}><Trash2 size={18} /></button>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-
-                  <div style={{ padding: '1.5rem 1.75rem', background: '#f8fafc', borderTop: '1px solid #f1f5f9', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '1rem', flexWrap: 'wrap' }}>
-                    <div>
-                      <div style={{ fontSize: '0.8rem', color: '#64748b', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.2rem' }}>Category Subtotal</div>
-                      <div style={{ fontWeight: 900, fontSize: '1.5rem', color: '#0f172a', letterSpacing: '-0.02em' }}>₹{subtotal}</div>
+          <div className="cart-grid">
+            
+            {/* Left Column: Cart items grouped by category */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+              {categoryKeys.map((cat) => {
+                const items = groups[cat];
+                const subtotal = items.reduce((acc, item) => acc + (item.discountPrice * item.quantity), 0);
+                
+                return (
+                  <div key={cat} className="cart-card">
+                    <div style={{ padding: '1.25rem 1.75rem', background: '#fff', borderBottom: '1px solid #f1f5f9', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <h3 style={{ margin: 0, fontSize: '1.15rem', fontWeight: 600, color: '#0f172a', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                        <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#0a57d0' }} />
+                        {getCategoryLabel(cat)}
+                      </h3>
+                      <span style={{ fontSize: '0.75rem', fontWeight: 500, color: '#0a57d0', background: '#eff6ff', padding: '0.35rem 0.75rem', borderRadius: '99px', textTransform: 'uppercase' }}>{items.length} items</span>
                     </div>
-                    <button className="checkout-btn" onClick={() => handleProceed(cat)}>
-                      Checkout this order <ArrowRight size={18} strokeWidth={2.5} />
-                    </button>
+                    
+                    <div style={{ padding: '0 1.75rem' }}>
+                      {items.map((item, idx) => (
+                        <div key={item.id} className="cart-item-row" style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', alignItems: isMobile ? 'stretch' : 'center', gap: '1.25rem', padding: '1.5rem 0', borderBottom: idx === items.length - 1 ? 'none' : '1px solid #f1f5f9' }}>
+                          
+                          {/* Image & Title Info */}
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem', flex: 1 }}>
+                            <div style={{ width: '80px', height: '80px', borderRadius: '16px', background: '#f8fafc', overflow: 'hidden', border: '1px solid #e2e8f0', flexShrink: 0 }}>
+                              <img src={item.image} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                            </div>
+                            <div style={{ flex: 1 }}>
+                              <h4 style={{ margin: '0 0 0.4rem', fontSize: '1.05rem', fontWeight: 500, color: '#0f172a', lineHeight: 1.35 }}>{item.title}</h4>
+                              <p style={{ margin: 0, fontSize: '1.15rem', fontWeight: 600, color: '#0a57d0' }}>₹{item.discountPrice}</p>
+                            </div>
+                          </div>
+                          
+                          {/* Controls: Quantity & Trash */}
+                          <div style={{ display: 'flex', alignItems: 'center', justifyContent: isMobile ? 'space-between' : 'flex-end', gap: '1rem', marginTop: isMobile ? '0.75rem' : 0 }}>
+                            <div style={{ display: 'flex', alignItems: 'center', background: '#f1f5f9', borderRadius: '99px', padding: '4px 8px' }}>
+                              <button className="qty-btn" onClick={() => updateQuantity(item.id, -1)} style={{ padding: '0 8px' }}>−</button>
+                              <span style={{ width: '28px', textAlign: 'center', fontSize: '0.95rem', fontWeight: 500, color: '#0f172a' }}>{item.quantity}</span>
+                              <button className="qty-btn plus" onClick={() => updateQuantity(item.id, 1)} style={{ padding: '0 8px' }}>+</button>
+                            </div>
+                            <button 
+                              onClick={() => removeFromCart(item.id)} 
+                              style={{ 
+                                background: isMobile ? '#fee2e2' : '#fff', 
+                                border: isMobile ? 'none' : '1px solid #fee2e2', 
+                                width: '40px', 
+                                height: '40px', 
+                                borderRadius: '12px', 
+                                color: '#ef4444', 
+                                cursor: 'pointer', 
+                                display: 'flex', 
+                                alignItems: 'center', 
+                                justifyContent: 'center', 
+                                transition: 'all 0.2s' 
+                              }}  
+                              onMouseEnter={e => { if (!isMobile) e.currentTarget.style.background = '#fee2e2'; }} 
+                              onMouseLeave={e => { if (!isMobile) e.currentTarget.style.background = '#fff'; }}
+                            >
+                              <Trash2 size={18} />
+                            </button>
+                          </div>
+                          
+                        </div>
+                      ))}
+                    </div>
+
+                    <div style={{ 
+                      padding: '1.5rem 1.75rem', 
+                      background: '#f8fafc', 
+                      borderTop: '1px solid #f1f5f9', 
+                      display: 'flex', 
+                      flexDirection: isMobile ? 'column' : 'row', 
+                      alignItems: isMobile ? 'stretch' : 'center', 
+                      justifyContent: 'space-between', 
+                      gap: '1.25rem' 
+                    }}>
+                      <div style={{ textAlign: 'left' }}>
+                        <div style={{ fontSize: '0.75rem', color: '#64748b', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.2rem' }}>Category Subtotal</div>
+                        <div style={{ fontWeight: 600, fontSize: '1.55rem', color: '#0f172a', letterSpacing: '-0.02em' }}>₹{subtotal}</div>
+                      </div>
+                      <button className="checkout-btn" onClick={() => handleProceed(cat)} style={{ width: isMobile ? '100%' : 'auto' }}>
+                        Checkout this order <ArrowRight size={18} strokeWidth={2.5} />
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+              
+
+            </div>
+
+            {/* Right Column: Sidebar summaries & Trust banners */}
+            <div style={{ position: 'sticky', top: '2rem', display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+              
+              {/* Order Info sidebar card */}
+              <div className="sidebar-card">
+                <h3 style={{ margin: '0 0 1.25rem', fontSize: '1.15rem', fontWeight: 600, color: '#0f172a', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <Info size={20} color="#0a57d0" /> Cart Summary
+                </h3>
+                
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', marginBottom: '1.25rem' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.9rem', color: '#64748b', fontWeight: 500 }}>
+                    <span>Total Service Types</span>
+                    <span style={{ fontWeight: 500, color: '#0f172a' }}>{categoryKeys.length}</span>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.9rem', color: '#64748b', fontWeight: 500 }}>
+                    <span>Total Items Count</span>
+                    <span style={{ fontWeight: 500, color: '#0f172a' }}>{cartItems.reduce((acc, item) => acc + item.quantity, 0)}</span>
+                  </div>
+                  <div style={{ height: '1px', background: '#f1f5f9', margin: '0.25rem 0' }} />
+                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '1.1rem', color: '#0f172a', fontWeight: 600 }}>
+                    <span>Total Value</span>
+                    <span style={{ color: '#0a57d0', fontSize: '1.25rem', fontWeight: 600 }}>₹{cartItems.reduce((acc, item) => acc + (item.discountPrice * item.quantity), 0)}</span>
                   </div>
                 </div>
-              );
-            })}
-
-            {/* Trust badges */}
-            <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap', padding: '1rem 0' }}>
-              {[{ icon: <ShieldCheck size={16} />, text: 'Secure Payment' }, { icon: <Sparkles size={16} />, text: 'Quality Guaranteed' }, { icon: <Phone size={16} />, text: '24/7 Support' }].map(b => (
-                <div key={b.text} className="trust-badge">
-                  <span style={{ color: '#2563eb', display: 'flex' }}>{b.icon}</span>{b.text}
+                
+                <div style={{ background: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: '12px', padding: '0.75rem 1rem', display: 'flex', alignItems: 'flex-start', gap: '0.5rem' }}>
+                  <span style={{ color: '#16a34a', display: 'flex', marginTop: '2px' }}><CheckCircle size={16} /></span>
+                  <span style={{ fontSize: '0.75rem', color: '#166534', fontWeight: 500, lineHeight: 1.45 }}>
+                    Checkout is processed category by category to assign the best localized experts.
+                  </span>
                 </div>
-              ))}
+              </div>
+
+              {/* Trust badges sidebar card */}
+              <div className="sidebar-card" style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                <h3 style={{ margin: '0 0 0.5rem', fontSize: '1.15rem', fontWeight: 600, color: '#0f172a', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <Sparkles size={20} color="#0a57d0" /> Why Dhoond?
+                </h3>
+                
+                {[
+                  { icon: <ShieldCheck size={18} />, title: 'Verified Professionals', desc: 'Every technician is background checked and certified.' },
+                  { icon: <Sparkles size={18} />, title: 'Satisfaction Warranty', desc: 'Quality guaranteed or we redo the job completely free.' },
+                  { icon: <Lock size={18} />, title: 'Secure Checkout', desc: 'Your personal data and payments are fully encrypted.' }
+                ].map((item, idx) => (
+                  <div key={idx} className="trust-item">
+                    <div className="trust-icon-wrapper">
+                      {item.icon}
+                    </div>
+                    <div>
+                      <h4 style={{ margin: '0 0 0.15rem', fontSize: '0.875rem', fontWeight: 600, color: '#0f172a' }}>{item.title}</h4>
+                      <p style={{ margin: 0, fontSize: '0.75rem', color: '#64748b', lineHeight: 1.4, fontWeight: 400 }}>{item.desc}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              
             </div>
 
-            <div style={{ textAlign: 'center', paddingBottom: '2rem' }}>
-              <button onClick={() => { if (window.history.state && window.history.state.idx > 0) navigate(-1); else navigate('/painting'); }}
-                style={{ background: '#fff', border: '1px solid #e2e8f0', padding: '0.75rem 1.5rem', borderRadius: '99px', display: 'inline-flex', alignItems: 'center', gap: '0.5rem', color: '#475569', fontWeight: 700, fontSize: '0.9rem', cursor: 'pointer', transition: 'all 0.2s', boxShadow: '0 2px 10px rgba(0,0,0,0.02)' }}
-                onMouseEnter={e => { e.currentTarget.style.background = '#f8fafc'; e.currentTarget.style.color = '#0f172a'; }}
-                onMouseLeave={e => { e.currentTarget.style.background = '#fff'; e.currentTarget.style.color = '#475569'; }}
-              ><ChevronLeft size={16} /> Continue Shopping</button>
-            </div>
           </div>
         )}
       </div>
@@ -269,7 +383,7 @@ const Cart = () => {
               <User size={28} color="#2563eb" />
             </div>
             
-            <h2 style={{ fontSize: '1.5rem', fontWeight: 800, marginBottom: '0.5rem', color: '#0f172a' }}>{authStep === 'mobile' ? 'Verify your number' : 'Enter OTP'}</h2>
+            <h2 style={{ fontSize: '1.5rem', fontWeight: 600, marginBottom: '0.5rem', color: '#0f172a' }}>{authStep === 'mobile' ? 'Verify your number' : 'Enter OTP'}</h2>
             <p style={{ color: '#64748b', fontSize: '0.95rem', marginBottom: '1.5rem', lineHeight: 1.5 }}>
               {authStep === 'mobile' ? 'We need this to confirm your booking and send updates.' : `Sent to +91 ${authData.mobile}`}
             </p>
@@ -278,22 +392,22 @@ const Cart = () => {
             
             {authStep === 'mobile' ? (
               <div style={{ position: 'relative', marginBottom: '1.5rem' }}>
-                <span style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', color: '#64748b', fontWeight: 600 }}>+91</span>
-                <input type="tel" value={authData.mobile} onChange={e => setAuthData({...authData, mobile: e.target.value.replace(/\D/g, '')})} placeholder="Mobile Number" maxLength={10} style={{ width: '100%', padding: '1rem 1rem 1rem 3rem', borderRadius: '14px', border: '2px solid #e2e8f0', fontSize: '1.05rem', fontWeight: 600, color: '#0f172a', outline: 'none', transition: 'border-color 0.2s', background: '#fafafa' }} onFocus={e => { e.target.style.borderColor = '#2563eb'; e.target.style.background = '#fff'; }} onBlur={e => { e.target.style.borderColor = '#e2e8f0'; e.target.style.background = '#fafafa'; }} />
+                <span style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', color: '#64748b', fontWeight: 500 }}>+91</span>
+                <input type="tel" value={authData.mobile} onChange={e => setAuthData({...authData, mobile: e.target.value.replace(/\D/g, '')})} placeholder="Mobile Number" maxLength={10} style={{ width: '100%', padding: '1rem 1rem 1rem 3rem', borderRadius: '14px', border: '2px solid #e2e8f0', fontSize: '1.05rem', fontWeight: 500, color: '#0f172a', outline: 'none', transition: 'border-color 0.2s', background: '#fafafa' }} onFocus={e => { e.target.style.borderColor = '#2563eb'; e.target.style.background = '#fff'; }} onBlur={e => { e.target.style.borderColor = '#e2e8f0'; e.target.style.background = '#fafafa'; }} />
               </div>
             ) : (
               <div style={{ marginBottom: '1.5rem' }}>
-                <input type="text" value={authData.otp} onChange={e => setAuthData({...authData, otp: e.target.value})} placeholder="Enter 4-digit OTP" maxLength={4} style={{ width: '100%', padding: '1rem', borderRadius: '14px', border: '2px solid #e2e8f0', fontSize: '1.1rem', fontWeight: 700, color: '#0f172a', outline: 'none', textAlign: 'center', letterSpacing: '0.2em', transition: 'border-color 0.2s', background: '#fafafa' }} onFocus={e => { e.target.style.borderColor = '#2563eb'; e.target.style.background = '#fff'; }} onBlur={e => { e.target.style.borderColor = '#e2e8f0'; e.target.style.background = '#fafafa'; }} />
+                <input type="text" value={authData.otp} onChange={e => setAuthData({...authData, otp: e.target.value})} placeholder="Enter 4-digit OTP" maxLength={4} style={{ width: '100%', padding: '1rem', borderRadius: '14px', border: '2px solid #e2e8f0', fontSize: '1.1rem', fontWeight: 500, color: '#0f172a', outline: 'none', textAlign: 'center', letterSpacing: '0.2em', transition: 'border-color 0.2s', background: '#fafafa' }} onFocus={e => { e.target.style.borderColor = '#2563eb'; e.target.style.background = '#fff'; }} onBlur={e => { e.target.style.borderColor = '#e2e8f0'; e.target.style.background = '#fafafa'; }} />
               </div>
             )}
             
-            <button onClick={authStep === 'mobile' ? handleSendOtp : handleVerifyOtp} disabled={isLoading} style={{ width: '100%', padding: '1rem', background: isLoading ? '#94a3b8' : '#0f172a', color: '#fff', border: 'none', borderRadius: '14px', fontWeight: 800, fontSize: '1.05rem', cursor: isLoading ? 'not-allowed' : 'pointer', transition: 'background 0.2s', boxShadow: isLoading ? 'none' : '0 4px 15px rgba(15,23,42,0.2)' }}>
+            <button onClick={authStep === 'mobile' ? handleSendOtp : handleVerifyOtp} disabled={isLoading} style={{ width: '100%', padding: '1rem', background: isLoading ? '#94a3b8' : '#0f172a', color: '#fff', border: 'none', borderRadius: '14px', fontWeight: 600, fontSize: '1.05rem', cursor: isLoading ? 'not-allowed' : 'pointer', transition: 'background 0.2s', boxShadow: isLoading ? 'none' : '0 4px 15px rgba(15,23,42,0.2)' }}>
               {isLoading ? 'Processing...' : (authStep === 'mobile' ? 'Send OTP' : 'Verify & Continue')}
             </button>
             
             {authStep === 'otp' && (
               <div style={{ textAlign: 'center', marginTop: '1rem' }}>
-                <button onClick={resendTimer === 0 ? handleSendOtp : null} style={{ background: 'none', border: 'none', color: resendTimer === 0 ? '#2563eb' : '#94a3b8', fontWeight: 600, cursor: resendTimer === 0 ? 'pointer' : 'default', fontSize: '0.9rem' }}>
+                <button onClick={resendTimer === 0 ? handleSendOtp : null} style={{ background: 'none', border: 'none', color: resendTimer === 0 ? '#2563eb' : '#94a3b8', fontWeight: 500, cursor: resendTimer === 0 ? 'pointer' : 'default', fontSize: '0.9rem' }}>
                   {resendTimer > 0 ? `Resend OTP in ${resendTimer}s` : 'Resend OTP'}
                 </button>
               </div>

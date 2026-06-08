@@ -1,11 +1,13 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import * as Lucide from 'lucide-react';
 import { useUI } from '../context/UIContext';
 import { isInsideGeofence } from '../utils/location';
 
 const Footer = () => {
   const { openComingSoon, locationLabel, locationSubtext, userLat, userLng } = useUI();
+  const location = useLocation();
+  const isSimplifiedPage = ['/cart', '/shop/cart', '/checkout'].includes(location.pathname);
 
   const isBengaluru = (locationLabel || '').toLowerCase().includes('bengaluru') ||
     (locationLabel || '').toLowerCase().includes('bangalore') ||
@@ -31,6 +33,7 @@ const Footer = () => {
             :root { --footer-contact-pad: 2.5rem 1.5rem; --footer-main-pad: 3rem 1.5rem 2rem; --footer-main-gap: 3.5rem 2rem; }
             .mobile-centered-col { align-items: center !important; text-align: center !important; }
             .mobile-bottom-links { flex-direction: column !important; gap: 1rem !important; }
+            .simplified-footer-hide-mobile { display: none !important; }
           }
         `}</style>
         <div className="mobile-stack" style={{ maxWidth: '1280px', margin: '0 auto', display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', gap: '2rem' }}>
@@ -80,7 +83,7 @@ const Footer = () => {
       </div>
 
       {/* Main links section */}
-      <div style={{ maxWidth: '1400px', margin: '0 auto', padding: 'var(--footer-main-pad, 4.5rem 5% 3rem)' }}>
+      <div className={isSimplifiedPage ? "simplified-footer-hide-mobile" : ""} style={{ maxWidth: '1400px', margin: '0 auto', padding: 'var(--footer-main-pad, 4.5rem 5% 3rem)' }}>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--footer-main-gap, 4rem)' }}>
 
           {/* Brand Column */}
@@ -92,7 +95,7 @@ const Footer = () => {
               />
             </Link>
             <p style={{ color: '#94a3b8', fontSize: '0.9rem', lineHeight: 1.7, fontWeight: 500, margin: '0 0 1.5rem 0' }}>
-              India's fastest growing premium Commercial and home services marketplace. Quality craftsmanship delivered to your doorstep.
+              India's fastest growing premium Home and Commercial services marketplace. Quality craftsmanship delivered to your spot.
             </p>
           </div>
 
@@ -105,9 +108,9 @@ const Footer = () => {
           }} className="mobile-text-center">
             {[
               { title: 'Company', links: ['About Us', 'Careers', 'Blog', 'Press'] },
-              { title: 'Services', links: ['Painting', 'AC Tech', 'RO Tech', 'Electrician', 'Washing Mach.', 'Refrigerator'] },
+              { title: 'Services', links: ['Painting', 'AC Service', 'RO Service', 'Electrician', 'Washing Machine Repair', 'Refrigerator Repair'] },
               { title: 'Partners', links: ['Join as Expert', 'Partner with Us', 'Training Center'] },
-              { title: 'Support', links: ['Help Center', 'Privacy Policy', 'Terms of Service', 'Refund Policy'] },
+              { title: 'Support', links: ['Help Center', 'FAQs', 'Privacy Policy', 'Terms of Service', 'Refund Policy'] },
             ].map(col => (
               <div key={col.title}>
                 <h4 style={{ fontWeight: 800, fontSize: '0.85rem', color: '#fff', marginBottom: '1rem', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
@@ -123,11 +126,12 @@ const Footer = () => {
                         to={(() => {
                           const lower = l.toLowerCase();
                           if (lower === 'painting') return "/painting";
-                          if (lower === 'ac tech') return "/shop?cat=technician&subcat=ac";
-                          if (lower === 'ro tech') return "/shop?cat=technician&subcat=ro";
+                          if (lower === 'ac service') return "/shop?cat=technician&subcat=ac";
+                          if (lower === 'ro service') return "/shop?cat=technician&subcat=ro";
                           if (lower === 'electrician') return "/shop?cat=electrician";
-                          if (lower === 'washing mach.') return "/shop?cat=technician&subcat=washing";
-                          if (lower === 'refrigerator') return "/shop?cat=technician&subcat=fridge";
+                          if (lower === 'washing machine repair') return "/shop?cat=technician&subcat=washing";
+                          if (lower === 'refrigerator repair') return "/shop?cat=technician&subcat=fridge";
+                          if (lower === 'privacy policy') return "/privacy-policy";
                           return "#";
                         })()}
                         onClick={(e) => {
@@ -138,16 +142,16 @@ const Footer = () => {
                             openComingSoon();
                             return;
                           }
-                          // Other services in Nagpur or Bengaluru
-                          const isOtherService = ['ac tech', 'ro tech', 'electrician', 'washing mach.', 'refrigerator'].includes(lower);
-                          if (isOtherService && !isNagpur && !isBengaluru) {
+                          // Other services in Nagpur
+                          const isOtherService = ['ac service', 'ro service', 'electrician', 'washing machine repair', 'refrigerator repair'].includes(lower);
+                          if (isOtherService && !isNagpur) {
                             e.preventDefault();
                             openComingSoon();
                             return;
                           }
                           
                           // Handle coming soon for specific subcategories if needed in Shop.jsx
-                          if (lower === 'refrigerator') {
+                          if (lower === 'refrigerator repair') {
                              e.preventDefault();
                              openComingSoon();
                           }

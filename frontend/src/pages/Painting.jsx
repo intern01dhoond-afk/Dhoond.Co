@@ -1,9 +1,10 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { ChevronRight } from 'lucide-react';
+import { ChevronRight, ShoppingCart, ClipboardList, ShieldCheck, Headphones, Sparkles } from 'lucide-react';
 import PaintingServiceList from '../components/PaintingServiceList';
 import { useUI } from '../context/UIContext';
 import { useSEO } from '../hooks/useSEO';
+import { useCart } from '../context/CartContext';
 import paintingBanner from '../assets/painting_banner.png';
 import consultationImg from '../assets/consultation.png';
 import commercialImg from '../assets/commercial_painting.jpg';
@@ -42,7 +43,39 @@ export default function Painting() {
   const [galleryActive, setGalleryActive] = useState('after');
   const [activeService, setActiveService] = useState('Painting');
   const [selectedService, setSelectedService] = useState(null);
+  const [faqOpen, setFaqOpen] = useState(null);
   const { openComingSoon, locationLabel, locationSubtext } = useUI();
+  const { addToCart, cartItems, updateQuantity, removeFromCart } = useCart();
+
+  const handleBookConsultation = async () => {
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_URL || ''}/api/V1/services?category=painter`);
+      if (!res.ok) throw new Error('Fetch failed');
+      const result = await res.json();
+      const data = Array.isArray(result) ? result : (result.services || result.data || []);
+      
+      let consult = data.find(s => s.title.toLowerCase().includes('painting expert'));
+      if (!consult) {
+        consult = data.find(s => s.title.toLowerCase().includes('consultation'));
+      }
+      
+      if (consult) {
+        addToCart({
+          id: consult.id,
+          title: consult.title,
+          discountPrice: consult.title.toLowerCase().includes('on call') ? 0 : 49,
+          originalPrice: Number(consult.original_price),
+          image: '/consultation.png',
+          category: 'painter',
+          quantity: 1,
+        });
+      }
+      navigate('/cart');
+    } catch (err) {
+      console.error('Manual consultation add error:', err);
+      navigate('/cart');
+    }
+  };
 
   // Sync URL Params -> Local Modal State
   useEffect(() => {
@@ -218,12 +251,10 @@ export default function Painting() {
   return (
     <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
-
         /* ── Reset & base ── */
         .p-page *, .p-page *::before, .p-page *::after { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         .p-page {
-          font-family: 'Inter', sans-serif;
+          font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
           background: #f9fafb;
           color: #1a1a1a;
           overflow-x: hidden;
@@ -264,7 +295,6 @@ export default function Painting() {
         .p-hero-badge-dot { width: 6px; height: 6px; border-radius: 50%; background: #2563eb; animation: blink 1.8s ease infinite; }
         @keyframes blink { 0%,100% { opacity:1; } 50% { opacity:.3; } }
         .p-hero h1 {
-          font-family: 'Inter', sans-serif;
           font-size: clamp(32px, 8vw, 68px);
           font-weight: 900; line-height: 1.05; letter-spacing: -1.2px;
           color: #fff; margin-bottom: 16px;
@@ -293,7 +323,7 @@ export default function Painting() {
           display: flex; flex-direction: column; align-items: center; gap: 2px;
           white-space: nowrap; flex-shrink: 0;
           min-height: 48px; /* touch target */
-          font-family: 'DM Sans', sans-serif;
+          font-family: 'Inter', sans-serif;
         }
         .p-sel-btn-sub { font-size: 10px; opacity: .6; letter-spacing: .5px; }
         .p-sel-btn:hover { background: rgba(255,255,255,0.12); border-color: rgba(255,255,255,0.3); }
@@ -313,7 +343,6 @@ export default function Painting() {
           display: inline-flex; align-items: center; gap: 8px;
           position: relative; overflow: hidden; border: none; cursor: pointer;
           transition: color .3s; min-height: 52px;
-          font-family: 'Inter', sans-serif;
         }
         .p-btn-primary:hover { background: #2563eb; color: #fff; transform: translateY(-2px); box-shadow: 0 12px 24px rgba(37,99,235,0.25); }
         .p-btn-primary span, .p-btn-primary svg { position: relative; z-index: 1; }
@@ -322,7 +351,6 @@ export default function Painting() {
           text-decoration: none; border: 1px solid rgba(255,255,255,0.35);
           transition: border-color .2s, background .2s; background: none; cursor: pointer;
           min-height: 52px; display: flex; align-items: center;
-          font-family: 'Inter', sans-serif;
         }
         .p-btn-outline:hover { border-color: #fff; background: rgba(255,255,255,0.07); }
         .p-hero-rating { display: flex; align-items: center; gap: 8px; margin-top: 24px; opacity: 0; transform: translateY(14px); flex-wrap: wrap; }
@@ -348,18 +376,18 @@ export default function Painting() {
         .p-mdot { width: 4px; height: 4px; border-radius: 50%; background: #2563eb; flex-shrink: 0; }
 
         /* ── SERVICES STRIP ── */
-        .p-services-strip { padding: 32px 5vw; background: #fff; display: flex; flex-direction: column; position: relative; z-index: 2; max-width: 720px; margin: 0 auto; }
+        .p-services-strip { padding: 24px 0; background: #fff; display: flex; flex-direction: column; position: relative; z-index: 2; max-width: 720px; margin: 0 auto; }
         .p-services-strip::-webkit-scrollbar { display: none; }
-        .p-service-item { flex-shrink: 0; padding: 16px; margin-bottom: 12px; border-radius: 18px; border: 1.5px solid #f1f5f9; display: flex; align-items: center; gap: 16px; opacity: 0; transform: translateY(22px); cursor: pointer; transition: all .3s ease; width: 100%; justify-content: space-between; background: #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
+        .p-service-item { flex-shrink: 0; padding: 16px; margin-bottom: 12px; border-radius: 0px; border: 1.5px solid #f1f5f9; display: flex; align-items: center; gap: 16px; opacity: 0; transform: translateY(22px); cursor: pointer; transition: all .3s ease; width: 100%; justify-content: space-between; background: #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
         .p-service-item:last-child { margin-bottom: 0; }
         .p-service-item:hover { border-color: #2563eb; transform: translateY(-2px); box-shadow: 0 8px 28px rgba(37,99,235,0.12); }
-        .p-si-img { width: 88px; height: 88px; border-radius: 14px; overflow: hidden; flex-shrink: 0; }
+        .p-si-img { width: 88px; height: 88px; border-radius: 0px; overflow: hidden; flex-shrink: 0; }
         .p-si-img img { width: 100%; height: 100%; object-fit: cover; transition: transform .5s; }
         .p-service-item:hover .p-si-img img { transform: scale(1.06); }
         .p-service-info { flex: 1; }
         .p-service-info h3 { font-size: 1.1rem; font-weight: 800; color: #111; margin-bottom: 5px; letter-spacing: -0.01em; }
         .p-service-info p { font-size: 0.88rem; color: #64748b; margin: 0; line-height: 1.5; font-weight: 400; }
-        .p-si-chevron { color: #cbd5e1; transition: all 0.25s; width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: #f8fafc; flex-shrink: 0; }
+        .p-si-chevron { color: #cbd5e1; transition: all 0.25s; width: 36px; height: 36px; border-radius: 0px; display: flex; align-items: center; justify-content: center; background: #f8fafc; flex-shrink: 0; }
         .p-service-item:hover .p-si-chevron { background: #2563eb; color: #fff; transform: translateX(2px); }
         @media (min-width: 900px) {
           .p-services-strip { padding: 40px 2rem; }
@@ -376,7 +404,7 @@ export default function Painting() {
         .p-eyebrow::after { content: ''; position: absolute; bottom: -5px; left: 0; width: 20px; height: 2px; background: #2563eb; }
         .p-section-header { text-align: center; margin-bottom: 48px; }
         .p-section-header .p-eyebrow { margin-bottom: 18px; }
-        .p-section-header h2 { font-family: 'Inter', sans-serif; font-size: clamp(28px, 5vw, 46px); font-weight: 900; color: #1a1a1a; margin-bottom: 14px; line-height: 1.2; }
+        .p-section-header h2 { font-size: clamp(28px, 5vw, 46px); font-weight: 900; color: #1a1a1a; margin-bottom: 14px; line-height: 1.2; }
         .p-section-header p { color: #666; font-size: 15px; font-weight: 500; max-width: 480px; margin: 0 auto; line-height: 1.7; }
         .p-brush-line { width: 60px; height: 3px; background: linear-gradient(90deg, #2563eb, #facc15); border-radius: 2px; margin: 12px auto 16px; }
 
@@ -389,7 +417,7 @@ export default function Painting() {
         .p-intro-img:nth-child(2) { margin-top: 48px; border: 8px solid #fff; box-shadow: 0 50px 100px -20px rgba(0,0,0,0.3); }
         .p-intro-img-inner { position: absolute; width: 100%; height: 120%; top: -10%; will-change: transform; }
         .p-intro-text p { font-size: 15px; color: #666; line-height: 1.8; margin-bottom: 18px; font-weight: 300; }
-        .p-intro-text h2 { font-family: 'Inter', sans-serif; font-size: clamp(26px, 4.5vw, 44px); font-weight: 900; line-height: 1.15; letter-spacing: -.8px; color: #1a1a1a; margin-bottom: 20px; }
+        .p-intro-text h2 { font-size: clamp(26px, 4.5vw, 44px); font-weight: 900; line-height: 1.15; letter-spacing: -.8px; color: #1a1a1a; margin-bottom: 20px; }
         .p-intro-text h2 em { color: #2563eb; font-style: italic; }
         @media (min-width: 860px) {
           .p-intro { padding: 120px 5vw; }
@@ -405,7 +433,7 @@ export default function Painting() {
         .p-stats-glow { position: absolute; inset: 0; background: radial-gradient(ellipse at 50% 0%, rgba(96,165,250,0.18), transparent 70%); pointer-events: none; }
         .p-stat { padding: 44px 28px; border-right: 1px solid rgba(255,255,255,0.10); text-align: center; opacity: 0; transform: translateY(22px); position: relative; will-change: transform; }
         .p-stat:nth-child(2) { border-right: none; }
-        .p-stat .num { font-family: 'Inter', sans-serif; font-size: clamp(44px, 10vw, 88px); font-weight: 900; color: #fff; line-height: 1; margin-bottom: 12px; letter-spacing: -2px; }
+        .p-stat .num { font-size: clamp(44px, 10vw, 88px); font-weight: 900; color: #fff; line-height: 1; margin-bottom: 12px; letter-spacing: -2px; }
         .p-stat .num .plus { color: #facc15; }
         .p-stat .slabel { font-size: 11px; color: rgba(255,255,255,0.5); text-transform: uppercase; letter-spacing: 2px; font-weight: 600; }
         @media (min-width: 700px) {
@@ -428,7 +456,7 @@ export default function Painting() {
         }
         .process-card:last-child { margin-right: 5vw; }
         .process-card:hover { transform: translateY(-12px) scale(1.02); box-shadow: 0 40px 80px -16px rgba(196,130,90,0.2); }
-        .process-card::before { content: attr(data-num); position: absolute; right: 16px; top: 12px; font-family: 'Inter', sans-serif; font-size: 72px; font-weight: 900; color: rgba(37,99,235,0.06); line-height: 1; }
+        .process-card::before { content: attr(data-num); position: absolute; right: 16px; top: 12px; font-size: 72px; font-weight: 900; color: rgba(37,99,235,0.06); line-height: 1; }
         .p-picon { width: 58px; height: 58px; border-radius: 16px; margin-bottom: 22px; display: flex; align-items: center; justify-content: center; transition: all .35s; }
         .process-card:hover .p-picon { transform: scale(1.1) rotate(-5deg); }
         .p-picon svg { width: 26px; height: 26px; fill: none; stroke-width: 1.5; }
@@ -446,7 +474,7 @@ export default function Painting() {
           .p-why { padding: 60px 5vw !important; }
         }
         @media (min-width: 1024px) {
-          .p-process-grid { display: grid; grid-template-columns: repeat(4,1fr); overflow: visible; padding: 8px 5vw 0; }
+          .p-process-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 24px; overflow: visible; padding: 8px 5vw 0; }
           .process-card { min-width: unset; flex: unset; }
           .process-card:last-child { margin-right: 0; }
         }
@@ -459,7 +487,7 @@ export default function Painting() {
         /* ── GALLERY ── */
         .p-gallery { padding: 80px 5vw; background: #f1f5f9; }
         .p-gallery-grid { display: grid; grid-template-columns: 1fr; gap: 14px; margin-top: 48px; }
-        .gitem { border-radius: 24px; overflow: hidden; position: relative; opacity: 0; cursor: pointer; height: 280px; box-shadow: 0 4px 24px rgba(0,0,0,0.10); transition: box-shadow .4s, transform .4s; }
+        .gitem { border-radius: 0px; overflow: hidden; position: relative; opacity: 0; cursor: pointer; height: 280px; box-shadow: 0 4px 24px rgba(0,0,0,0.10); transition: box-shadow .4s, transform .4s; }
         .gitem:hover { transform: translateY(-4px); box-shadow: 0 20px 48px rgba(0,0,0,0.18); }
         .p-gbg { position: absolute; inset: 0; transition: transform 1.3s cubic-bezier(.16,1,.3,1), filter .5s; background-size: cover !important; background-position: center 30% !important; }
         .gitem:hover .p-gbg { transform: scale(1.08); }
@@ -468,7 +496,7 @@ export default function Painting() {
         .gitem:hover .p-glabel, .gitem:focus .p-glabel { transform: translateY(0); opacity: 1; }
         .p-glabel span { color: #fff; font-size: 16px; font-weight: 700; display: block; letter-spacing: -.01em; }
         .p-glabel p { color: rgba(255,255,255,0.7); font-size: 12px; margin-top: 4px; margin-bottom: 0; display: flex; align-items: center; gap: 4px; }
-        .p-g-badge { position: absolute; top: 14px; right: 14px; background: rgba(255,255,255,0.92); backdrop-filter: blur(8px); color: #1a1a1a; padding: 4px 12px; border-radius: 100px; font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: .8px; border: 1px solid rgba(255,255,255,0.5); }
+        .p-g-badge { position: absolute; top: 14px; right: 14px; background: rgba(255,255,255,0.92); backdrop-filter: blur(8px); color: #1a1a1a; padding: 4px 12px; border-radius: 0px; font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: .8px; border: 1px solid rgba(255,255,255,0.5); }
         .p-g-loc-icon { width: 10px; height: 10px; }
         @media (min-width: 640px) {
           .p-gallery-grid { grid-template-columns: repeat(2, 1fr); gap: 16px; }
@@ -498,9 +526,9 @@ export default function Painting() {
         }
         .p-tgrid::-webkit-scrollbar { display: none; }
         .p-tcard { 
-          background: #fff; border-radius: 22px; padding: 32px; border: 1px solid rgba(0,0,0,0.05); 
+          background: #fff; border-radius: 0px; padding: 32px; border: 1px solid rgba(0,0,0,0.05); 
           opacity: 0; transform: translateY(24px); transition: all .35s; 
-          flex: 0 0 85vw;
+          flex: 0 0 80vw;
           scroll-snap-align: center;
         }
         .p-tcard:hover { transform: translateY(-6px); box-shadow: 0 24px 48px rgba(0,0,0,0.07); }
@@ -535,7 +563,7 @@ export default function Painting() {
         .p-why { padding: 80px 5vw; background: #fff; }
         .p-why-inner { display: flex; flex-direction: column; gap: 40px; max-width: 1100px; margin: 0 auto; text-align: center; }
         .p-why-text { opacity: 0; transform: translateY(28px); will-change: transform; }
-        .p-why-text h2 { font-family: 'Inter', sans-serif; font-size: clamp(28px, 4.5vw, 44px); font-weight: 900; line-height: 1.2; color: #1a1a1a; margin-bottom: 48px; }
+        .p-why-text h2 { font-size: clamp(28px, 4.5vw, 44px); font-weight: 900; line-height: 1.2; color: #1a1a1a; margin-bottom: 48px; }
         .p-wlist { display: grid; grid-template-columns: 1fr; gap: 32px; text-align: left; }
         .p-witem { display: flex; flex-direction: column; gap: 14px; align-items: center; text-align: center; }
         .p-wdot { width: 44px; height: 44px; border-radius: 12px; background: rgba(196,130,90,0.1); display: flex; align-items: center; justify-content: center; transition: all .3s; }
@@ -564,7 +592,7 @@ export default function Painting() {
           opacity: 0; transform: translateY(28px); will-change: transform;
           box-shadow: 0 40px 80px rgba(0,0,0,0.18);
         }
-        #p-ctaEl h2 { font-family: 'Inter', sans-serif; font-size: clamp(28px, 5vw, 52px); font-weight: 900; line-height: 1.1; color: #fff; margin: 0; }
+        #p-ctaEl h2 { font-size: clamp(28px, 5vw, 52px); font-weight: 900; line-height: 1.1; color: #fff; margin: 0; }
         #p-ctaEl h2 em { color: #facc15; font-style: italic; }
         #p-ctaEl p { font-size: 15px; color: rgba(255,255,255,0.7); margin: 0; line-height: 1.6; }
         .p-price-anchors { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 8px; }
@@ -579,7 +607,7 @@ export default function Painting() {
           box-shadow: 0 0 32px rgba(250,204,21,0.35);
           animation: glowPulse 2.2s infinite alternate;
           transition: transform .3s;
-          min-height: 54px; font-family: 'Inter', sans-serif;
+          min-height: 54px;
         }
         @keyframes glowPulse { from { box-shadow: 0 0 16px rgba(250,204,21,0.25); } to { box-shadow: 0 0 44px rgba(250,204,21,0.6); } }
         .p-btn-cta:hover { transform: scale(1.04) translateY(-2px); }
@@ -607,7 +635,7 @@ export default function Painting() {
           text-decoration: none; cursor: pointer;
           box-shadow: 0 8px 22px rgba(250,204,21,0.35);
           active-transform: scale(0.97); transition: transform .15s;
-          font-family: 'Inter', sans-serif;
+
         }
         .mobile-sticky-cta-call:active { transform: scale(0.97); }
         .mobile-sticky-cta-call:active { transform: scale(0.97); }
@@ -616,6 +644,33 @@ export default function Painting() {
         @media (max-width: 859px) { .p-cta-wrap { padding-bottom: calc(80px + env(safe-area-inset-bottom) + 16px); } }
 
         @media (max-width: 859px) { .p-wa-fab { display: none; } }
+
+        .painting-desktop-layout {
+          padding: 0 16px;
+        }
+        @media (min-width: 900px) {
+          .painting-desktop-layout {
+            display: grid !important;
+            grid-template-columns: 1fr 360px !important;
+            gap: 40px !important;
+            align-items: start !important;
+            padding: 0 5% !important;
+          }
+          .painting-sidebar-container {
+            display: block !important;
+            position: sticky !important;
+            top: 100px !important;
+          }
+          .p-services-strip {
+            max-width: 100% !important;
+            padding: 0 !important;
+          }
+        }
+        @media (max-width: 899px) {
+          .painting-sidebar-container {
+            display: none !important;
+          }
+        }
 
         /* ── Misc ── */
         .p-stroke-dec { position: absolute; pointer-events: none; opacity: .08; z-index: 0; }
@@ -640,11 +695,11 @@ export default function Painting() {
               Professional Painting Services
             </div>
             <h1>
-              <span className="p-line-wrap"><span className="p-line-inner">Colour Your</span></span>
+              <span className="p-line-wrap"><span className="p-line-inner">Transform Your</span></span>
               <span className="p-line-wrap"><em><span className="p-line-inner">Dream Space</span></em></span>
-              <span className="p-line-wrap"><span className="p-line-inner">With Precision</span></span>
+              <span className="p-line-wrap"><span className="p-line-inner">With Expert Painting Services</span></span>
             </h1>
-            <p className="p-hero-sub">Dhoond brings verified painting professionals to your doorstep — interior, exterior &amp; texture painting done right, on time.</p>
+            <p className="p-hero-sub">Dhoond brings verified painting professionals to your spot — interior, exterior &amp; texture painting done right, on time.</p>
 
 
 
@@ -662,7 +717,7 @@ export default function Painting() {
 
           {/* Desktop only right panel */}
           <div className="p-hero-media">
-            <p style={{ color: '#fff', fontFamily: "'Inter',serif", fontSize: 'clamp(28px,3.8vw,52px)', fontStyle: 'italic', fontWeight: 900, textAlign: 'right', margin: 0, textShadow: '0 8px 32px rgba(0,0,0,0.5)', lineHeight: 1.25 }}>
+            <p style={{ color: '#fff', fontFamily: "'Inter', sans-serif", fontSize: 'clamp(28px,3.8vw,52px)', fontStyle: 'italic', fontWeight: 900, textAlign: 'right', margin: 0, textShadow: '0 8px 32px rgba(0,0,0,0.5)', lineHeight: 1.25 }}>
               "From bare walls<br />to breathtaking rooms"
             </p>
           </div>
@@ -680,33 +735,237 @@ export default function Painting() {
         </div>
 
         {/* ── SERVICES STRIP ── */}
-        <div style={{ background: '#fff', paddingTop: '12px', paddingBottom: '8px' }}>
-          <div className="p-services-strip" id="p-sstrip" role="list">
-            {[
-              { img: consultationImg, title: 'Expert Consultation on Site', sub: 'Talk to an expert — ₹49', filter: 'consultation', badge: 'Popular' },
-              { img: commercialImg, title: 'Commercial Painting', sub: 'Offices, Schools & warehouses', filter: 'commercial', badge: null },
-              { img: interiorImg, title: 'Interior Painting', sub: 'Walls, ceilings & trims', filter: 'interior', badge: null },
-              { img: exteriorImg, title: 'Exterior Painting', sub: 'Weather-resistant finishes', filter: 'exterior', badge: null },
-              { img: specialtyImg, title: 'Specialty Coatings', sub: 'Epoxy for Grills, Gates & Doors', filter: 'coatings', badge: null },
-            ].map(s => (
-              <div key={s.title} className="p-service-item" role="listitem" style={{ cursor: 'pointer', position: 'relative' }} onClick={() => {
-                navigate(`?service=${encodeURIComponent(s.title)}&sub=${encodeURIComponent(s.sub)}&filter=${s.filter}`);
+        <div style={{ background: '#fff', paddingTop: '24px', paddingBottom: '24px' }}>
+          <div className="painting-desktop-layout" style={{ maxWidth: '1100px', margin: '0 auto' }}>
+            <div className="p-services-strip p-services-strip-grid" id="p-sstrip" role="list">
+              {[
+                { img: consultationImg, title: 'Expert Consultation on Site', sub: 'Talk to an expert — ₹49', filter: 'consultation', badge: 'Popular' },
+                { img: commercialImg, title: 'Commercial Painting', sub: 'Offices, Schools & warehouses', filter: 'commercial', badge: null },
+                { img: interiorImg, title: 'Interior Painting', sub: 'Walls, ceilings & trims', filter: 'interior', badge: null },
+                { img: exteriorImg, title: 'Exterior Painting', sub: 'Weather-resistant finishes', filter: 'exterior', badge: null },
+                { img: '/images/waterproofing.png', title: 'Waterproofing Services', sub: 'Damp-proofing & terrace coatings', filter: 'waterproofing', badge: null },
+                { img: '/images/texture_painting.png', title: 'Texture Painting', sub: 'Metallic, non-metallic & designer walls', filter: 'texture', badge: null },
+                { img: '/images/wood_metal.png', title: 'Wood & Metal Painting', sub: 'Polishing, varnishing & metal coat', filter: 'wood_metal', badge: null },
+                { img: specialtyImg, title: 'Specialty Coatings', sub: 'Epoxy for Grills, Gates & Doors', filter: 'coatings', badge: null },
+              ].map(s => (
+                <div key={s.title} className="p-service-item" role="listitem" style={{ cursor: 'pointer', position: 'relative' }} onClick={() => {
+                  navigate(`?service=${encodeURIComponent(s.title)}&sub=${encodeURIComponent(s.sub)}&filter=${s.filter}`);
+                }}>
+                  <div className="p-si-img">
+                    <img src={s.img} alt={s.title} loading="lazy" />
+                  </div>
+                  <div className="p-service-info">
+                    <h3 style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      {s.title}
+                      {s.badge && <span style={{ background: '#facc15', color: '#111', fontSize: '9px', fontWeight: 800, padding: '2px 8px', borderRadius: '99px', textTransform: 'uppercase', letterSpacing: '0.5px', flexShrink: 0 }}>{s.badge}</span>}
+                    </h3>
+                    <p>{s.sub}</p>
+                  </div>
+                  <div className="p-si-chevron">
+                    <ChevronRight size={18} />
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <div className="painting-sidebar-container">
+              {/* Card 1: Package Selector */}
+              <div style={{
+                background: '#fff',
+                border: '1px solid #e2e8f0',
+                borderRadius: '0px',
+                padding: '24px',
+                boxShadow: '0 10px 30px rgba(0,0,0,0.03)',
+                marginBottom: '16px'
               }}>
-                <div className="p-si-img">
-                  <img src={s.img} alt={s.title} loading="lazy" />
+                {(() => {
+                  const painterItems = cartItems.filter(i => i.category === 'painter');
+                  const hasItems = painterItems.length > 0;
+                  const activeItem = painterItems[0];
+
+                  if (!hasItems) {
+                    return (
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                          <ShoppingCart size={22} color="#64748b" style={{ opacity: 0.8 }} />
+                          <span style={{ fontSize: '0.9rem', color: '#64748b', fontWeight: 600 }}>Start with a site consultation</span>
+                        </div>
+                        <button
+                          onClick={handleBookConsultation}
+                          style={{
+                            width: '100%',
+                            background: '#2563eb',
+                            color: '#fff',
+                            border: 'none',
+                            borderRadius: '0px',
+                            padding: '14px',
+                            fontWeight: 800,
+                            fontSize: '0.95rem',
+                            cursor: 'pointer',
+                            transition: 'all 0.2s',
+                            boxShadow: '0 4px 14px rgba(37,99,235,0.2)',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            gap: '8px'
+                          }}
+                        >
+                          Book Consultation
+                        </button>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', borderTop: '1px solid #f1f5f9', paddingTop: '16px' }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.82rem', color: '#475569', fontWeight: 600 }}>
+                            <span style={{ color: '#16a34a', fontWeight: 900 }}>✓</span> Free Site Visit
+                          </div>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.82rem', color: '#475569', fontWeight: 600 }}>
+                            <span style={{ color: '#16a34a', fontWeight: 900 }}>✓</span> No Hidden Charges
+                          </div>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.82rem', color: '#475569', fontWeight: 600 }}>
+                            <span style={{ color: '#16a34a', fontWeight: 900 }}>✓</span> Detailed Quotation
+                          </div>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.82rem', color: '#475569', fontWeight: 600 }}>
+                            <span style={{ color: '#16a34a', fontWeight: 900 }}>✓</span> Expert Guidance
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  }
+
+                  const isConsult = activeItem.title.toLowerCase().includes('consultation');
+
+                  return (
+                    <>
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px' }}>
+                        <div style={{ display: 'flex', flexDirection: 'column', minWidth: 0, flex: 1, marginRight: '8px' }}>
+                          <span style={{ fontWeight: 850, fontSize: '0.95rem', color: '#0f172a', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                            {activeItem.title}
+                          </span>
+                          <span style={{ fontSize: '0.9rem', color: '#2563eb', fontWeight: 800, marginTop: '2px' }}>
+                            ₹{activeItem.discountPrice}
+                          </span>
+                        </div>
+                        <div style={{ display: 'flex', alignItems: 'center', background: '#f8fafc', border: '1.5px solid #e2e8f0', borderRadius: '10px', overflow: 'hidden', flexShrink: 0 }}>
+                          <button 
+                            onClick={() => activeItem.quantity === 1 ? removeFromCart(activeItem.id) : updateQuantity(activeItem.id, -1)}
+                            style={{ width: '32px', height: '32px', background: 'none', border: 'none', fontSize: '1.1rem', color: '#1e293b', fontWeight: 900, cursor: 'pointer' }}
+                          >
+                            −
+                          </button>
+                          <span style={{ width: '28px', textAlign: 'center', fontWeight: 800, fontSize: '0.95rem', color: '#0f172a' }}>
+                            {activeItem.quantity}
+                          </span>
+                          <button 
+                            onClick={() => updateQuantity(activeItem.id, 1)}
+                            disabled={isConsult}
+                            style={{ width: '32px', height: '32px', background: 'none', border: 'none', fontSize: '1.1rem', color: isConsult ? '#cbd5e1' : '#1e293b', fontWeight: 900, cursor: isConsult ? 'not-allowed' : 'pointer' }}
+                          >
+                            +
+                          </button>
+                        </div>
+                      </div>
+
+                      <button
+                        onClick={() => navigate('/cart')}
+                        style={{
+                          width: '100%',
+                          background: '#2563eb',
+                          color: '#fff',
+                          border: 'none',
+                          borderRadius: '0px',
+                          padding: '14px',
+                          fontWeight: 800,
+                          fontSize: '0.95rem',
+                          cursor: 'pointer',
+                          transition: 'all 0.2s',
+                          boxShadow: '0 4px 14px rgba(37,99,235,0.2)',
+                          marginBottom: '16px',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          gap: '8px'
+                        }}
+                      >
+                        Book Consultation
+                      </button>
+
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', borderTop: '1px solid #f1f5f9', paddingTop: '16px' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.82rem', color: '#475569', fontWeight: 600 }}>
+                          <span style={{ color: '#16a34a', fontWeight: 900 }}>✓</span> Free Site Visit
+                        </div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.82rem', color: '#475569', fontWeight: 600 }}>
+                          <span style={{ color: '#16a34a', fontWeight: 900 }}>✓</span> No Hidden Charges
+                        </div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.82rem', color: '#475569', fontWeight: 600 }}>
+                          <span style={{ color: '#16a34a', fontWeight: 900 }}>✓</span> Detailed Quotation
+                        </div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.82rem', color: '#475569', fontWeight: 600 }}>
+                          <span style={{ color: '#16a34a', fontWeight: 900 }}>✓</span> Expert Guidance
+                        </div>
+                      </div>
+                    </>
+                  );
+                })()}
+              </div>
+
+              {/* Card 2: Painting Guarantee Box */}
+              <div style={{
+                background: '#fff',
+                border: '1px solid #e2e8f0',
+                borderRadius: '0px',
+                padding: '24px',
+                boxShadow: '0 10px 30px rgba(0,0,0,0.03)',
+                marginBottom: '16px'
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '18px' }}>
+                  <div style={{ background: '#ecfdf5', border: '1px solid #dcfce7', borderRadius: '50%', width: '40px', height: '40px', display: 'flex', alignItems: 'center', justify_content: 'center', flexShrink: 0 }}>
+                    <ShieldCheck size={20} color="#16a34a" />
+                  </div>
+                  <span style={{ fontSize: '0.88rem', color: '#1e293b', fontWeight: 700 }}>1-Year Service Warranty</span>
                 </div>
-                <div className="p-service-info">
-                  <h3 style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    {s.title}
-                    {s.badge && <span style={{ background: '#facc15', color: '#111', fontSize: '9px', fontWeight: 800, padding: '2px 8px', borderRadius: '99px', textTransform: 'uppercase', letterSpacing: '0.5px', flexShrink: 0 }}>{s.badge}</span>}
-                  </h3>
-                  <p>{s.sub}</p>
-                </div>
-                <div className="p-si-chevron">
-                  <ChevronRight size={18} />
+                <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                  <div style={{ background: '#fffbeb', border: '1px solid #fef3c7', borderRadius: '50%', width: '40px', height: '40px', display: 'flex', alignItems: 'center', justify_content: 'center', flexShrink: 0 }}>
+                    <Sparkles size={18} color="#d97706" />
+                  </div>
+                  <span style={{ fontSize: '0.88rem', color: '#1e293b', fontWeight: 700 }}>Dust-free masking &amp; cleanup</span>
                 </div>
               </div>
-            ))}
+
+              {/* Card 3: Why Dhoond? */}
+              <div style={{
+                background: '#fff',
+                border: '1px solid #e2e8f0',
+                borderRadius: '0px',
+                padding: '24px',
+                boxShadow: '0 10px 30px rgba(0,0,0,0.03)'
+              }}>
+                <h4 style={{ fontSize: '1rem', fontWeight: 800, color: '#0f172a', marginBottom: '20px' }}>Why Dhoond?</h4>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+                    <div style={{ background: '#eff6ff', borderRadius: '8px', width: '36px', height: '36px', display: 'flex', alignItems: 'center', justify_content: 'center', flexShrink: 0 }}>
+                      <ClipboardList size={18} color="#2563eb" />
+                    </div>
+                    <span style={{ fontSize: '0.85rem', color: '#334155', fontWeight: 700 }}>Verified Painting Professionals</span>
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+                    <div style={{ background: '#eff6ff', borderRadius: '8px', width: '36px', height: '36px', display: 'flex', alignItems: 'center', justify_content: 'center', flexShrink: 0 }}>
+                      <ShieldCheck size={18} color="#2563eb" />
+                    </div>
+                    <span style={{ fontSize: '0.85rem', color: '#334155', fontWeight: 700 }}>Warranty on Workmanship</span>
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+                    <div style={{ background: '#eff6ff', borderRadius: '8px', width: '36px', height: '36px', display: 'flex', alignItems: 'center', justify_content: 'center', flexShrink: 0 }}>
+                      <Sparkles size={18} color="#2563eb" />
+                    </div>
+                    <span style={{ fontSize: '0.85rem', color: '#334155', fontWeight: 700 }}>Premium Quality Paints</span>
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+                    <div style={{ background: '#eff6ff', borderRadius: '8px', width: '36px', height: '36px', display: 'flex', alignItems: 'center', justify_content: 'center', flexShrink: 0 }}>
+                      <Headphones size={18} color="#2563eb" />
+                    </div>
+                    <span style={{ fontSize: '0.85rem', color: '#334155', fontWeight: 700 }}>Transparent Pricing</span>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -724,9 +983,7 @@ export default function Painting() {
             <div className="p-intro-text" id="p-introText" style={{ opacity: 0, transform: 'translateX(28px)' }}>
               <span className="p-eyebrow">Our Story</span>
               <h2>We Make Every Wall Tell A <em>Beautiful</em> Story</h2>
-              <p>At Dhoond, we believe your home deserves more than just paint — it deserves craftsmanship. Founded in Nagpur, we've grown into India's fastest-growing home services network.</p>
-              <p>Every project is handled by background-checked, trained professionals using premium paints and proven techniques that last for years.</p>
-
+              <p style={{ fontSize: '16px', lineHeight: '1.8', color: '#4b5563', fontWeight: 400 }}>At Dhoond, we combine craftsmanship, premium materials, and expert guidance to create stunning interiors and exteriors. Whether you're refreshing a room or transforming an entire property, our professionals ensure flawless execution from start to finish.</p>
             </div>
           </div>
         </section>
@@ -735,9 +992,9 @@ export default function Painting() {
         <section className="p-stats" id="p-statsSec" aria-label="Our numbers">
           <div className="p-stats-glow" />
           {[
-            { target: 1200, label: 'Projects Completed' },
-            { target: 950, label: 'Happy Clients' },
-            { target: 80, label: 'Expert Painters' },
+            { target: 1200, label: 'Projects Delivered' },
+            { target: 950, label: 'Happy Customers' },
+            { target: 80, label: 'Verified Professionals' },
           ].map(s => (
             <div key={s.label} className="p-stat">
               <div className="num"><span className="p-cnum" data-target={s.target}>0</span><span className="plus">+</span></div>
@@ -756,10 +1013,12 @@ export default function Painting() {
           </div>
           <div className="p-process-grid">
             {[
-              { num: '01', color: 'rgba(37,99,235,0.12)', stroke: '#2563eb', icon: <><rect x="4" y="3" width="16" height="18" rx="2" /><path d="M9 7h6M9 11h6M9 15h4" /><circle cx="18" cy="19" r="3" fill="#facc15" stroke="none" /></>, title: 'Book Online', desc: 'Choose service & pickup time in 60 seconds.' },
-              { num: '02', color: 'rgba(56,189,248,0.15)', stroke: '#38bdf8', icon: <><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" /><path d="M12 12v10" stroke="#facc15" strokeWidth="2" /></>, title: 'Expert Visit', desc: 'Verified pro assessment & site inspection.' },
-              { num: '03', color: 'rgba(30,58,138,0.12)', stroke: '#1e3a8a', icon: <><path d="M18 11V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v5" /><path d="M14 10h4" /><path d="M10 20v-5a2 2 0 0 1 2-2v0a2 2 0 0 1 2 2v5" /><path d="M10 16h4" /><rect x="2" y="14" width="6" height="8" rx="1" fill="#facc15" stroke="none" /></>, title: 'Premium Execution', desc: 'Top-quality colours & dust-free application.' },
-              { num: '04', color: 'rgba(250,204,21,0.12)', stroke: '#facc15', icon: <><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" /><polyline points="22 4 12 14.01 9 11.01" strokeWidth="3" /></>, title: 'Final Walkthrough', desc: '100% satisfaction check & cleanup.' },
+              { num: '01', color: 'rgba(37,99,235,0.12)', stroke: '#2563eb', icon: <><rect x="4" y="3" width="16" height="18" rx="2" /><path d="M9 7h6M9 11h6M9 15h4" /></>, title: 'Book Inspection', desc: 'Schedule a visit online or on call in 60 seconds.' },
+              { num: '02', color: 'rgba(56,189,248,0.15)', stroke: '#38bdf8', icon: <><path d="M12 2L2 7l10 5 10-5" /></>, title: 'Site Visit & Assessment', desc: 'Expert laser measurement & dampness testing.' },
+              { num: '03', color: 'rgba(30,58,138,0.12)', stroke: '#1e3a8a', icon: <><rect x="3" y="4" width="18" height="16" rx="2" /><path d="M16 2v4M8 2v4M3 10h18" /></>, title: 'Receive Detailed Quote', desc: 'Get transparent pricing with multiple brand choices.' },
+              { num: '04', color: 'rgba(250,204,21,0.12)', stroke: '#facc15', icon: <><path d="M12 22V12M12 12a5 5 0 1 1 0-10 5 5 0 0 1 0 10z" /></>, title: 'Painting Begins', desc: 'Dust-free masking & high-speed painting execution.' },
+              { num: '05', color: 'rgba(34,197,94,0.12)', stroke: '#22c55e', icon: <><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" /><polyline points="22 4 12 14.01 9 11.01" /></>, title: 'Final Quality Check', desc: 'Thorough inspection for flawless coating & finish.' },
+              { num: '06', color: 'rgba(168,85,247,0.12)', stroke: '#a855f7', icon: <><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" /><polyline points="22 4 12 14.01 9 11.01" /></>, title: 'Project Completion', desc: 'Post-job deep cleanup & official handover.' },
             ].map(c => (
               <div key={c.num} className="process-card" data-num={c.num}>
                 <div className="p-picon" style={{ background: c.color }}>
@@ -797,25 +1056,34 @@ export default function Painting() {
             {[
               { 
                 title: 'Living Room Makeover', loc: 'Nagpur', tag: galleryActive === 'before' ? 'Before' : 'After', price: '₹18,000',
-                bg: galleryActive === 'before' ? 'url(/images/before/Gemini_Generated_Image_nixczynixczynixc.png)' : 'url(/Gemini_Generated_Image_nixczynixczynixc.png)'
+                bg: galleryActive === 'before' ? 'url(/images/before/Gemini_Generated_Image_nixczynixczynixc.png)' : 'url(/Gemini_Generated_Image_nixczynixczynixc.png)',
+                tags: ['Interior', 'Apartment']
               },
               { 
                 title: 'Bedroom Retreat', loc: 'Bengaluru, HSR Layout Sector 1', tag: galleryActive === 'before' ? 'Before' : 'After', price: '₹12,000',
-                bg: galleryActive === 'before' ? 'url(/images/before/interior.png)' : 'url(/images/interior.jpg)'
+                bg: galleryActive === 'before' ? 'url(/images/before/interior.png)' : 'url(/images/interior.jpg)',
+                tags: ['Interior', 'Apartment']
               },
               { 
                 title: 'Full Home Painting', loc: 'Bengaluru, Koramangala', tag: galleryActive === 'before' ? 'Before' : 'After', price: '₹45,000',
-                bg: galleryActive === 'before' ? 'url(/images/before/space.png)' : 'url(/space.jpg)'
+                bg: galleryActive === 'before' ? 'url(/images/before/space.png)' : 'url(/space.jpg)',
+                tags: ['Interior', 'Villa']
               },
               { 
                 title: 'Exterior Excellence', loc: 'Nagpur, Ramdaspeth', tag: galleryActive === 'before' ? 'Before' : 'After', price: '₹32,000',
-                bg: galleryActive === 'before' ? 'url(/images/before/exterior_excellence.png)' : 'url(/exterior_excellence.png)'
+                bg: galleryActive === 'before' ? 'url(/images/before/exterior_excellence.png)' : 'url(/exterior_excellence.png)',
+                tags: ['Exterior', 'Villa']
               },
             ].map(g => (
               <div key={g.title} className="gitem" tabIndex={0} role="img" aria-label={`${g.title}, ${g.loc}`}>
                 <div className="p-gbg" style={{ background: `${g.bg} center/cover no-repeat`, filter: galleryActive === 'before' ? 'grayscale(0.1) contrast(1.02)' : 'none', transition: 'filter .6s' }} />
                 <div className="p-goverlay" />
-                <div className="p-g-badge">{g.tag}</div>
+                <div style={{ position: 'absolute', top: '14px', left: '14px', display: 'flex', gap: '6px', flexWrap: 'wrap', zIndex: 10 }}>
+                  {g.tags && g.tags.map(t => (
+                    <span key={t} style={{ background: 'rgba(37,99,235,0.9)', color: '#fff', padding: '3px 8px', borderRadius: '0px', fontSize: '9px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.5px' }}>{t}</span>
+                  ))}
+                </div>
+                <div className="p-g-badge" style={{ borderRadius: '0px' }}>{g.tag}</div>
                 <div className="p-glabel">
                   <span>{g.title}</span>
                   <p>
@@ -837,9 +1105,9 @@ export default function Painting() {
           </div>
           <div className="p-tgrid">
             {[
-              { name: 'Hemanth', role: 'HSR Layout, Bengaluru', avatar: hemanthImg, text: 'Absolutely brilliant painting service! The team arrived on time, covered all furniture, and finished the job ahead of schedule. The walls look flawless!', featured: true },
-              { name: 'Rahul Mehta', role: 'Business Owner, Bengaluru', avatar: rahulImg, text: 'Good experience overall. The painting team was professional and the work quality was solid. The final finish on our exterior walls is exactly what we wanted.' },
-              { name: 'Sunita Kapoor', role: 'House Owner, Nagpur', avatar: sunitaImg, text: 'Amazing transformation! The painters fixed our long-standing dampness issues and the new interior colors look stunning. Highly recommend for home painting.' },
+              { name: 'Rakesh Kumar', city: 'Bengaluru', service: 'Interior Painting', avatar: hemanthImg, text: 'Dhoond transformed our 3BHK apartment beautifully. The painters were professional and completed the work on time.', featured: true },
+              { name: 'Rahul Mehta', city: 'Bengaluru', service: 'Exterior Painting', avatar: rahulImg, text: 'Good experience overall. The painting team was professional and the work quality was solid. The final finish on our exterior walls is exactly what we wanted.' },
+              { name: 'Sunita Kapoor', city: 'Nagpur', service: 'Waterproofing & Damp Fix', avatar: sunitaImg, text: 'Amazing transformation! The painters fixed our long-standing dampness issues and the new interior colors look stunning. Highly recommend for home painting.' },
             ].map(t => (
               <div key={t.name} className={`p-tcard${t.featured ? ' p-tcard-featured' : ''}`}>
                 <div className="p-tstars">★★★★★</div>
@@ -854,7 +1122,9 @@ export default function Painting() {
                   </div>
                   <div>
                     <div className="p-tname">{t.name}</div>
-                    <div className="p-trole">{t.role}</div>
+                    <div className="p-trole" style={{ color: t.featured ? 'rgba(255,255,255,0.6)' : '#64748b', fontSize: '11px', marginTop: '2px', fontWeight: 550 }}>
+                      {t.city} &middot; <span style={{ color: t.featured ? '#facc15' : '#2563eb' }}>{t.service}</span>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -871,8 +1141,8 @@ export default function Painting() {
               <div className="p-wlist">
                 {[
                   { icon: <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78L12 21.23l7.78-7.78a5.5 5.5 0 0 0 0-7.78z" />, title: 'Verified Pros', desc: 'Background-checked, trained experts.' },
-                  { icon: <><circle cx="12" cy="12" r="10" /><path d="M12 6v6l4 2" /></>, title: 'On-Time', desc: 'Scheduled visits, zero delays.' },
-                  { icon: <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />, title: 'Clear Pricing', desc: 'Transparent upfront quotes.' },
+                  { icon: <><circle cx="12" cy="12" r="10" /><path d="M12 6v6l4 2" /></>, title: 'On-Time Project Completion', desc: 'Scheduled visits, zero delays.' },
+                  { icon: <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />, title: 'Transparent Pricing', desc: 'Transparent upfront quotes.' },
                   { icon: <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />, title: 'Post-Job Clean', desc: 'Professional cleanup included.' },
                 ].map(w => (
                   <div key={w.title} className="p-witem">
@@ -881,6 +1151,84 @@ export default function Painting() {
                   </div>
                 ))}
               </div>
+            </div>
+          </div>
+        </section>
+
+        {/* ── BRANDS WE USE ── */}
+        <section className="p-brands" style={{ padding: '60px 5vw', background: '#fff', borderTop: '1px solid #f1f5f9', borderBottom: '1px solid #f1f5f9' }}>
+          <div style={{ maxWidth: '1100px', margin: '0 auto', textAlign: 'center' }}>
+            <span className="p-eyebrow" style={{ marginBottom: '8px' }}>Partners</span>
+            <h2 style={{ fontSize: 'clamp(24px, 4vw, 36px)', fontWeight: 900, color: '#1a1a1a', marginBottom: '32px' }}>Paint Brands We Use</h2>
+            <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', alignItems: 'center', gap: '40px', margin: '0 auto' }}>
+              {['Asian Paints', 'Berger Paints', 'Nerolac'].map(b => (
+                <div key={b} style={{ fontSize: '20px', fontWeight: 900, color: '#94a3b8', transition: 'color 0.3s', cursor: 'default', textTransform: 'uppercase', letterSpacing: '2px', display: 'flex', alignItems: 'center', gap: '8px' }}
+                     onMouseEnter={(e) => e.currentTarget.style.color = '#2563eb'}
+                     onMouseLeave={(e) => e.currentTarget.style.color = '#94a3b8'}>
+                  <Sparkles size={16} style={{ opacity: 0.5 }} />
+                  {b}
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* ── FAQ SECTION ── */}
+        <section className="p-faq" style={{ padding: '80px 5vw', background: '#f8fafc' }}>
+          <div style={{ maxWidth: '800px', margin: '0 auto' }}>
+            <div className="p-section-header">
+              <span className="p-eyebrow">Got Questions?</span>
+              <h2>Frequently Asked Questions</h2>
+              <div className="p-brush-line" />
+            </div>
+            
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', marginTop: '32px' }}>
+              {[
+                { q: "How is the painting cost calculated?", a: "Painting cost is calculated based on the total surface area to be painted (in square feet), the type of paint chosen (standard, premium, or luxury), dampness repair requirements, and labor. Our expert will provide a detailed breakdown with precise laser measurements during the site visit." },
+                { q: "Do you provide paint materials?", a: "Yes, we offer complete turnkey services including premium paint materials, primer, putty, and masking sheets. Alternatively, we also support labor-only bookings if you prefer purchasing materials independently." },
+                { q: "Which paint brands are available?", a: "We work with top-tier authorized brands including Asian Paints, Berger Paints, and Nerolac. You can choose from standard emulsions to premium luxury finishes and protective coatings." },
+                { q: "How long does a project take?", a: "A standard 2BHK interior project usually takes 4 to 6 days from start to finish. Exterior or larger commercial projects depend on the building's size and weather conditions. We provide a guaranteed timeline before commencing work." },
+                { q: "Is there a warranty?", a: "Yes! We offer a 1-Year Dhoond Painting Workmanship Warranty that covers wall peeling or execution defects. In addition, select premium paints carry manufacturer durability warranties." },
+                { q: "Is site inspection free?", a: "Yes, the site visit and digital laser measurement estimation are completely free. You only pay a nominal booking charge of ₹49 for the expert consultation, which is adjusted against your final billing." }
+              ].map((faq, idx) => {
+                const isOpen = faqOpen === idx;
+                return (
+                  <div key={idx} style={{ background: '#fff', border: '1px solid #e2e8f0', borderRadius: '0px', overflow: 'hidden', transition: 'all 0.25s' }}>
+                    <button
+                      onClick={() => setFaqOpen(isOpen ? null : idx)}
+                      style={{
+                        width: '100%',
+                        background: 'none',
+                        border: 'none',
+                        padding: '20px 24px',
+                        textAlign: 'left',
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        cursor: 'pointer',
+                        fontWeight: 700,
+                        fontSize: '0.98rem',
+                        color: isOpen ? '#2563eb' : '#1e293b',
+                        transition: 'color 0.2s',
+                        outline: 'none'
+                      }}
+                    >
+                      <span>{faq.q}</span>
+                      <span style={{ fontSize: '1.2rem', fontWeight: 400, color: '#94a3b8', transform: isOpen ? 'rotate(45deg)' : 'none', transition: 'transform 0.2s', display: 'inline-block' }}>+</span>
+                    </button>
+                    <div style={{
+                      maxHeight: isOpen ? '240px' : '0px',
+                      overflow: 'hidden',
+                      transition: 'max-height 0.3s cubic-bezier(0, 1, 0, 1), padding 0.3s',
+                      background: '#fafafa',
+                      borderTop: isOpen ? '1px solid #f1f5f9' : 'none',
+                      padding: isOpen ? '20px 24px' : '0 24px'
+                    }}>
+                      <p style={{ margin: 0, fontSize: '0.88rem', color: '#64748b', lineHeight: 1.6, fontWeight: 400 }}>{faq.a}</p>
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           </div>
         </section>

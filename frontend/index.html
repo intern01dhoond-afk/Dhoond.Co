@@ -16,10 +16,6 @@
     'https://connect.facebook.net/en_US/fbevents.js');
     fbq('init', '1961031598112857');
   </script>
-  <noscript>
-    <img height="1" width="1" style="display:none"
-    src="https://www.facebook.com/tr?id=1961031598112857&ev=PageView&noscript=1"/>
-  </noscript>
   <!-- End Facebook Pixel Code -->
   
   <!-- Google tag (gtag.js) -->
@@ -44,7 +40,7 @@
   <meta property="og:type" content="website" />
   <!-- Twitter -->
   <meta name="twitter:card" content="summary_large_image" />
-  <title>Dhoond.co — Painting Service and Electricians & Technicians at Your Doorstep in 15 Min</title>
+  <title>Dhoond.co — Painting Service and Electricians & Technicians at Your Spot in 15 Min</title>
   
   <!-- Google Maps JS API (Places + Geocoding) -->
   <script>
@@ -63,11 +59,16 @@
       }
     })();
   </script>
-  <!-- Razorpay Checkout SDK -->
-  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+  <!-- Razorpay Checkout SDK: loaded on-demand in Checkout.jsx -->
 </head>
 
 <body>
+  <!-- Facebook Pixel Code (noscript fallback) -->
+  <noscript>
+    <img height="1" width="1" style="display:none"
+    src="https://www.facebook.com/tr?id=1961031598112857&ev=PageView&noscript=1"/>
+  </noscript>
+  <!-- End Facebook Pixel Code (noscript fallback) -->
   <div id="root"></div>
   <script type="module" src="/src/main.jsx"></script>
 </body>

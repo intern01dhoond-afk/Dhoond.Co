@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { ArrowUpRight, Clock, ShieldCheck, Star, ChevronRight, ChevronLeft } from 'lucide-react';
+import { ArrowUpRight, Clock, ShieldCheck, Star, ChevronRight, ChevronLeft, Users, Smile, MapPin } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { useUI } from '../context/UIContext';
@@ -17,6 +17,12 @@ import washingIcon from '../assets/icons/washing_machine.png';
 import hemanthImg from '../assets/Kuruba Hemanth Kishore.png';
 import rahulImg from '../assets/rahul_avatar.png';
 import sunitaImg from '../assets/sunita_avatar.png';
+import painterHero from '../assets/Hero images/painter_hero.png';
+import acHero from '../assets/Hero images/ac_hero.png';
+import plumberHero from '../assets/Hero images/plumber_hero.png';
+import drillHero from '../assets/Hero images/drill_hero.png';
+
+const HERO_SLIDES = [painterHero, acHero, plumberHero, drillHero];
 
 const Home = () => {
   const navigate = useNavigate();
@@ -24,11 +30,19 @@ const Home = () => {
   const [featuredServices, setFeaturedServices] = useState([]);
   const { openComingSoon, closeComingSoon, showComingSoon, locationLabel, locationSubtext, userLat, userLng } = useUI();
   const [shakingId, setShakingId] = useState(null);
+  const [currentSlide, setCurrentSlide] = useState(0);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentSlide(prev => (prev + 1) % HERO_SLIDES.length);
+    }, 4000);
+    return () => clearInterval(timer);
+  }, []);
   
   // SEO Integration
   useSEO({
     title: "Dhoond.co — Home Services & Professional Painting in 15 Min",
-    description: "Book professional painters, electricians, AC technicians, and more in Bengaluru and Nagpur. Reliable home services delivered to your doorstep in just 15 minutes.",
+    description: "Book professional painters, electricians, AC technicians, and more in Bengaluru and Nagpur. Reliable home services delivered to your spot in just 15 minutes.",
     canonicalPath: "/"
   });
 
@@ -78,6 +92,24 @@ const Home = () => {
     (locationLabel || '').toLowerCase().includes('nagpur') ||
     (locationSubtext || '').toLowerCase().includes('nagpur');
 
+  const handleSlideClick = (idx) => {
+    if (idx === 0) { // Painter
+      if (isBengaluru) {
+        navigate('/painting');
+      } else {
+        openComingSoon();
+      }
+    } else if (idx === 1) { // AC
+      if (isNagpur) {
+        navigate('/shop?cat=technician&subcat=ac');
+      } else {
+        openComingSoon();
+      }
+    } else { // Plumber or Drill
+      openComingSoon();
+    }
+  };
+
   useEffect(() => {
     // Map service titles to distinct local images by keyword
     const pickImage = (title = '') => {
@@ -118,12 +150,12 @@ const Home = () => {
     ];
 
     const paintingFallback = [
-      { id: 'f1', title: 'Full Home Painting (2BHK)', discountPrice: 5999, originalPrice: 8999, image: '/wall1.jpg' },
-      { id: 'f2', title: 'Full Home Painting (3BHK)', discountPrice: 7999, originalPrice: 11999, image: '/interior.jpg' },
-      { id: 'f3', title: 'Exterior Weatherproof Coating', discountPrice: 12999, originalPrice: 18999, image: '/images/exterior_painting.webp' },
-      { id: 'f4', title: 'Specialty Texture Wall', discountPrice: 2499, originalPrice: 3999, image: '/texture.png' },
-      { id: 'f5', title: 'Kitchen & Bathroom Painting', discountPrice: 1999, originalPrice: 2999, image: '/wall2.jpg' },
-      { id: 'f6', title: 'Commercial Office Painting', discountPrice: 9999, originalPrice: 14999, image: '/exterior_painter.png' },
+      { id: 'f1', title: '2 BHK Full Painting (Interior)', discountPrice: 11999, originalPrice: 16999, image: '/space.jpg' },
+      { id: 'f2', title: '3 BHK Full Painting (Interior)', discountPrice: 17499, originalPrice: 24999, image: '/interior.jpg' },
+      { id: 'f3', title: '4 BHK / Villa Full Painting', discountPrice: 27999, originalPrice: 39999, image: '/images/vila.jpg' },
+      { id: 'f4', title: 'Office Painting (per 1000 sq ft)', discountPrice: 9999, originalPrice: 12999, image: '/images/office space.jpg' },
+      { id: 'f5', title: 'Exterior Wall Painting (Single)', discountPrice: 4499, originalPrice: 5999, image: '/images/single wall.jpg' },
+      { id: 'f6', title: 'Full Exterior Home Painting', discountPrice: 18999, originalPrice: 24999, image: '/images/exterior_painting.webp' },
     ];
 
     const mixedFallback = [
@@ -164,13 +196,7 @@ const Home = () => {
           return nagpurFallback.find(x => x.title === title);
         }).filter(Boolean);
 
-        const paintingServices = data.filter(s => s.title && s.title.toLowerCase().includes('paint'));
-        const bengaluruFiltered = paintingServices.length > 0 ? paintingServices.slice(0, 6).map(s => ({
-            ...s,
-            discountPrice: s.discount_price,
-            originalPrice: s.original_price,
-            image: pickImage(s.title)
-          })) : paintingFallback;
+        const bengaluruFiltered = paintingFallback;
 
         if (isNagpur && !isBengaluru) {
           setFeaturedServices(nagpurFiltered.length > 0 ? nagpurFiltered : nagpurFallback);
@@ -244,6 +270,7 @@ const Home = () => {
         .service-scroll::-webkit-scrollbar, .testi-scroll::-webkit-scrollbar { display: none; }
         .desktop-flex { display: flex; gap: 4rem; align-items: center; }
         .mobile-only { display: none; }
+        .hero-section, .hero-section * { font-family: 'Hanken Grotesk', -apple-system, BlinkMacSystemFont, sans-serif !important; }
         .hero-text { flex: 1 1 460px; order: 1; }
         .hero-video { flex: 1 1 460px; order: 2; }
         
@@ -252,9 +279,10 @@ const Home = () => {
         .floating-rating .rating-text { font-size: 1rem; }
         
         .video-container { border-radius: 32px; overflow: hidden; box-shadow: 0 30px 60px rgba(0,0,0,0.15); }
+        .hero-main-img-container { height: 350px; }
 
         @media(max-width: 768px) {
-           .desktop-flex { flex-direction: column; gap: 1rem !important; }
+           .desktop-flex { flex-direction: column; gap: 1rem !important; align-items: stretch !important; }
            .mobile-only { display: block; }
            .desktop-only { display: none !important; }
            .hero-section { padding-left: 0 !important; padding-right: 0 !important; }
@@ -267,20 +295,27 @@ const Home = () => {
            .hero-cta-row { flex-direction: column !important; width: 100%; }
            .hero-cta-row button { width: 100% !important; justify-content: center !important; margin-bottom: 0.5rem; }
            .hero-trust { justify-content: center !important; width: 100%; margin-top: 1rem; }
+           .hero-main-img-container { height: auto !important; aspect-ratio: 3/2 !important; border-radius: 16px !important; }
+           .hero-images-collage { width: 100% !important; flex: none !important; gap: 0 !important; margin-top: 1.5rem !important; padding: 0 1.25rem !important; }
            
            .service-grid-mobile { display: grid !important; grid-template-columns: repeat(3, 1fr) !important; gap: 0.75rem !important; padding: 0 !important; }
-           .service-grid-mobile > div { width: 100% !important; background: transparent !important; border: none !important; box-shadow: none !important; padding: 0 !important; border-radius: 0 !important; overflow: visible !important; }
-           .service-grid-mobile .svc-icon-box { width: 100% !important; aspect-ratio: 1 / 1 !important; height: auto !important; border-radius: 12px !important; background: #ffffff !important; }
-           .service-grid-mobile .svc-icon-box img { width: 100% !important; height: 100% !important; object-fit: contain !important; object-position: center !important; padding: 4px !important; }
-           .service-grid-mobile .svc-label { font-size: 0.65rem !important; font-weight: 700 !important; }
-           .service-grid-mobile .svc-tag { font-size: 6px !important; padding: 1px 4px !important; }
+           .service-grid-mobile > div { width: 100% !important; background: transparent !important; border: none !important; box-shadow: none !important; padding: 0 !important; border-radius: 0 !important; overflow: visible !important; height: 100% !important; }
+           .service-grid-mobile .svc-icon-box { width: 100% !important; aspect-ratio: 1 / 1 !important; height: auto !important; border-radius: 20px !important; background: #ffffff !important; }
+           .service-grid-mobile .svc-icon-box img { width: 100% !important; height: 100% !important; object-fit: cover !important; object-position: center !important; padding: 0 !important; }
+           .service-grid-mobile .svc-label { font-size: 0.78rem !important; font-weight: 800 !important; }
+           .service-grid-mobile .svc-tag { font-size: 8px !important; padding: 2px 6px !important; border-radius: 99px !important; }
            
+           .mobile-center { text-align: center !important; }
+           .mobile-center span { display: inline-block !important; margin-left: auto !important; margin-right: auto !important; }
+           .mobile-center-row { flex-direction: column !important; align-items: center !important; text-align: center !important; gap: 1rem !important; }
+
            .availability-tag { font-size: 6px !important; padding: 1px 3px !important; border-radius: 3px !important; margin-top: 2px !important; }
            .painting-highlight { border: 2.5px solid #facc15 !important; background: #fffcf0 !important; }
            
-           .section-pad { padding: 1.5rem 5% 3rem !important; }
-           .section-pad h2 { font-size: 1.75rem !important; line-height: 1.2 !important; }
-           .section-pad p { font-size: 0.85rem !important; }
+            .section-pad { padding: 1.5rem 5% 3rem !important; }
+            .section-pad * { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important; }
+            .section-pad h2 { font-size: 1.75rem !important; line-height: 1.2 !important; }
+            .section-pad p { font-size: 0.85rem !important; }
            .pop-scroll-mobile { padding-left: 5% !important; padding-right: 5% !important; scroll-snap-type: x mandatory; }
            .pop-scroll-mobile > div { flex: 0 0 240px !important; scroll-snap-align: start; }
             .svc-img-container { height: 180px !important; }
@@ -308,8 +343,7 @@ const Home = () => {
         @media(min-width: 769px) {
            .service-grid { display: flex !important; flex-wrap: wrap; justify-content: center; gap: 2rem !important; }
            .pop-grid { display: grid !important; grid-template-columns: repeat(4, 1fr) !important; }
-           .testi-grid { display: grid !important; grid-template-columns: repeat(3, 1fr) !important; }
-           .stagger-card:nth-child(even) { margin-top: 32px; }
+           .testi-grid { display: flex !important; justify-content: center; gap: 2rem !important; flex-wrap: wrap; }
         }
 
         @keyframes shake {
@@ -332,29 +366,81 @@ const Home = () => {
           0%, 100% { transform: translateY(0); }
           50% { transform: translateY(-20px); }
         }
+
+        .stats-grid { display: flex; justify-content: space-between; align-items: center; width: 100%; flex-wrap: wrap; gap: 1.5rem; }
+        .stat-item-card {
+          display: flex;
+          align-items: center;
+          gap: 1rem;
+          flex: 1 1 220px;
+          justify-content: flex-start;
+          padding: 0.75rem 1rem;
+          background: #ffffff;
+          border: 1px solid #f1f5f9;
+          border-radius: 16px;
+          box-shadow: 0 4px 15px rgba(0,0,0,0.02);
+          transition: transform 0.2s ease;
+        }
+        .stat-num { font-weight: 800; font-size: 1.25rem; color: #0f172a; line-height: 1.2; }
+        .stat-lbl { color: #64748b; font-size: 0.8rem; font-weight: 600; margin-top: 2px; }
+        .stat-icon-wrapper {
+          width: 44px;
+          height: 44px;
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          flex-shrink: 0;
+        }
+
+        @media(max-width: 768px) {
+          .stats-grid {
+            display: grid !important;
+            grid-template-columns: repeat(2, 1fr) !important;
+            gap: 0.75rem !important;
+            width: 100% !important;
+          }
+          .stat-item-card {
+            flex: none !important;
+            padding: 0.75rem !important;
+            gap: 0.5rem !important;
+            border-radius: 12px !important;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.02) !important;
+          }
+          .stat-num { font-size: 1rem !important; }
+          .stat-lbl { font-size: 0.68rem !important; margin-top: 1px !important; }
+          .stat-icon-wrapper {
+            width: 36px !important;
+            height: 36px !important;
+          }
+          .stat-icon-wrapper svg {
+            width: 16px !important;
+            height: 16px !important;
+          }
+        }
       `}</style>
 
       <div style={{ position: 'relative', zIndex: 1 }}>
-        <section className="hero-section" style={{ background: 'linear-gradient(180deg, #f8fafc 0%, #ffffff 100%)', borderBottom: '1px solid #f1f5f9', padding: '2.5rem 5% 3rem' }}>
+        <section className="hero-section" style={{ background: 'linear-gradient(180deg, #f8fafc 0%, #ffffff 100%)', borderBottom: '1px solid #f1f5f9', padding: '2.5rem 5% 2rem' }}>
           <div style={{ maxWidth: '1280px', margin: '0 auto' }}>
             <div className="desktop-flex">
               <div className="hero-text">
-                <span style={{ display: 'inline-block', padding: '0.4rem 1rem', background: 'linear-gradient(135deg, #fef3c7 0%, #fde68a 100%)', color: '#92400e', borderRadius: '99px', fontWeight: 700, fontSize: '0.68rem', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '1.75rem', boxShadow: '0 2px 8px rgba(250,204,21,0.15)' }}>
-                  #1 Rated Commercial &amp; Home Services
+                <span style={{ display: 'inline-block', padding: '0.45rem 1.15rem', background: '#eff6ff', color: '#1d4ed8', borderRadius: '99px', fontWeight: 700, fontSize: '0.75rem', letterSpacing: '0.06em', textTransform: 'uppercase', marginBottom: '1.75rem', border: '1px solid #dbeafe' }}>
+                  🛡️ VERIFIED HOME &amp; COMMERCIAL SERVICES
                 </span>
-                <h1 style={{ fontSize: 'clamp(2.6rem, 5.5vw, 4.5rem)', fontWeight: 900, color: '#0f172a', lineHeight: 1.06, marginBottom: '1.25rem', letterSpacing: '-0.045em', maxWidth: '560px' }}>
-                  Home &amp; Commercial<br />
-                  <span style={{ background: 'linear-gradient(135deg, #2563eb 0%, #7c3aed 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', fontWeight: 800 }}>Services At Your</span><br />
-                  <span style={{ color: '#0f172a' }}>Doorstep</span>
+                <h1 style={{ fontSize: 'clamp(2.5rem, 5vw, 4.25rem)', fontWeight: 700, color: '#0f172a', lineHeight: 1.15, marginBottom: '1.5rem', letterSpacing: '-0.02em', maxWidth: '620px' }}>
+                  Reliable Home &amp;<br />
+                  Commercial Services,<br />
+                  <span style={{ color: '#0a57d0', fontWeight: 700 }}>Right at Your Spot</span>
                 </h1>
-                <p style={{ fontSize: '1.05rem', fontWeight: 400, color: '#64748b', marginBottom: '2rem', lineHeight: 1.7, maxWidth: '440px', letterSpacing: '0.005em' }}>
-                  Trusted professionals for your commercial &amp; household needs — delivered instantly, from routine fixes to major updates.
+                <p style={{ fontSize: '1.05rem', fontWeight: 400, color: '#64748b', marginBottom: '2rem', lineHeight: 1.7, maxWidth: '500px' }}>
+                  From routine maintenance to major upgrades — book trusted professionals for all your home and commercial service needs.
                 </p>
 
-                <div className="hero-cta-row" style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem', marginBottom: '1.75rem' }}>
+                <div className="hero-cta-row" style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem', marginBottom: '2rem' }}>
                   <button
                     onClick={() => servicesRef.current?.scrollIntoView({ behavior: 'smooth' })}
-                    style={{ background: 'linear-gradient(135deg, #2563eb 0%, #1e40af 100%)', color: '#fff', padding: '1rem 2rem', borderRadius: '14px', fontWeight: 800, fontSize: '1rem', border: 'none', cursor: 'pointer', boxShadow: '0 8px 30px rgba(37,99,235,0.3)', display: 'inline-flex', alignItems: 'center', gap: '8px', transition: 'all 0.3s ease' }}
+                    style={{ background: '#0b3cba', color: '#fff', padding: '1rem 2.25rem', borderRadius: '14px', fontWeight: 800, fontSize: '1rem', border: 'none', cursor: 'pointer', boxShadow: '0 8px 30px rgba(11,60,186,0.3)', display: 'inline-flex', alignItems: 'center', gap: '8px', transition: 'all 0.3s ease' }}
                     className="btn-hover"
                   >
                     Book a Service <ArrowUpRight size={18} strokeWidth={3} />
@@ -367,70 +453,172 @@ const Home = () => {
                         openComingSoon();
                       }
                     }}
-                    style={{ background: '#f0f5ff', color: '#1e40af', padding: '1rem 2rem', borderRadius: '14px', fontWeight: 700, fontSize: '1rem', border: '1.5px solid #bfdbfe', cursor: 'pointer', transition: 'all 0.3s ease' }}
+                    style={{ background: '#ffffff', color: '#0b3cba', padding: '1rem 2.25rem', borderRadius: '14px', fontWeight: 700, fontSize: '1rem', border: '1.5px solid #0b3cba', cursor: 'pointer', transition: 'all 0.3s ease' }}
                     className="btn-hover"
                   >
                     Explore Painting
                   </button>
                 </div>
 
-                <div className="hero-trust" style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                  <div style={{ display: 'flex' }}>
-                    {['#6366f1', '#2563eb', '#0891b2', '#059669'].map((c, i) => (
-                      <div key={i} style={{ width: '28px', height: '28px', borderRadius: '50%', background: c, border: '2px solid #fff', marginLeft: i > 0 ? '-8px' : 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.6rem', color: '#fff', fontWeight: 700 }}>
-                        {['A', 'R', 'S', 'P'][i]}
-                      </div>
-                    ))}
-                  </div>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '1px' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '3px' }}>
-                      {[1, 2, 3, 4, 5].map(i => <Star key={i} size={12} fill="#facc15" color="#facc15" />)}
-                      <span style={{ fontWeight: 800, fontSize: '0.78rem', color: '#0f172a', marginLeft: '2px' }}>4.9</span>
-                    </div>
-                    <span style={{ fontWeight: 500, fontSize: '0.75rem', color: '#94a3b8' }}>from 100+ verified reviews</span>
-                  </div>
+                {/* Trust Guarantee Badges */}
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.6rem' }}>
+                  {[
+                    { icon: '✓', text: 'Verified Professionals' },
+                    { icon: '✓', text: 'Upfront Pricing' },
+                    { icon: '✓', text: 'Service Warranty' },
+                    { icon: '✓', text: 'Secure Payments' },
+                  ].map(b => (
+                    <span key={b.text} style={{ display: 'inline-flex', alignItems: 'center', gap: '5px', background: '#f0fdf4', border: '1.5px solid #bbf7d0', color: '#166534', fontSize: '0.78rem', fontWeight: 700, padding: '6px 14px', borderRadius: '99px', whiteSpace: 'nowrap' }}>
+                      <span style={{ color: '#16a34a', fontWeight: 900 }}>{b.icon}</span> {b.text}
+                    </span>
+                  ))}
                 </div>
               </div>
 
-              <div className="hero-video" style={{ position: 'relative' }}>
-                <div className="video-container" style={{ background: '#f8fafc', minHeight: '260px' }}>
-                  <video 
-                    autoPlay 
-                    loop 
-                    muted 
-                    playsInline 
-                    poster={heroPoster}
-                    style={{ width: '100%', display: 'block', objectFit: 'cover' }}
-                  >
-                    <source src={heroVideo} type="video/mp4" />
-                    Your browser does not support the video tag.
-                  </video>
-                </div>
-                <div className="floating-rating" style={{ position: 'absolute', background: 'rgba(255,255,255,0.95)', backdropFilter: 'blur(10px)', boxShadow: '0 20px 50px rgba(0,0,0,0.18)', display: 'flex', flexDirection: 'column', zIndex: 10 }}>
-                  <div className="rating-row" style={{ display: 'flex', alignItems: 'center', fontWeight: 900, color: '#111' }}>
-                    <Star size={24} fill="#facc15" color="#facc15" /> 4.9 Rating
+              <div className="hero-images-collage" style={{ position: 'relative', flex: '1 1 540px', order: 2, display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+                {/* Main image / mobile slider */}
+                <div className="hero-main-img-container" style={{ position: 'relative', width: '100%', borderRadius: '24px', overflow: 'hidden', boxShadow: '0 20px 40px rgba(0,0,0,0.06)' }}>
+                  {/* Desktop static image */}
+                  <img src={painterHero} alt="Reliable Home & Commercial Services" style={{ width: '100%', height: '100%', objectFit: 'cover' }} className="desktop-only" />
+                  
+                  {/* Mobile hero slider */}
+                  <div className="mobile-only" style={{ width: '100%', height: '100%', position: 'absolute', inset: 0 }}>
+                    {HERO_SLIDES.map((slide, idx) => (
+                      <div
+                        key={idx}
+                        onClick={() => handleSlideClick(idx)}
+                        style={{
+                          position: 'absolute',
+                          inset: 0,
+                          opacity: currentSlide === idx ? 1 : 0,
+                          transition: 'opacity 0.6s ease-in-out',
+                          zIndex: currentSlide === idx ? 2 : 1,
+                          cursor: 'pointer'
+                        }}
+                      >
+                        <img src={slide} alt={`Slide ${idx + 1}`} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                      </div>
+                    ))}
+                    
+                    {/* Slider indicators */}
+                    <div style={{ position: 'absolute', bottom: '12px', left: '50%', transform: 'translateX(-50%)', display: 'flex', gap: '6px', zIndex: 10 }}>
+                      {HERO_SLIDES.map((_, idx) => (
+                        <button
+                          key={idx}
+                          onClick={(e) => { e.stopPropagation(); setCurrentSlide(idx); }}
+                          style={{
+                            width: currentSlide === idx ? '16px' : '6px',
+                            height: '6px',
+                            borderRadius: '99px',
+                            background: currentSlide === idx ? '#ffffff' : 'rgba(255, 255, 255, 0.5)',
+                            border: 'none',
+                            cursor: 'pointer',
+                            padding: 0,
+                            transition: 'all 0.3s ease'
+                          }}
+                          aria-label={`Go to slide ${idx + 1}`}
+                        />
+                      ))}
+                    </div>
                   </div>
-                  <span className="rating-text" style={{ color: '#4b5563', fontWeight: 600 }}>1 Lakh+ active bookings</span>
+                </div>
+                
+                {/* Bottom Row */}
+                <div className="desktop-only" style={{ display: 'flex', gap: '1rem', marginTop: '0.25rem' }}>
+                  {/* Spacer matching the width of the absolute Rating Card */}
+                  <div style={{ width: '180px', flexShrink: 0 }} className="desktop-only" />
+                  
+                  {/* 3 small images */}
+                  <div style={{ flex: 1, height: '130px', borderRadius: '20px', overflow: 'hidden', boxShadow: '0 10px 25px rgba(0,0,0,0.04)' }}>
+                    <img src={acHero} alt="AC Service" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  </div>
+                  <div style={{ flex: 1, height: '130px', borderRadius: '20px', overflow: 'hidden', boxShadow: '0 10px 25px rgba(0,0,0,0.04)' }}>
+                    <img src={plumberHero} alt="Plumbing Service" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  </div>
+                  <div style={{ flex: 1, height: '130px', borderRadius: '20px', overflow: 'hidden', boxShadow: '0 10px 25px rgba(0,0,0,0.04)' }}>
+                    <img src={drillHero} alt="Drilling Service" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  </div>
+                </div>
+
+                {/* Rating Card Overlay */}
+                <div style={{
+                  position: 'absolute',
+                  left: '10px',
+                  bottom: '0px',
+                  width: '160px',
+                  background: '#ffffff',
+                  borderRadius: '16px',
+                  padding: '0.85rem 1rem',
+                  boxShadow: '0 15px 30px rgba(0,0,0,0.1)',
+                  border: '1px solid #f1f5f9',
+                  zIndex: 10,
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '0.5rem'
+                }} className="desktop-only">
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '5px', fontWeight: 800, color: '#0f172a', fontSize: '1.05rem' }}>
+                    <Star size={16} fill="#facc15" color="#facc15" style={{ flexShrink: 0 }} /> 4.9 / 5
+                  </div>
+                  <span style={{ color: '#64748b', fontSize: '0.7rem', fontWeight: 600 }}>from 100+ verified reviews</span>
+                  
+                  <div style={{ display: 'flex', alignItems: 'center', margin: '2px 0' }}>
+                    {[sunitaImg, rahulImg, hemanthImg].map((avatar, i) => (
+                      <img
+                        key={i}
+                        src={avatar}
+                        alt="User Avatar"
+                        style={{
+                          width: '24px',
+                          height: '24px',
+                          borderRadius: '50%',
+                          border: '1.5px solid #fff',
+                          marginLeft: i > 0 ? '-8px' : '0px',
+                          objectFit: 'cover'
+                        }}
+                      />
+                    ))}
+                    <div style={{
+                      width: '24px',
+                      height: '24px',
+                      borderRadius: '50%',
+                      border: '1.5px solid #fff',
+                      marginLeft: '-8px',
+                      background: '#eff6ff',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      fontSize: '8px',
+                      fontWeight: 800,
+                      color: '#2563eb'
+                    }}>+99</div>
+                  </div>
+                  
+                  <div style={{ height: '1px', background: '#f1f5f9', margin: '2px 0' }} />
+                  
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '1px' }}>
+                    <span style={{ fontWeight: 800, fontSize: '1.05rem', color: '#0f172a' }}>1 Lakh+</span>
+                    <span style={{ color: '#64748b', fontSize: '0.7rem', fontWeight: 600 }}>Active Bookings</span>
+                  </div>
                 </div>
               </div>
             </div>
 
             <div id="services-section" ref={servicesRef} style={{ marginTop: '2rem' }}>
-              <div style={{ marginBottom: '1.25rem' }}>
+              <div style={{ marginBottom: '1.25rem' }} className="mobile-center">
                 <span style={{ display: 'inline-block', background: '#eff6ff', color: '#2563eb', fontSize: '0.7rem', fontWeight: 800, padding: '3px 10px', borderRadius: '99px', letterSpacing: '0.07em', textTransform: 'uppercase', marginBottom: '0.5rem' }}>Our Services</span>
-                <h3 style={{ fontSize: 'clamp(1.15rem, 2.5vw, 1.4rem)', fontWeight: 900, color: '#0f172a', margin: 0, letterSpacing: '-0.02em' }}>Trusted Commercial &amp; Home Services</h3>
+                <h3 style={{ fontSize: 'clamp(1.15rem, 2.5vw, 1.4rem)', fontWeight: 900, color: '#0f172a', margin: 0, letterSpacing: '-0.02em' }}>Trusted Home &amp; Commercial Services</h3>
               </div>
               <div className="service-scroll service-grid service-grid-mobile" style={{ display: 'flex', gap: '1.25rem', overflowX: 'auto', paddingBottom: '1rem' }}>
                 {[
                   { label: 'Painting', img: painterIcon, cat: 'painter', accent: '#d97706' },
-                  { label: 'AC Tech', img: acIcon, cat: 'technician', subcat: 'ac', accent: '#0284c7' },
-                  { label: 'RO Tech', img: roIcon, cat: 'technician', subcat: 'ro', accent: '#0891b2' },
+                  { label: 'AC Service', img: acIcon, cat: 'technician', subcat: 'ac', accent: '#0284c7' },
+                  { label: 'RO Service', img: roIcon, cat: 'technician', subcat: 'ro', accent: '#0891b2' },
                   { label: 'Electrician', img: electricianIcon, cat: 'electrician', accent: '#ca8a04' },
-                  { label: 'Washing Mach.', img: washingIcon, cat: 'technician', subcat: 'washing', accent: '#4f46e5' },
-                  { label: 'Refrigerator', img: refrigeratorIcon, cat: 'technician', subcat: 'fridge', accent: '#059669' }
+                  { label: 'Washing Machine Repair', img: washingIcon, cat: 'technician', subcat: 'washing', accent: '#4f46e5' },
+                  { label: 'Refrigerator Repair', img: refrigeratorIcon, cat: 'technician', subcat: 'fridge', accent: '#059669' }
                 ].map((item) => {
                   const isAvailable = (item.label === 'Painting' && isBengaluru) ||
-                    (item.label !== 'Painting' && item.label !== 'Refrigerator' && isNagpur);
+                    (item.label !== 'Painting' && item.label !== 'Refrigerator Repair' && isNagpur);
                   const isHighlight = item.label === 'Painting' && isAvailable;
                   return (
                     <div
@@ -458,6 +646,7 @@ const Home = () => {
                         display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.8rem',
                         cursor: 'pointer', background: 'transparent', border: 'none', padding: 0,
                         transition: 'transform 0.2s ease',
+                        height: '100%',
                       }}
                       className={`${shakingId === item.label ? 'shake-anim' : ''}`}
                     >
@@ -475,23 +664,21 @@ const Home = () => {
                           src={item.img}
                           alt={item.label}
                           style={{
-                            width: '100%', height: '100%',
-                            objectFit: 'cover', objectPosition: 'top center',
-                            display: 'block',
-                            filter: isAvailable ? 'none' : 'grayscale(0.85) opacity(0.65)',
+                            width: '100%',
+                            height: '100%',
+                            objectFit: 'cover',
+                            objectPosition: 'center',
+                            display: 'block'
                           }}
                         />
-                        {!isAvailable && (
-                          <div style={{ position: 'absolute', top: 10, right: 10, width: '22px', height: '22px', background: 'rgba(255,255,255,0.95)', border: '1.5px solid #e2e8f0', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '10px' }}>🔒</div>
-                        )}
                       </div>
                       {/* Label + tag below the box */}
-                      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '5px', width: '100%' }}>
+                      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '5px', width: '100%', flexGrow: 1 }}>
                         <span className="svc-label" style={{ fontSize: '1.05rem', fontWeight: 800, color: isAvailable ? '#0f172a' : '#94a3b8', textAlign: 'center', lineHeight: 1.25 }}>{item.label}</span>
                         {isAvailable ? (
-                          <span className="svc-tag" style={{ fontSize: '10px', fontWeight: 800, color: item.accent, background: `${item.accent}12`, border: `1.5px solid ${item.accent}25`, padding: '3px 10px', borderRadius: '99px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>🔥 Available</span>
+                          <span className="svc-tag" style={{ fontSize: '10px', fontWeight: 800, color: item.accent, background: `${item.accent}12`, border: `1.5px solid ${item.accent}25`, padding: '3px 10px', borderRadius: '99px', textTransform: 'uppercase', letterSpacing: '0.05em', marginTop: 'auto' }}>🔥 Available Now</span>
                         ) : (
-                          <span className="svc-tag" style={{ fontSize: '10px', fontWeight: 700, color: '#cbd5e1', textAlign: 'center', letterSpacing: '0.05em', textTransform: 'uppercase' }}>Coming Soon</span>
+                          <span className="svc-tag" style={{ fontSize: '10px', fontWeight: 700, color: '#cbd5e1', textAlign: 'center', letterSpacing: '0.05em', textTransform: 'uppercase', marginTop: 'auto' }}>Coming Soon</span>
                         )}
                       </div>
                     </div>
@@ -502,23 +689,70 @@ const Home = () => {
           </div>
         </section>
 
-        <section className="section-pad fade-up parallax-bg" style={{ background: 'linear-gradient(180deg, #f8fafc 0%, #fff 100%)', padding: '5rem 5% 8rem' }}>
+        {/* Bottom Stats Bar */}
+        <section style={{
+          background: '#ffffff',
+          borderBottom: '1px solid #e2e8f0',
+          padding: '1.5rem 5%',
+          position: 'relative',
+          zIndex: 5
+        }}>
+          <div className="stats-grid" style={{
+            maxWidth: '1280px',
+            margin: '0 auto'
+          }}>
+            {[
+              {
+                icon: <Users size={20} color="#2563eb" />,
+                num: '1,24,783+',
+                label: 'Services Completed',
+                bgColor: '#eff6ff'
+              },
+              {
+                icon: <Smile size={20} color="#ca8a04" />,
+                num: '98%',
+                label: 'Customer Satisfaction',
+                bgColor: '#fef9c3'
+              },
+              {
+                icon: <MapPin size={20} color="#7c3aed" />,
+                num: '25+',
+                label: 'Areas in Bengaluru',
+                bgColor: '#f5f3ff'
+              },
+              {
+                icon: <Clock size={20} color="#dc2626" />,
+                num: '15 Min',
+                label: 'Average Response Time',
+                bgColor: '#fef2f2'
+              }
+            ].map((stat, i) => (
+              <div key={i} className="stat-item-card">
+                <div className="stat-icon-wrapper" style={{ background: stat.bgColor }}>
+                  {stat.icon}
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column' }}>
+                  <span className="stat-num">{stat.num}</span>
+                  <span className="stat-lbl">{stat.label}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        <section className="section-pad fade-up parallax-bg" style={{ background: 'linear-gradient(180deg, #f8fafc 0%, #fff 100%)', padding: '2.5rem 5% 3rem' }}>
           <div style={{ maxWidth: '1280px', margin: '0 auto' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '3rem' }}>
-              <div>
-                <span style={{ display: 'inline-block', background: '#dbeafe', color: '#1d4ed8', fontSize: '0.65rem', fontWeight: 800, padding: '4px 14px', borderRadius: '99px', letterSpacing: '0.14em', textTransform: 'uppercase', marginBottom: '1rem' }}>Popular Choices</span>
-                <h2 style={{ fontSize: 'clamp(2.25rem, 5vw, 3.5rem)', fontWeight: 900, color: '#0f172a', margin: '0 0 0.75rem', lineHeight: 1.08, letterSpacing: '-0.03em' }}>Top Demanding Services</h2>
-                <p style={{ color: '#94a3b8', fontWeight: 300, fontSize: '1.05rem', margin: 0, letterSpacing: '0.01em', lineHeight: 1.65 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '3rem' }} className="mobile-center-row">
+              <div className="mobile-center">
+                <span style={{ display: 'inline-block', background: '#eff6ff', color: '#1d4ed8', fontSize: '0.65rem', fontWeight: 700, padding: '4px 14px', borderRadius: '99px', letterSpacing: '0.14em', textTransform: 'uppercase', marginBottom: '1rem', border: '1px solid #dbeafe' }}>Popular Choices</span>
+                <h2 style={{ fontSize: 'clamp(2.25rem, 5vw, 3.5rem)', fontWeight: 700, color: '#0f172a', margin: '0 0 0.75rem', lineHeight: 1.08, letterSpacing: '-0.03em' }}>Top Demanding Services</h2>
+                <p style={{ color: '#94a3b8', fontWeight: 400, fontSize: '1.05rem', margin: 0, letterSpacing: '0.01em', lineHeight: 1.65 }}>
                   {isNagpur && !isBengaluru ? 'Reliable home and commercial services at transparent pricing' : isBengaluru && !isNagpur ? 'Book a consultation — our expert visits and gives exact pricing' : 'Explore our top-rated services across India'}
                 </p>
               </div>
-              <div className="desktop-only" style={{ display: 'flex', gap: '0.5rem' }}>
-                <button onClick={scrollLeft} style={{ width: '48px', height: '48px', borderRadius: '50%', background: '#fff', border: '1.5px solid #e2e8f0', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 8px rgba(0,0,0,0.06)' }}><ChevronLeft size={22} /></button>
-                <button onClick={scrollRight} style={{ width: '48px', height: '48px', borderRadius: '50%', background: '#fff', border: '1.5px solid #e2e8f0', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 8px rgba(0,0,0,0.06)' }}><ChevronRight size={22} /></button>
-              </div>
             </div>
 
-            <div ref={scrollContainerRef} className="service-scroll pop-scroll-mobile" style={{ display: 'flex', gap: '1.25rem', overflowX: 'auto', paddingBottom: '2rem' }}>
+            <div ref={scrollContainerRef} className="service-scroll pop-scroll-mobile" style={{ display: 'flex', gap: '1.25rem', overflowX: 'auto', paddingBottom: '2rem', alignItems: 'stretch' }}>
               {featuredServices.map((s, idx) => {
                 const discountPrice = s.discount_price ?? s.discountPrice;
                 const originalPrice = s.original_price ?? s.originalPrice;
@@ -551,12 +785,14 @@ const Home = () => {
                     style={{
                       flex: '0 0 auto', width: '260px',
                       background: '#fff',
-                      borderRadius: '24px',
+                      borderRadius: '16px',
                       overflow: 'hidden',
                       border: '1px solid #e2e8f0',
                       cursor: 'pointer',
                       boxShadow: '0 4px 16px rgba(0,0,0,0.05)',
                       transition: 'all 0.3s cubic-bezier(0.34,1.56,0.64,1)',
+                      display: 'flex',
+                      flexDirection: 'column',
                     }}
                     className="card-hover-lift"
                   >
@@ -573,12 +809,12 @@ const Home = () => {
                         }}
                       />
                       {/* Star badge */}
-                      <div style={{ position: 'absolute', top: '12px', left: '12px', background: 'rgba(255,255,255,0.95)', backdropFilter: 'blur(6px)', padding: '4px 10px', borderRadius: '99px', fontSize: '0.75rem', fontWeight: 800, display: 'flex', alignItems: 'center', gap: '4px', boxShadow: '0 2px 8px rgba(0,0,0,0.12)' }}>
+                      <div style={{ position: 'absolute', top: '12px', left: '12px', background: 'rgba(255,255,255,0.95)', backdropFilter: 'blur(6px)', padding: '4px 10px', borderRadius: '99px', fontSize: '0.75rem', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '4px', boxShadow: '0 2px 8px rgba(0,0,0,0.12)' }}>
                         <Star size={12} fill="#facc15" color="#facc15" /> {rating}
                       </div>
                       {/* Discount badge */}
                       {discount > 0 && (
-                        <div style={{ position: 'absolute', top: '12px', right: '12px', background: '#22c55e', color: '#fff', padding: '4px 8px', borderRadius: '99px', fontSize: '0.7rem', fontWeight: 800 }}>
+                        <div style={{ position: 'absolute', top: '12px', right: '12px', background: '#22c55e', color: '#fff', padding: '4px 8px', borderRadius: '99px', fontSize: '0.7rem', fontWeight: 700 }}>
                           {discount}% OFF
                         </div>
                       )}
@@ -586,20 +822,20 @@ const Home = () => {
                     </div>
 
                     {/* Body */}
-                    <div className="svc-card-body" style={{ padding: '0.75rem 1rem 0.85rem' }}>
-                      <h3 style={{ fontSize: '0.95rem', fontWeight: 800, color: '#0f172a', margin: '0 0 0.4rem', lineHeight: 1.3, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+                    <div className="svc-card-body" style={{ padding: '0.75rem 1rem 0.85rem', display: 'flex', flexDirection: 'column', flexGrow: 1 }}>
+                      <h3 style={{ fontSize: '0.95rem', fontWeight: 600, color: '#0f172a', margin: '0 0 0.4rem', lineHeight: 1.3, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
                         {s.title}
                       </h3>
 
                       <div style={{ marginBottom: '0.9rem' }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                          <span style={{ fontWeight: 900, color: '#0f172a', fontSize: '1.05rem' }}>{'₹'}{Number(discountPrice).toLocaleString('en-IN')}</span>
+                          <span style={{ fontWeight: 700, color: '#0f172a', fontSize: '1.05rem' }}>{'₹'}{Number(discountPrice).toLocaleString('en-IN')}</span>
                           {originalPrice > discountPrice && (
-                            <span style={{ color: '#94a3b8', textDecoration: 'line-through', fontSize: '0.85rem', fontWeight: 600 }}>{'₹'}{Number(originalPrice).toLocaleString('en-IN')}</span>
+                            <span style={{ color: '#94a3b8', textDecoration: 'line-through', fontSize: '0.85rem', fontWeight: 500 }}>{'₹'}{Number(originalPrice).toLocaleString('en-IN')}</span>
                           )}
                         </div>
                         {isConsult && (
-                          <span style={{ color: '#6366f1', fontSize: '0.7rem', fontWeight: 700, marginTop: '2px', display: 'inline-block' }}>Final Price After Consultation</span>
+                          <span style={{ color: '#6366f1', fontSize: '0.7rem', fontWeight: 600, marginTop: '2px', display: 'inline-block' }}>Starting Price</span>
                         )}
                       </div>
 
@@ -610,9 +846,10 @@ const Home = () => {
                           background: isConsult ? 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)' : '#0f172a',
                           color: '#fff', border: 'none',
                           padding: '0.7rem 1rem',
-                          borderRadius: '12px', fontWeight: 800, fontSize: '0.875rem', cursor: 'pointer',
+                          borderRadius: '12px', fontWeight: 700, fontSize: '0.875rem', cursor: 'pointer',
                           display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px',
                           transition: 'opacity 0.2s',
+                          marginTop: 'auto',
                         }}
                       onClick={(e) => {
                         e.stopPropagation();
@@ -661,6 +898,7 @@ const Home = () => {
         <section className="section-pad fade-up" style={{
           background: '#0f172a',
           position: 'relative', overflow: 'hidden',
+          padding: '3rem 5%',
         }}>
           {/* Decorative glow orbs */}
           <div style={{ position: 'absolute', top: '-120px', left: '-80px', width: '500px', height: '500px', borderRadius: '50%', background: 'radial-gradient(circle, rgba(99,102,241,0.2) 0%, transparent 65%)', pointerEvents: 'none' }} />
@@ -673,7 +911,7 @@ const Home = () => {
           <div className="why-dhoond-gap" style={{ display: 'flex', gap: '5rem', alignItems: 'center', flexWrap: 'wrap' }}>
 
               {/* ── LEFT COLUMN ── */}
-              <div className="why-dhoond-content" style={{ flex: '1 1 480px', minWidth: 0, padding: '2rem 0' }}>
+              <div className="why-dhoond-content" style={{ flex: '1 1 480px', minWidth: 0, padding: '0' }}>
                 {/* Label */}
                 <span style={{ display: 'inline-block', background: 'linear-gradient(135deg, rgba(99,102,241,0.15) 0%, rgba(139,92,246,0.15) 100%)', border: '1px solid rgba(139,92,246,0.3)', color: '#c4b5fd', fontSize: '0.72rem', fontWeight: 800, padding: '5px 16px', borderRadius: '99px', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '1.25rem', boxShadow: '0 0 15px rgba(139,92,246,0.1)' }}>
                   Why Dhoond?
@@ -685,15 +923,15 @@ const Home = () => {
                   </span>{' '}Happy Customers
                 </h2>
                 <p className="description" style={{ color: '#cbd5e1', fontSize: '1.05rem', fontWeight: 500, maxWidth: '480px', margin: '0 0 3.5rem', lineHeight: 1.65 }}>
-                  India's most trusted home &amp; commercial services platform — professional, verified, on-demand.
+                  India's trusted platform for home and commercial services — verified professionals, transparent pricing, and on-demand support.
                 </p>
 
                 {/* Features List */}
                 <div className="features-list" style={{ display: 'flex', flexDirection: 'column', gap: '2rem', marginBottom: '2.5rem' }}>
                   {[
-                    { icon: <Clock size={22} />, title: '15 Min Response Time', desc: 'Experts assigned instantly after booking — no waiting, no delays.', color: '#818cf8' },
-                    { icon: <ShieldCheck size={22} />, title: 'Verified & Insured Experts', desc: 'Every pro is background-checked, trained, and insured.', color: '#38bdf8' },
-                    { icon: <Star size={22} />, title: '4.9/5 Consistent Rating', desc: 'Quality guaranteed — or we redo the job, free of charge.', color: '#fbbf24' },
+                    { icon: <Clock size={22} />, title: '15-Minute Response Time', desc: 'Experts assigned instantly after booking — no waiting, no delays.', color: '#818cf8' },
+                    { icon: <ShieldCheck size={22} />, title: 'Verified & Insured Experts', desc: 'All professionals are background-verified, trained, and insured.', color: '#38bdf8' },
+                    { icon: <Star size={22} />, title: '4.9/5 Customer Rating', desc: 'Quality guaranteed — or we redo the job, free of charge.', color: '#fbbf24' },
                   ].map((item, i) => (
                     <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: '1.35rem' }}>
                       <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: `radial-gradient(circle at top left, rgba(${item.color === '#818cf8' ? '99,102,241' : item.color === '#38bdf8' ? '56,189,248' : '251,191,36'},0.25), transparent)`, border: `1px solid rgba(255,255,255,0.08)`, boxShadow: `inset 0 0 12px rgba(255,255,255,0.05), 0 8px 16px rgba(${item.color === '#818cf8' ? '99,102,241' : item.color === '#38bdf8' ? '56,189,248' : '251,191,36'},0.1)`, color: item.color, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: '2px' }}>
@@ -755,30 +993,73 @@ const Home = () => {
         </section>
 
 
-        <section className="section-pad fade-up" style={{ background: '#f9fafb', padding: '5rem 5% 2.5rem' }}>
+         <section className="section-pad fade-up" style={{ background: '#f9fafb', padding: '2.5rem 5% 2.5rem' }}>
           <div style={{ maxWidth: '1280px', margin: '0 auto' }}>
-            <div style={{ textAlign: 'center', marginBottom: '1.5rem' }}>
-              <span style={{ display: 'inline-block', background: '#fef3c7', color: '#d97706', fontSize: '0.7rem', fontWeight: 800, padding: '3px 12px', borderRadius: '99px', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: '0.6rem' }}>Reviews</span>
-              <h2 style={{ fontSize: 'clamp(1.75rem, 5vw, 2.75rem)', fontWeight: 900, color: '#0f172a', margin: 0, letterSpacing: '-0.02em' }}>Loved by Thousands</h2>
-              <p style={{ color: '#64748b', fontWeight: 500, fontSize: '0.95rem', marginTop: '0.5rem', marginBottom: 0 }}>Real feedback from real customers across India</p>
-            </div>
-            <div className="testi-scroll testi-grid fade-up" style={{ display: 'flex', gap: '1rem', overflowX: 'auto', paddingBottom: '1.5rem', WebkitOverflowScrolling: 'touch' }}>
-              {[
-                { name: 'Hemanth', role: 'HSR Layout, Bengaluru', stars: 5, avatar: hemanthImg, text: 'Absolutely brilliant service! The technician arrived on time, diagnosed the issue within minutes, and was done in under 30 mins. Will definitely book again.' },
-                { name: 'Rahul Mehta', role: 'Business Owner, Bengaluru', stars: 4, avatar: rahulImg, text: 'Good experience overall. The painting team was professional and the work quality was solid. Took a bit longer than expected, but the result was worth it.' },
-                { name: 'Sunita Kapoor', role: 'House Owner, Nagpur', stars: 3, avatar: sunitaImg, text: 'Service was okay. The plumber did fix the leak but left without cleaning up. Could improve on punctuality and communication.' },
-              ].map(r => (
-                <div key={r.name} style={{ flex: '0 0 300px', minWidth: '260px', background: '#fff', padding: '1.5rem', borderRadius: '20px', border: '1px solid #f1f5f9', boxShadow: '0 4px 16px rgba(0,0,0,0.04)' }} className="card-hover-lift stagger-card">
-                  <div style={{ display: 'flex', gap: '3px', marginBottom: '0.85rem' }}>
-                    {[1, 2, 3, 4, 5].map(i => (
-                      <svg key={i} width="16" height="16" viewBox="0 0 24 24" fill={i <= r.stars ? '#f59e0b' : 'none'} stroke={i <= r.stars ? '#f59e0b' : '#d1d5db'} strokeWidth="2">
-                        <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26" />
-                      </svg>
-                    ))}
+            
+            {/* Centered Header */}
+            <div style={{ textAlign: 'center', marginBottom: '1.75rem' }}>
+              <span style={{ display: 'inline-block', background: '#eff6ff', color: '#1d4ed8', fontSize: '0.72rem', fontWeight: 800, padding: '4px 12px', borderRadius: '99px', letterSpacing: '0.06em', textTransform: 'uppercase', marginBottom: '0.5rem', border: '1px solid #dbeafe' }}>
+                Reviews
+              </span>
+              <h2 style={{ fontSize: 'clamp(1.75rem, 4vw, 2.5rem)', fontWeight: 900, color: '#0f172a', margin: '0 0 0.5rem 0', letterSpacing: '-0.02em' }}>
+                Loved by Thousands
+              </h2>
+              <p style={{ color: '#64748b', fontWeight: 500, fontSize: '0.92rem', margin: '0 0 1.25rem 0' }}>
+                Real feedback from real customers across India
+              </p>
+              
+              {/* Google Reviews Trust Score Badge */}
+              <div style={{ display: 'flex', justifyContent: 'center' }}>
+                <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.75rem', background: '#fff', border: '1.5px solid #e2e8f0', borderRadius: '16px', padding: '0.75rem 1.5rem', boxShadow: '0 4px 16px rgba(0,0,0,0.04)' }}>
+                  <div style={{ display: 'flex', gap: '2px' }}>
+                    {[1, 2, 3, 4, 5].map(i => <Star key={i} size={15} fill="#facc15" color="#facc15" />)}
                   </div>
-                  <p style={{ color: '#374151', fontSize: '0.95rem', lineHeight: 1.65, marginBottom: '1.5rem', fontStyle: 'italic', fontWeight: 500 }}>"{r.text}"</p>
-                  <div style={{ borderTop: '1px solid #f1f5f9', paddingTop: '1rem', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                    <div style={{ width: '40px', height: '40px', borderRadius: '50%', overflow: 'hidden', background: 'linear-gradient(135deg, #dbeafe, #ede9fe)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 900, fontSize: '0.9rem', color: '#2563eb', flexShrink: 0, border: '2px solid #fff', boxShadow: '0 4px 10px rgba(0,0,0,0.05)' }}>
+                  <span style={{ fontWeight: 900, fontSize: '1.05rem', color: '#0f172a' }}>4.9/5</span>
+                  <span style={{ color: '#64748b', fontWeight: 600, fontSize: '0.85rem' }}>
+                    from <strong style={{ color: '#0f172a' }}>10,000+</strong> customers
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Testimonials Grid Container */}
+            <div className="testi-scroll testi-grid" style={{ display: 'flex', gap: '1.5rem', overflowX: 'auto', paddingBottom: '1rem', WebkitOverflowScrolling: 'touch' }}>
+              {[
+                { name: 'Hemanth', role: 'HSR Layout, Bengaluru', stars: 5, avatar: hemanthImg, text: 'Absolutely brilliant painting service! The team arrived on time, helped select the perfect wall colors, and finished the job in under 2 days. Will definitely book again.' },
+                { name: 'Rahul Mehta', role: 'Business Owner, Bengaluru', stars: 4, avatar: rahulImg, text: 'Exceptional house painting experience! The team was highly professional, though they finished slightly behind schedule. The final wall finish looks incredible.' },
+                { name: 'Sunita Kapoor', role: 'House Owner, Nagpur', stars: 4, avatar: sunitaImg, text: 'Super fast booking via WhatsApp and solid work on our AC. Punctuality could have been slightly better, but the service quality is top-notch.' },
+              ].map(r => (
+                <div key={r.name} style={{
+                  flex: '1 1 330px',
+                  maxWidth: '360px',
+                  minWidth: '280px',
+                  background: '#ffffff',
+                  padding: '1.5rem',
+                  borderRadius: '24px',
+                  border: '1px solid #f1f5f9',
+                  boxShadow: '0 10px 25px rgba(0,0,0,0.03)',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'space-between',
+                  position: 'relative',
+                  overflow: 'hidden'
+                }} className="card-hover-lift">
+                  {/* Subtle quote symbol background */}
+                  <span style={{ position: 'absolute', right: '1.5rem', top: '0.75rem', fontSize: '4.5rem', color: '#f1f5f9', fontWeight: 900, lineHeight: 1, fontFamily: 'serif', pointerEvents: 'none', select: 'none', opacity: 0.65 }}>“</span>
+                  
+                  <div style={{ position: 'relative', zIndex: 1 }}>
+                    <div style={{ display: 'flex', gap: '3px', marginBottom: '1rem' }}>
+                      {[1, 2, 3, 4, 5].map(i => (
+                        <svg key={i} width="15" height="15" viewBox="0 0 24 24" fill={i <= r.stars ? '#f59e0b' : 'none'} stroke={i <= r.stars ? '#f59e0b' : '#d1d5db'} strokeWidth="2">
+                          <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26" />
+                        </svg>
+                      ))}
+                    </div>
+                    <p style={{ color: '#374151', fontSize: '0.92rem', lineHeight: 1.6, marginBottom: '1.5rem', fontStyle: 'italic', fontWeight: 500 }}>"{r.text}"</p>
+                  </div>
+
+                  <div style={{ borderTop: '1px solid #f8fafc', paddingTop: '1rem', display: 'flex', alignItems: 'center', gap: '0.75rem', position: 'relative', zIndex: 1 }}>
+                    <div style={{ width: '38px', height: '38px', borderRadius: '50%', overflow: 'hidden', background: 'linear-gradient(135deg, #dbeafe, #ede9fe)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 900, fontSize: '0.9rem', color: '#2563eb', flexShrink: 0, border: '2px solid #fff', boxShadow: '0 4px 10px rgba(0,0,0,0.05)' }}>
                       {r.avatar ? (
                         <img src={r.avatar} alt={r.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                       ) : (
@@ -786,13 +1067,14 @@ const Home = () => {
                       )}
                     </div>
                     <div>
-                      <h4 style={{ fontWeight: 800, color: '#111', margin: 0, fontSize: '0.9rem' }}>{r.name}</h4>
-                      <p style={{ color: '#9ca3af', margin: 0, fontSize: '0.78rem', fontWeight: 600 }}>{r.role}</p>
+                      <h4 style={{ fontWeight: 800, color: '#111', margin: 0, fontSize: '0.88rem' }}>{r.name}</h4>
+                      <p style={{ color: '#9ca3af', margin: 0, fontSize: '0.75rem', fontWeight: 600 }}>{r.role}</p>
                     </div>
                   </div>
                 </div>
               ))}
             </div>
+
           </div>
         </section>
 

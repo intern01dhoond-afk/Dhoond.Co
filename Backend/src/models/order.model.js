@@ -55,16 +55,41 @@ const updateOrder = async (id, status) => {
 
 const getSyncDetails = async (key) => {
   let result;
-  let idToSearch = null;
 
-  // Extract ID from formatted strings (e.g., 0001 from DHD-11.05-0001)
+  // Case A: Formatted ID (e.g., DHD-25.04-0001)
   const parts = key.split('-');
-  const lastPart = parts[parts.length - 1];
-  const idMatch = lastPart.match(/\d+/);
-  if (idMatch) idToSearch = parseInt(idMatch[0]);
+  if (parts.length >= 3) {
+    const dateStr = parts[1]; // "25.04"
+    const seqStr = parts[2];  // "0001"
+    const sequence = parseInt(seqStr);
 
-  // 1. Try search by Order ID (joined with users)
-  if (idToSearch) {
+    const [day, month] = dateStr.split('.').map(n => parseInt(n));
+    if (!isNaN(day) && !isNaN(month) && !isNaN(sequence)) {
+      // Find the n-th order of that specific day
+      // We use the current year as the year is not in the short ID
+      const year = new Date().getFullYear();
+      const targetDate = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+
+      result = await pool.query(
+        `WITH daily_orders AS (
+           SELECT o.address, u.name, u.phone,
+                  ROW_NUMBER() OVER (ORDER BY o.created_at ASC) as seq
+           FROM orders o
+           JOIN users u ON u.id = o.user_id
+           WHERE o.created_at::date = $1::date
+         )
+         SELECT name, address, phone FROM daily_orders WHERE seq = $2`,
+        [targetDate, sequence]
+      );
+
+      if (result.rows.length > 0) return result.rows[0];
+    }
+  }
+
+  // Case B: Simple numeric ID or fallback
+  const idMatch = key.match(/\d+/);
+  if (idMatch && !key.includes('-')) {
+    const idToSearch = parseInt(idMatch[0]);
     result = await pool.query(
       `SELECT u.name, o.address, u.phone 
        FROM orders o 
@@ -75,32 +100,15 @@ const getSyncDetails = async (key) => {
     if (result.rows.length > 0) return result.rows[0];
   }
 
-  // 2. Try search by Booking ID (if exists)
-  if (idToSearch) {
-    result = await pool.query(
-      "SELECT customer_name as name, address, phone FROM bookings WHERE id = $1::int",
-      [idToSearch]
-    );
-    if (result.rows.length > 0) return result.rows[0];
-  }
-
-  // 3. Try search by Phone (numeric check)
+  // Case C: Search by Phone (numeric check)
   const cleanPhone = key.replace(/\D/g, '');
   if (cleanPhone.length >= 10) {
-    // Search in users + latest order
     result = await pool.query(
       `SELECT u.name, o.address, u.phone 
        FROM users u 
        LEFT JOIN orders o ON o.user_id = u.id 
        WHERE u.phone LIKE $1 
        ORDER BY o.created_at DESC LIMIT 1`,
-      [`%${cleanPhone}`]
-    );
-    if (result.rows.length > 0) return result.rows[0];
-
-    // Search in bookings
-    result = await pool.query(
-      "SELECT customer_name as name, address, phone FROM bookings WHERE phone LIKE $1 LIMIT 1",
       [`%${cleanPhone}`]
     );
     if (result.rows.length > 0) return result.rows[0];

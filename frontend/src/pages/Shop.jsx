@@ -132,7 +132,7 @@ const Shop = () => {
       params.delete('cat');
       setSearchParams(params);
       setPaintingView(null);
-    } else if (category && category !== 'all' && category !== 'painter' && !isNagpur && !isBengaluru) {
+    } else if (category && category !== 'all' && category !== 'painter' && !isNagpur) {
       openComingSoon();
       const params = new URLSearchParams(searchParams);
       params.delete('cat');

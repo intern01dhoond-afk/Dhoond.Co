@@ -6,7 +6,7 @@ import {
   Share2, CircleHelp, CheckCircle2,
   ArrowRight, Plus, Check, ArrowLeft, ChevronDown,
   Paintbrush, Home, Building2, Sparkles, ChevronUp, Minus,
-  ShoppingCart, Phone, XCircle
+  ShoppingCart, Phone, XCircle, CheckCheck, ClipboardList, Headphones, BadgePercent, Percent
 } from 'lucide-react';
 
 const API_URL = import.meta.env.VITE_API_URL || '';
@@ -81,7 +81,10 @@ const FILTER_MAP = {
   interior: ['interior', '1 bhk', '2 bhk', '3 bhk', '4 bhk', 'villa'],
   exterior: ['exterior'],
   commercial: ['office', 'school', 'college', 'warehouse', 'industrial', 'commercial'],
-  coatings: ['specialty coatings', 'wood polishing', 'waterproofing', 'grill', 'gate', 'varnish', 'damp', 'stencil', 'wallpaper', 'texture', 'designer'],
+  coatings: ['specialty coatings', 'grill', 'gate'],
+  waterproofing: ['waterproofing', 'damp'],
+  texture: ['texture', 'stencil', 'wallpaper', 'designer'],
+  wood_metal: ['wood polishing', 'wood', 'varnish', 'grill', 'gate', 'specialty coatings'],
 };
 
 const FILTER_TITLES = {
@@ -89,7 +92,10 @@ const FILTER_TITLES = {
   interior: 'Interior Painting',
   exterior: 'Exterior Painting',
   commercial: 'Commercial Painting',
-  coatings: 'Specialty & Coatings',
+  coatings: 'Specialty Coatings',
+  waterproofing: 'Waterproofing Services',
+  texture: 'Texture Painting',
+  wood_metal: 'Wood & Metal Painting',
 };
 
 // Map service titles to distinct local images by keyword
@@ -99,7 +105,9 @@ const pickImage = (title = '') => {
   if (t.includes('consultation') || t.includes('expert')) return '/consultation.png';
   if (t.includes('single')) return '/images/single%20wall.jpg';
   if (t.includes('exterior') || t.includes('weather')) return '/images/exterior_painting.webp';
-  if (t.includes('texture') || t.includes('stencil')) return '/texture.png';
+  if (t.includes('waterproofing') || t.includes('damp')) return '/images/waterproofing.png';
+  if (t.includes('texture') || t.includes('stencil') || t.includes('wallpaper') || t.includes('designer')) return '/images/texture_painting.png';
+  if (t.includes('wood') || t.includes('varnish') || t.includes('gate') || t.includes('grill') || t.includes('coatings')) return '/images/wood_metal.png';
   if (t.includes('commercial') || t.includes('office') || t.includes('school')) return '/images/office%20space.jpg';
   if (t.includes('warehouse') || t.includes('industrial')) return '/images/ware%20house.jpg';
   if (t.includes('kitchen') || t.includes('bathroom')) return '/wall2.jpg';
@@ -291,6 +299,25 @@ const PaintingServiceList = ({ service, onClose }) => {
             .header-cart-btn .cart-text { display: none; }
             .header-cart-btn { padding: 0.5rem !important; border-radius: 50% !important; }
           }
+          @media (min-width: 900px) {
+            .psl-desktop-layout {
+              display: grid !important;
+              grid-template-columns: 1fr 360px !important;
+              gap: 40px !important;
+              align-items: start !important;
+              max-width: 1100px !important;
+            }
+            .psl-sidebar-container {
+              display: block !important;
+              position: sticky !important;
+              top: 100px !important;
+            }
+          }
+          @media (max-width: 899px) {
+            .psl-sidebar-container {
+              display: none !important;
+            }
+          }
         `}</style>
       </header>
 
@@ -345,7 +372,8 @@ const PaintingServiceList = ({ service, onClose }) => {
       </div>
 
       {/* CONTENT */}
-      <div style={{ maxWidth: '700px', margin: '0 auto', padding: '1.5rem 5% 120px' }}>
+      <div className="psl-desktop-layout" style={{ maxWidth: '1100px', margin: '0 auto', padding: '1.5rem 5% 120px' }}>
+        <div style={{ minWidth: 0 }}>
 
         {loading && (
           <div style={{ textAlign: 'center', padding: '4rem 0', color: '#64748b' }}>
@@ -415,7 +443,7 @@ const PaintingServiceList = ({ service, onClose }) => {
                     <div
                       key={svc.id}
                       style={{
-                        background: '#fff', borderRadius: '18px',
+                        background: '#fff', borderRadius: '0px',
                         border: qty > 0 && isConsultation && group.key === 'consultation' ? '2px solid #2563eb' : '1px solid #f1f5f9',
                         padding: '1.1rem 1.25rem',
                         display: 'flex', flexDirection: isExpanded ? 'column' : 'row', 
@@ -426,7 +454,7 @@ const PaintingServiceList = ({ service, onClose }) => {
                     >
                       <div style={{ display: 'flex', width: '100%', gap: '1rem', alignItems: 'flex-start' }}>
                         {/* Image */}
-                        <div style={{ width: '72px', height: '72px', borderRadius: '12px', overflow: 'hidden', flexShrink: 0, background: '#f1f5f9' }}>
+                        <div style={{ width: '72px', height: '72px', borderRadius: '0px', overflow: 'hidden', flexShrink: 0, background: '#f1f5f9' }}>
                           <img src={svc.image} alt={svc.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                             onError={e => { e.target.src = '/interior.jpg'; }} />
                         </div>
@@ -437,25 +465,46 @@ const PaintingServiceList = ({ service, onClose }) => {
                             {svc.title}
                           </div>
                           {!isExpanded && (
-                            <div style={{ fontSize: '0.78rem', color: '#64748b', fontWeight: 500, marginBottom: '0.2rem', lineHeight: 1.5, display: 'flex', alignItems: 'center', flexWrap: 'wrap' }}>
-                              {(() => {
-                                const text = svc.description.split('[NOT_INCLUDED]')[0].replace('Includes\n', '').trim();
-                                const truncated = text.length > 20 ? text.slice(0, 20) : text;
-                                return (
-                                  <span style={{ display: 'inline-block' }}>
-                                    {truncated}
-                                    {text.length > 20 && (
-                                      <button
-                                        onClick={(e) => { e.stopPropagation(); setExpandedDescs(prev => ({ ...prev, [svc.id]: true })); }}
-                                        style={{ background: 'none', border: 'none', color: '#2563eb', fontSize: '0.78rem', fontWeight: 800, padding: '0 0 0 4px', cursor: 'pointer', display: 'inline', whiteSpace: 'nowrap' }}
-                                      >
-                                        ...more
-                                      </button>
-                                    )}
+                            <>
+                              <div style={{ fontSize: '0.78rem', color: '#64748b', fontWeight: 500, marginBottom: '0.2rem', lineHeight: 1.5, display: 'flex', alignItems: 'center', flexWrap: 'wrap' }}>
+                                {(() => {
+                                  const text = svc.description.split('[NOT_INCLUDED]')[0].replace('Includes\n', '').trim();
+                                  const truncated = text.length > 20 ? text.slice(0, 20) : text;
+                                  return (
+                                    <span style={{ display: 'inline-block' }}>
+                                      {truncated}
+                                      {text.length > 20 && (
+                                        <button
+                                          onClick={(e) => { e.stopPropagation(); setExpandedDescs(prev => ({ ...prev, [svc.id]: true })); }}
+                                          style={{ background: 'none', border: 'none', color: '#2563eb', fontSize: '0.78rem', fontWeight: 800, padding: '0 0 0 4px', cursor: 'pointer', display: 'inline', whiteSpace: 'nowrap' }}
+                                        >
+                                          ...more
+                                        </button>
+                                      )}
+                                    </span>
+                                  );
+                                })()}
+                              </div>
+                              
+                              {/* Collapsed Price Block */}
+                              {!svc.title.toLowerCase().includes('on call') && (
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', flexWrap: 'wrap', marginTop: '0.3rem' }}>
+                                  <span style={{ fontWeight: 850, fontSize: '0.95rem', color: '#111' }}>
+                                    {'\u20b9'}{svc.title.toLowerCase().includes('consultation') ? 49 : Number(svc.discount_price).toLocaleString('en-IN')}
                                   </span>
-                                );
-                              })()}
-                            </div>
+                                  {svc.original_price > svc.discount_price && (
+                                    <>
+                                      <span style={{ fontSize: '0.78rem', color: '#94a3b8', textDecoration: 'line-through', fontWeight: 500 }}>
+                                        {'\u20b9'}{Number(svc.original_price).toLocaleString('en-IN')}
+                                      </span>
+                                      <span style={{ background: '#dcfce7', color: '#15803d', fontSize: '0.68rem', fontWeight: 800, padding: '1px 5px', borderRadius: '100px' }}>
+                                        {discount}% OFF
+                                      </span>
+                                    </>
+                                  )}
+                                </div>
+                              )}
+                            </>
                           )}
                         </div>
 
@@ -612,19 +661,19 @@ const PaintingServiceList = ({ service, onClose }) => {
 
         {!loading && !error && (
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.75rem', marginTop: '2rem', padding: '0 0.5rem' }}>
-            <div style={{ background: '#f0fdf4', borderRadius: '16px', padding: '1rem 0.5rem', textAlign: 'center', border: '1px solid #dcfce7' }}>
+            <div style={{ background: '#f0fdf4', borderRadius: '0px', padding: '1rem 0.5rem', textAlign: 'center', border: '1px solid #dcfce7' }}>
               <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px' }}>
                 <CheckCircle2 size={24} color="#22c55e" weight="fill" />
                 <span style={{ fontSize: '0.72rem', fontWeight: 800, color: '#166534', lineHeight: 1.2 }}>Verified<br/>Pros</span>
               </div>
             </div>
-            <div style={{ background: '#eff6ff', borderRadius: '16px', padding: '1rem 0.5rem', textAlign: 'center', border: '1px solid #dbeafe' }}>
+            <div style={{ background: '#eff6ff', borderRadius: '0px', padding: '1rem 0.5rem', textAlign: 'center', border: '1px solid #dbeafe' }}>
               <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px' }}>
                 <ShieldCheck size={24} color="#2563eb" />
                 <span style={{ fontSize: '0.72rem', fontWeight: 800, color: '#1e40af', lineHeight: 1.2 }}>Insured<br/>Work</span>
               </div>
             </div>
-            <div style={{ background: '#fffbeb', borderRadius: '16px', padding: '1rem 0.5rem', textAlign: 'center', border: '1px solid #fef3c7' }}>
+            <div style={{ background: '#fffbeb', borderRadius: '0px', padding: '1rem 0.5rem', textAlign: 'center', border: '1px solid #fef3c7' }}>
               <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px' }}>
                 <Star size={24} color="#f59e0b" fill="#f59e0b" />
                 <span style={{ fontSize: '0.72rem', fontWeight: 800, color: '#92400e', lineHeight: 1.2 }}>4.9<br/>Rated</span>
@@ -633,6 +682,158 @@ const PaintingServiceList = ({ service, onClose }) => {
           </div>
         )}
       </div>
+
+      <div className="psl-sidebar-container">
+        {/* Card 1: Package Selector */}
+        <div style={{
+          background: '#fff',
+          border: '1px solid #e2e8f0',
+          borderRadius: '0px',
+          padding: '24px',
+          boxShadow: '0 10px 30px rgba(0,0,0,0.03)',
+          marginBottom: '16px',
+          position: 'sticky',
+          top: '100px',
+          zIndex: 10
+        }}>
+          {(() => {
+            const painterItems = cartItems.filter(i => i.category === 'painter');
+            const hasItems = painterItems.length > 0;
+            const activeItem = painterItems[0];
+
+            if (!hasItems) {
+              return (
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '20px 0', textAlign: 'center' }}>
+                  <ShoppingCart size={44} color="#64748b" style={{ marginBottom: '14px', opacity: 0.8 }} />
+                  <span style={{ fontSize: '0.9rem', color: '#64748b', fontWeight: 600 }}>No package selected</span>
+                </div>
+              );
+            }
+
+            const isConsult = activeItem.title.toLowerCase().includes('consultation');
+
+            return (
+              <>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px' }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', minWidth: 0, flex: 1, marginRight: '8px' }}>
+                    <span style={{ fontWeight: 850, fontSize: '0.95rem', color: '#0f172a', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                      {activeItem.title}
+                    </span>
+                    <span style={{ fontSize: '0.9rem', color: '#2563eb', fontWeight: 800, marginTop: '2px' }}>
+                      ₹{activeItem.discountPrice}
+                    </span>
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', background: '#f8fafc', border: '1.5px solid #e2e8f0', borderRadius: '10px', overflow: 'hidden', flexShrink: 0 }}>
+                    <button 
+                      onClick={() => activeItem.quantity === 1 ? removeFromCart(activeItem.id) : updateQuantity(activeItem.id, -1)}
+                      style={{ width: '32px', height: '32px', background: 'none', border: 'none', fontSize: '1.1rem', color: '#1e293b', fontWeight: 900, cursor: 'pointer' }}
+                    >
+                      −
+                    </button>
+                    <span style={{ width: '28px', textAlign: 'center', fontWeight: 800, fontSize: '0.95rem', color: '#0f172a' }}>
+                      {activeItem.quantity}
+                    </span>
+                    <button 
+                      onClick={() => updateQuantity(activeItem.id, 1)}
+                      disabled={isConsult}
+                      style={{ width: '32px', height: '32px', background: 'none', border: 'none', fontSize: '1.1rem', color: isConsult ? '#cbd5e1' : '#1e293b', fontWeight: 900, cursor: isConsult ? 'not-allowed' : 'pointer' }}
+                    >
+                      +
+                    </button>
+                  </div>
+                </div>
+
+                <button
+                  onClick={() => navigate('/cart')}
+                  style={{
+                    width: '100%',
+                    background: '#2563eb',
+                    color: '#fff',
+                    border: 'none',
+                    borderRadius: '12px',
+                    padding: '14px',
+                    fontWeight: 800,
+                    fontSize: '0.95rem',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s',
+                    boxShadow: '0 4px 14px rgba(37,99,235,0.2)',
+                    marginBottom: '16px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '8px'
+                  }}
+                >
+                  Book Consultation
+                </button>
+
+                
+              </>
+            );
+          })()}
+        </div>
+
+        {/* Card 2: Painting Guarantee Box */}
+        <div style={{
+          background: '#fff',
+          border: '1px solid #e2e8f0',
+          borderRadius: '0px',
+          padding: '24px',
+          boxShadow: '0 10px 30px rgba(0,0,0,0.03)',
+          marginBottom: '16px'
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '18px' }}>
+            <div style={{ background: '#ecfdf5', border: '1px solid #dcfce7', borderRadius: '50%', width: '40px', height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+              <ShieldCheck size={20} color="#16a34a" />
+            </div>
+            <span style={{ fontSize: '0.88rem', color: '#1e293b', fontWeight: 700 }}>1-Year Service Warranty</span>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+            <div style={{ background: '#fffbeb', border: '1px solid #fef3c7', borderRadius: '50%', width: '40px', height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+              <Sparkles size={18} color="#d97706" />
+            </div>
+            <span style={{ fontSize: '0.88rem', color: '#1e293b', fontWeight: 700 }}>Dust-free masking &amp; cleanup</span>
+          </div>
+        </div>
+
+        {/* Card 3: Why Dhoond? */}
+        <div style={{
+          background: '#fff',
+          border: '1px solid #e2e8f0',
+          borderRadius: '0px',
+          padding: '24px',
+          boxShadow: '0 10px 30px rgba(0,0,0,0.03)'
+        }}>
+          <h4 style={{ fontSize: '1rem', fontWeight: 800, color: '#0f172a', marginBottom: '20px' }}>Why Dhoond?</h4>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+              <div style={{ background: '#eff6ff', borderRadius: '8px', width: '36px', height: '36px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                <ClipboardList size={18} color="#2563eb" />
+              </div>
+              <span style={{ fontSize: '0.85rem', color: '#334155', fontWeight: 700 }}>Verified Painting Professionals</span>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+              <div style={{ background: '#eff6ff', borderRadius: '8px', width: '36px', height: '36px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                <ShieldCheck size={18} color="#2563eb" />
+              </div>
+              <span style={{ fontSize: '0.85rem', color: '#334155', fontWeight: 700 }}>Warranty on Workmanship</span>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+              <div style={{ background: '#eff6ff', borderRadius: '8px', width: '36px', height: '36px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                <Sparkles size={18} color="#2563eb" />
+              </div>
+              <span style={{ fontSize: '0.85rem', color: '#334155', fontWeight: 700 }}>Premium Quality Paints</span>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+              <div style={{ background: '#eff6ff', borderRadius: '8px', width: '36px', height: '36px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                <Headphones size={18} color="#2563eb" />
+              </div>
+              <span style={{ fontSize: '0.85rem', color: '#334155', fontWeight: 700 }}>Transparent Pricing</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
 
       {!isConsultation && (
         <div style={{

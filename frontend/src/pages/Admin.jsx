@@ -135,6 +135,7 @@ const Admin = () => {
   return (
     <div style={{ display: 'flex', height: '100vh', background: '#f1f5f9', overflow: 'hidden' }}>
       <style>{`
+        .logo-text { font-size: 22px; font-weight: 850; color: #0A57D0; letter-spacing: -0.03em; font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important; }
         .sidebar-item { display: flex; alignItems: center; gap: 12px; padding: 12px 16px; border-radius: 12px; cursor: pointer; color: #64748b; transition: all 0.2s; font-weight: 600; text-decoration: none; }
         .sidebar-item:hover { background: #f8fafc; color: #2563eb; }
         .sidebar-item.active { background: #eff6ff; color: #2563eb; }
@@ -148,8 +149,8 @@ const Admin = () => {
       {/* Sidebar */}
       <aside style={{ width: '280px', flexShrink: 0, background: '#fff', borderRight: '1px solid #e2e8f0', padding: '24px', display: 'flex', flexDirection: 'column', height: '100%' }}>
         <div style={{ marginBottom: '40px' }}>
-          <img src="/logo.png" style={{ height: '40px' }} alt="Logo" />
-          <p style={{ fontSize: '12px', color: '#94a3b8', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.05em', marginTop: '8px' }}>Admin Dashboard</p>
+          <span className="logo-text">Dhoond</span>
+          <p style={{ fontSize: '12px', color: '#94a3b8', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', marginTop: '8px' }}>Admin Dashboard</p>
         </div>
 
         <nav style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '4px' }}>

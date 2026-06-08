@@ -243,7 +243,7 @@ const MetaBrowserPopup = () => {
         </div>
 
         <h2 style={{ fontSize: '22px', fontWeight: 900, color: '#0f172a', marginBottom: '8px', letterSpacing: '-0.02em' }}>
-          Services at your Doorstep
+          Services at your Spot
         </h2>
         
         <p style={{ fontSize: '15px', color: '#64748b', lineHeight: '1.5', marginBottom: '28px', fontWeight: 500, padding: '0 10px' }}>

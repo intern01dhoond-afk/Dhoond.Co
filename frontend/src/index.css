@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Hanken+Grotesk:ital,wght@0,100..900;1,100..900&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
 
 /* ─── Design Tokens — 8px Grid System ──────────────────────────── */
@@ -146,8 +147,11 @@
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html { font-size: 16px; scroll-behavior: smooth; }
 
+body, button, input, select, textarea {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important;
+}
+
 body {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   font-optical-sizing: auto;
   background: var(--bg);
   color: var(--text-main);
@@ -416,7 +420,7 @@ input::placeholder { color: var(--text-dim); }
 .stars { color: var(--primary); display: flex; gap: 2px; }
 
 /* ─── Utility ───────────────────────────────────────────────────── */
-.serif-italic { font-family: 'Playfair Display', serif; font-style: italic; }
+.serif-italic { font-family: 'Inter', sans-serif; font-style: italic; }
 .text-primary { color: var(--primary); }
 .text-muted { color: var(--text-muted); }
 .font-black { font-weight: 900; }

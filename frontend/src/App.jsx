@@ -9,6 +9,7 @@ import Painting from './pages/Painting';
 import CommercialPainting from './pages/CommercialPainting';
 import Profile from './pages/Profile';
 import Admin from './pages/Admin';
+import PrivacyPolicy from './pages/PrivacyPolicy';
 import Footer from './components/Footer';
 import { CartProvider, useCart } from './context/CartContext';
 import { AuthProvider, useAuth } from './context/AuthContext';
@@ -268,29 +269,45 @@ const Navbar = () => {
   ];
 
   const LocationButton = ({ onClick, style = {} }) => (
-    <button
+    <div
       onClick={onClick}
       style={{
-        display: 'flex', alignItems: 'center', gap: '6px',
-        background: '#f9fafb', border: '1px solid #e5e7eb',
-        padding: '0.4rem 0.85rem', borderRadius: '99px',
-        cursor: 'pointer', fontWeight: 600, fontSize: '13px',
-        color: '#374151', transition: 'border-color 0.2s, background 0.2s',
-        maxWidth: '380px', overflow: 'hidden',
+        display: 'flex',
+        alignItems: 'center',
+        gap: '6px',
+        cursor: 'pointer',
+        maxWidth: '240px',
         ...style
       }}
     >
-      <MapPin size={16} color={locating ? '#9ca3af' : '#2563eb'} style={{ flexShrink: 0 }} />
-      <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1, textAlign: 'left' }}>
-        {locationLabel}
-      </span>
-      <ChevronDown size={14} style={{ flexShrink: 0 }} />
-    </button>
+      <MapPin size={16} color="#64748b" style={{ flexShrink: 0 }} />
+      <div style={{ display: 'flex', flexDirection: 'column', overflow: 'hidden', flex: 1 }}>
+        <span style={{ fontSize: '9px', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em', lineHeight: 1.1 }}>
+          Current Location
+        </span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '4px', overflow: 'hidden' }}>
+          <span style={{ 
+            fontSize: '12.5px', 
+            fontWeight: 700, 
+            color: '#1e293b', 
+            overflow: 'hidden', 
+            textOverflow: 'ellipsis', 
+            whiteSpace: 'nowrap', 
+            lineHeight: 1.3,
+            maxWidth: '160px'
+          }}>
+            {locationLabel || 'Bengaluru, Karnataka'}
+          </span>
+          <ChevronDown size={14} color="#64748b" style={{ flexShrink: 0 }} />
+        </div>
+      </div>
+    </div>
   );
 
   return (
     <>
       <style>{`
+        .logo-text { font-size: 24px; font-weight: 850; color: #0A57D0; letter-spacing: -0.03em; font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important; white-space: nowrap; }
         .nav-link { position: relative; text-decoration: none; font-size: 14px; font-weight: 600; color: #374151; padding: 0.4rem 0; transition: color 0.2s; }
         .nav-link::after { content: ''; position: absolute; bottom: -2px; left: 0; width: 0; height: 2px; background: #2563eb; border-radius: 2px; transition: width 0.25s ease; }
         .nav-link:hover::after, .nav-link.active::after { width: 100%; }
@@ -355,8 +372,8 @@ const Navbar = () => {
       }}>
         <nav className="mobile-nav-container" style={{ maxWidth: '1400px', margin: '0 auto', padding: '0 5%', height: '64px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
 
-          {/* LEFT */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flex: 1 }}>
+          {/* COLUMN 1: LEFT (Back/Menu on mobile, Dhoond Logo + LocationButton + NAV_LINKS on desktop) */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem', flex: 1 }}>
             <div className="mobile-only">
               {location.pathname !== '/' && !location.pathname.startsWith('/admin') ? (
                 <button className="icon-btn" onClick={() => navigate(-1)} aria-label="Go back">
@@ -370,12 +387,16 @@ const Navbar = () => {
             </div>
 
             <Link to="/" className="desktop-only" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center' }}>
-              <div className="dhoond-logo-container">
+              <div className="dhoond-logo-container" style={{ width: '130px', justifyContent: 'flex-start' }}>
                 <img src="/logo.png" alt="Dhoond" className="dhoond-logo dhoond-logo-desktop" style={{ width: 'auto', objectFit: 'contain' }} />
               </div>
             </Link>
 
-            <div className="desktop-only" style={{ display: 'flex', gap: '1.75rem', alignItems: 'center', marginLeft: '1rem' }}>
+            <div className="desktop-only" style={{ marginLeft: '0.25rem' }}>
+              <LocationButton onClick={openLocation} />
+            </div>
+
+            <div className="desktop-only" style={{ display: 'flex', gap: '1.75rem', alignItems: 'center', marginLeft: '0.75rem' }}>
               {NAV_LINKS.map(link => {
                 const isSoon = link.type === 'soon';
                 const isActive = link.to && location.pathname === link.to;
@@ -401,33 +422,52 @@ const Navbar = () => {
                     }}
                     className={`nav-link ${link.badge ? 'highlight' : ''} ${isActive ? 'active' : ''}`}>
                     {link.label}
-                    {link.badge && <span style={{ background: '#fef08a', color: '#854d0e', fontSize: '10px', fontWeight: 800, padding: '2px 6px', borderRadius: '8px', marginLeft: '6px' }}>{link.badge}</span>}
+                    {link.badge && (
+                      <span style={{ 
+                        background: '#facc15', 
+                        color: '#1e293b', 
+                        fontSize: '9px', 
+                        fontWeight: 800, 
+                        padding: '2px 6px', 
+                        borderRadius: '99px', 
+                        marginLeft: '6px',
+                        textTransform: 'uppercase'
+                      }}>
+                        {link.badge}
+                      </span>
+                    )}
                   </Link>
                 );
               })}
             </div>
           </div>
 
-          {/* CENTER: Mobile Logo */}
+          {/* COLUMN 2: CENTER (Mobile Logo on mobile, empty on desktop) */}
           <div className="mobile-only" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flex: 1, height: '100%' }}>
-            <Link to="/" style={{ display: 'flex', alignItems: 'center', height: '100%' }}>
-              <div className="dhoond-logo-container">
-                <img src="/logo.png" alt="Dhoond" className="dhoond-logo" />
+            <Link to="/" style={{ display: 'flex', alignItems: 'center', height: '100%', textDecoration: 'none' }}>
+              <div className="dhoond-logo-container" style={{ width: '110px' }}>
+                <img src="/logo.png" alt="Dhoond" className="dhoond-logo" style={{ width: '100%', objectFit: 'contain' }} />
               </div>
             </Link>
           </div>
 
-          {/* RIGHT: Actions */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', flex: 1, justifyContent: 'flex-end' }}>
-            <div className="desktop-only" style={{ marginRight: '1rem' }}>
-              <LocationButton onClick={openLocation} />
-            </div>
-
-            <div className="desktop-only" style={{ position: 'relative', width: '240px', marginRight: '1rem' }} ref={searchRef}>
-              <div style={{ display: 'flex', alignItems: 'center', background: '#f3f4f6', borderRadius: '99px', padding: '0.55rem 1rem' }}>
-                <Search size={16} color="#64748b" />
-                <input type="text" placeholder="Search..." value={searchQuery} onChange={e => setSearchQuery(e.target.value)} onFocus={() => setShowSuggestions(true)} onKeyDown={e => e.key === 'Enter' && handleSearchSubmit()} style={{ background: 'none', border: 'none', outline: 'none', marginLeft: '8px', fontSize: '14px', width: '100%' }} />
+          {/* COLUMN 3: RIGHT (Actions on desktop/mobile) */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flex: 1, justifyContent: 'flex-end' }}>
+            <div className="desktop-only" style={{ position: 'relative', width: '210px', marginRight: '0.75rem' }} ref={searchRef}>
+              <div style={{ display: 'flex', alignItems: 'center', background: '#f1f5f9', borderRadius: '99px', padding: '0.45rem 1rem' }}>
+                <Search size={15} color="#64748b" style={{ flexShrink: 0 }} />
+                <input type="text" placeholder="search services" value={searchQuery} onChange={e => setSearchQuery(e.target.value)} onFocus={() => setShowSuggestions(true)} onKeyDown={e => e.key === 'Enter' && handleSearchSubmit()} style={{ background: 'none', border: 'none', outline: 'none', marginLeft: '6px', fontSize: '13.5px', color: '#1e293b', width: '100%' }} />
               </div>
+              {showSuggestions && filteredSuggestions.length > 0 && (
+                <div style={{ position: 'absolute', top: '110%', left: 0, right: 0, background: '#fff', borderRadius: '16px', boxShadow: '0 10px 30px rgba(0,0,0,0.08)', border: '1px solid #f1f5f9', zIndex: 1000, overflow: 'hidden' }}>
+                  {filteredSuggestions.map(s => (
+                    <div key={s.label} onClick={() => handleSearchSubmit(s)} className="suggest-item" style={{ padding: '0.85rem 1.25rem', fontSize: '14px', color: '#334155', fontWeight: 500, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <Search size={14} color="#0a57d0" />
+                      {s.label}
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
 
             <button className="icon-btn mobile-only" onClick={() => setIsSearchOpen(true)}>
@@ -444,13 +484,13 @@ const Navbar = () => {
                   <div style={{ position: 'fixed', inset: 0, zIndex: 900 }} onClick={() => setIsProfileOpen(false)} />
                   <div style={{ position: 'absolute', top: 'calc(100% + 12px)', right: 0, width: '240px', background: '#fff', borderRadius: '20px', boxShadow: '0 20px 50px rgba(0,0,0,0.12)', border: '1px solid #f1f5f9', zIndex: 1000, overflow: 'hidden', padding: '0.75rem', animation: 'dropdownFade 0.2s ease-out' }}>
                     <div style={{ padding: '0.75rem', borderBottom: '1px solid #f1f5f9', marginBottom: '0.5rem' }}>
-                      <div style={{ fontWeight: 800, fontSize: '0.95rem', color: '#111' }}>{userName}</div>
-                      <div style={{ fontSize: '0.8rem', color: '#64748b', fontWeight: 600 }}>+91 {userMobile}</div>
+                      <div style={{ fontWeight: 600, fontSize: '0.95rem', color: '#111' }}>{userName}</div>
+                      <div style={{ fontSize: '0.8rem', color: '#64748b', fontWeight: 500 }}>+91 {userMobile}</div>
                     </div>
-                    <Link to="/profile" onClick={() => setIsProfileOpen(false)} style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.75rem', borderRadius: '12px', textDecoration: 'none', color: '#475569', fontWeight: 600, fontSize: '0.9rem' }} className="profile-item"><User size={18} /> My Profile</Link>
-                    <Link to="/profile" onClick={() => setIsProfileOpen(false)} style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.75rem', borderRadius: '12px', textDecoration: 'none', color: '#475569', fontWeight: 600, fontSize: '0.9rem' }} className="profile-item"><Package size={18} /> My Bookings</Link>
+                    <Link to="/profile" onClick={() => setIsProfileOpen(false)} style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.75rem', borderRadius: '12px', textDecoration: 'none', color: '#475569', fontWeight: 500, fontSize: '0.9rem' }} className="profile-item"><User size={18} /> My Profile</Link>
+                    <Link to="/profile" onClick={() => setIsProfileOpen(false)} style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.75rem', borderRadius: '12px', textDecoration: 'none', color: '#475569', fontWeight: 500, fontSize: '0.9rem' }} className="profile-item"><Package size={18} /> My Bookings</Link>
                     <div style={{ height: '1px', background: '#f1f5f9', margin: '0.5rem 0' }} />
-                    <button onClick={() => { logout(); setIsProfileOpen(false); navigate('/'); }} style={{ width: '100%', display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.75rem', borderRadius: '12px', border: 'none', background: 'transparent', color: '#ef4444', fontWeight: 600, fontSize: '0.9rem', cursor: 'pointer' }} className="profile-logout"><LogOut size={18} /> Logout</button>
+                    <button onClick={() => { logout(); setIsProfileOpen(false); navigate('/'); }} style={{ width: '100%', display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.75rem', borderRadius: '12px', border: 'none', background: 'transparent', color: '#ef4444', fontWeight: 500, fontSize: '0.9rem', cursor: 'pointer' }} className="profile-logout"><LogOut size={18} /> Logout</button>
                   </div>
                 </>
               )}
@@ -459,7 +499,7 @@ const Navbar = () => {
             <button className="icon-btn" onClick={() => navigate('/shop/cart')} style={{ position: 'relative' }}>
               <ShoppingCart size={24} />
               {totalItems > 0 && (
-                <span style={{ position: 'absolute', top: '2px', right: '2px', background: '#2563eb', color: '#fff', borderRadius: '50%', width: '16px', height: '16px', fontSize: '9px', fontWeight: 800, display: 'flex', alignItems: 'center', justifyContent: 'center', border: '2px solid #fff' }}>
+                <span style={{ position: 'absolute', top: '2px', right: '2px', background: '#facc15', color: '#1e293b', borderRadius: '50%', width: '16px', height: '16px', fontSize: '9px', fontWeight: 800, display: 'flex', alignItems: 'center', justifyContent: 'center', border: '2px solid #fff' }}>
                   {totalItems}
                 </span>
               )}
@@ -798,6 +838,7 @@ function App() {
                 <Route path="/painting" element={<Painting />} />
                 <Route path="/commercial-painting" element={<CommercialPainting />} />
                 <Route path="/profile" element={<Profile />} />
+                <Route path="/privacy-policy" element={<PrivacyPolicy />} />
               </Route>
             </Routes>
           </BrowserRouter>

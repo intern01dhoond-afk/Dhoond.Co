@@ -1,4 +1,4 @@
-﻿--
+--
 -- PostgreSQL database dump
 --
 
@@ -400,12 +400,12 @@ INSERT INTO public.services VALUES (93, 'Toilet Seat Repair/Replacement', 'plumb
 INSERT INTO public.services VALUES (94, 'Concealed Pipeline Leak Fix', 'plumber', 1499, 1199, '20% OFF', 'Detecting and fixing water leaks inside walls without damaging tiles if possible.', '/ac_tech.png', NULL);
 INSERT INTO public.services VALUES (95, 'Shower & Mixer Installation', 'plumber', 499, 349, '30% OFF', 'Installing bathroom diverters, shower heads, or hot/cold mixers.', '/ac_tech.png', NULL);
 INSERT INTO public.services VALUES (98, '1 BHK Full Painting (Interior)', 'painter', 8999, 6999, '22% OFF', 'Complete interior wall and ceiling painting for 1 BHK homes using premium emulsion paints.', '/interior.jpg', NULL);
-INSERT INTO public.services VALUES (99, '2 BHK Full Painting (Interior)', 'painter', 14999, 11999, '20% OFF', 'Premium tractor or royale emulsion painting for a 2 BHK setup with professional finish.', '/interior.jpg', NULL);
+INSERT INTO public.services VALUES (99, '2 BHK Interior Painting (Up to 900 sq.ft)', 'painter', 14999, 11999, '20% OFF', 'Premium tractor or royale emulsion painting for a 2 BHK setup with professional finish.', '/interior.jpg', NULL);
 INSERT INTO public.services VALUES (100, '3 BHK Full Painting (Interior)', 'painter', 21999, 17499, '20% OFF', 'Complete interior painting for 3 BHK homes ΓÇö walls, ceilings & trims using top-grade paints.', '/interior.jpg', NULL);
 INSERT INTO public.services VALUES (101, '4 BHK / Villa Full Painting', 'painter', 34999, 27999, '20% OFF', 'End-to-end interior painting for large 4 BHK homes and villas using luxury emulsion finish.', '/interior.jpg', NULL);
 INSERT INTO public.services VALUES (102, 'Exterior Wall Painting (Single)', 'painter', 5999, 4499, '25% OFF', 'Weather-proof exterior painting for a single outer wall or balcony using all-weather paint.', '/exterior_painting.webp', NULL);
 INSERT INTO public.services VALUES (103, 'Full Exterior Home Painting', 'painter', 24999, 18999, '24% OFF', 'Complete exterior painting for independent homes with weather-resistant premium coatings.', '/exterior_painting.webp', NULL);
-INSERT INTO public.services VALUES (104, 'Office Painting (per 1000 sq ft)', 'painter', 12999, 9999, '23% OFF', 'Professional office interior painting with minimal downtime and industrial-grade finish.', '/commercial_painting.jpg', NULL);
+INSERT INTO public.services VALUES (104, 'Office Painting (per 1,000 sq.ft)', 'painter', 12999, 9999, '23% OFF', 'Professional office interior painting with minimal downtime and industrial-grade finish.', '/commercial_painting.jpg', NULL);
 INSERT INTO public.services VALUES (105, 'School / College Painting', 'painter', 29999, 22999, '23% OFF', 'Safe, durable and vibrant painting solutions for educational institutions.', '/commercial_painting.jpg', NULL);
 INSERT INTO public.services VALUES (106, 'Warehouse / Industrial Coating', 'painter', 39999, 31999, '20% OFF', 'Heavy-duty epoxy and industrial coatings for warehouses and factory floors.', '/commercial_painting.jpg', NULL);
 INSERT INTO public.services VALUES (107, 'Texture / Designer Wall Painting', 'painter', 6999, 4999, '28% OFF', 'Artistic texture finishes ΓÇö sand, bark, venetian plaster & designer patterns for accent walls.', '/interior.jpg', NULL);

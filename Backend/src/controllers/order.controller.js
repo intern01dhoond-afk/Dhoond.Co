@@ -1,4 +1,6 @@
 const orderModel = require("../models/order.model");
+const pool = require("../db/db.js");
+
 
 const createOrderController = async (req, res) => {
   try {
@@ -88,9 +90,80 @@ const getSyncDetailsController = async (req, res) => {
   }
 };
 
+const uploadPdfController = async (req, res) => {
+  try {
+    const { pdfBase64, filename } = req.body;
+    if (!pdfBase64) {
+      return res.status(400).json({ success: false, message: "pdfBase64 is required" });
+    }
+
+    // Ensure database table exists
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS quotation_pdfs (
+        ref VARCHAR(255) PRIMARY KEY,
+        pdf_base64 TEXT NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `);
+
+    // Extract reference key from filename: Dhoond_Quotation_PQP-20260518-133.pdf -> PQP-20260518-133
+    const refMatch = filename.match(/Dhoond_Quotation_(.*?)\.pdf/);
+    const ref = refMatch ? refMatch[1] : `Q-${Date.now()}`;
+
+    // Save/upsert the PDF in the database
+    await pool.query(`
+      INSERT INTO quotation_pdfs (ref, pdf_base64)
+      VALUES ($1, $2)
+      ON CONFLICT (ref) DO UPDATE SET pdf_base64 = $2
+    `, [ref, pdfBase64]);
+
+    const downloadUrl = `https://dhoond-backend-684217984422.us-central1.run.app/api/V1/orders/download-pdf/${ref}`;
+    
+    res.status(200).json({ success: true, downloadUrl });
+  } catch (error) {
+    console.error('Server-side upload error:', error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+const downloadPdfController = async (req, res) => {
+  try {
+    const { ref } = req.params;
+    
+    // Ensure database table exists
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS quotation_pdfs (
+        ref VARCHAR(255) PRIMARY KEY,
+        pdf_base64 TEXT NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `);
+
+    const result = await pool.query('SELECT pdf_base64 FROM quotation_pdfs WHERE ref = $1', [ref]);
+    if (result.rows.length === 0) {
+      return res.status(404).send('Quotation PDF not found');
+    }
+
+    const pdfBase64 = result.rows[0].pdf_base64;
+    
+    // Strip base64 metadata prefix if present generically
+    const base64Data = pdfBase64.replace(/^data:.*?;base64,/, "");
+    const pdfBuffer = Buffer.from(base64Data, 'base64');
+
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', `inline; filename="Quotation_${ref}.pdf"`);
+    res.send(pdfBuffer);
+  } catch (error) {
+    console.error('Download PDF error:', error);
+    res.status(500).send('Internal Server Error');
+  }
+};
+
 module.exports = {
   createOrderController,
   getOrdersController,
   updateOrderController,
   getSyncDetailsController,
+  uploadPdfController,
+  downloadPdfController,
 };

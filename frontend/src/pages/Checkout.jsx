@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
-import { MapPin, Clock, CreditCard, Tag, Percent, Phone, SquareCheck, Info, X, Calendar, Edit2, CheckCircle2, ShieldCheck, Lock, Smartphone, Building2, ChevronRight, CheckCircle, ChevronLeft, Sparkles, ArrowRight } from 'lucide-react';
+import { MapPin, Clock, CreditCard, Tag, Percent, Phone, SquareCheck, Info, X, Calendar, Edit2, CheckCircle2, ShieldCheck, Lock, Smartphone, Building2, ChevronRight, CheckCircle, ChevronLeft, Sparkles, ArrowRight, ArrowLeft, Search, ShoppingCart, HelpCircle, Mail } from 'lucide-react';
 import { formatOrderId } from '../utils/formatOrderId';
 import { detectCurrentLocation } from '../utils/location';
 import AuthModal from '../components/AuthModal';
@@ -467,28 +467,57 @@ const Checkout = () => {
   };
 
   return (
-    <div style={{ background: '#f8fafc', minHeight: '100vh', paddingBottom: '4rem', fontFamily: 'Inter, sans-serif' }}>
-      {/* Header */}
+    <div style={{ background: '#f8fafc', minHeight: '100vh', paddingBottom: '4rem', fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif" }}>
+      {/* Header & Styles */}
       <style>{`
-        .checkout-header-img { position: absolute; right: 2%; top: 50%; transform: translateY(-50%); height: 110%; width: auto; object-fit: contain; pointer-events: none; user-select: none; opacity: 0.9; }
-        .checkout-card { background: #fff; border-radius: 24px; border: 1px solid rgba(226, 232, 240, 0.8); box-shadow: 0 10px 40px -10px rgba(0,0,0,0.04); overflow: hidden; }
+        * { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important; }
+        .checkout-card { background: #fff; border-radius: 16px; border: 1px solid rgba(226, 232, 240, 0.8); box-shadow: 0 4px 25px rgba(0,0,0,0.03); overflow: hidden; }
         .form-input { width: 100%; padding: 1rem 1.25rem; border-radius: 12px; border: 2px solid #e2e8f0; font-size: 1rem; font-weight: 500; outline: none; transition: all 0.2s; background: #fafafa; }
-        .form-input:focus { border-color: #2563eb; background: #fff; box-shadow: 0 0 0 4px rgba(37,99,235,0.1); }
+        .form-input:focus { border-color: #0a57d0; background: #fff; box-shadow: 0 0 0 4px rgba(10,87,208,0.1); }
         .checkout-qty-btn { background: #f1f5f9; border: none; width: 28px; height: 28px; border-radius: 8px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 1.1rem; font-weight: 600; color: #475569; transition: all 0.2s; }
         .checkout-qty-btn:hover { background: #e2e8f0; color: #0f172a; }
-        @media (max-width: 600px) { .checkout-header-img { height: 70px; opacity: 0.4; } }
+        .badge-assured { display: inline-flex; align-items: center; gap: 4px; padding: 4px 12px; background: #eff6ff; border: 1px solid #bae6fd; color: #1d4ed8; border-radius: 99px; font-size: 0.75rem; font-weight: 500; text-transform: uppercase; }
+        .outline-btn-dhoond { display: inline-flex; align-items: center; justify-content: center; border: 1px solid #0a57d0; color: #0a57d0; background: #fff; border-radius: 8px; padding: 0.5rem 1.5rem; font-weight: 500; cursor: pointer; transition: all 0.2s; font-size: 0.9rem; }
+        .outline-btn-dhoond:hover { background: #eff6ff; }
+        .blue-info-banner { display: flex; align-items: center; gap: 0.5rem; color: #0a57d0; font-size: 0.85rem; font-weight: 500; background: #eff6ff; padding: 0.75rem 1rem; border-radius: 10px; border: 1px solid #dbeafe; }
+        .yellow-saving-banner { display: flex; align-items: center; gap: 0.5rem; color: #854d0e; font-weight: 600; font-size: 0.95rem; background: #fef9c3; padding: 0.75rem 1.25rem; border-radius: 12px; border: 1px solid #fef08a; }
+        .assistance-section { background: #0f172a; color: #f8fafc; padding: 4rem 5% 3rem; text-align: center; }
+        .assistance-card { background: #1e293b; border: 1px solid #334155; border-radius: 16px; padding: 1.5rem; width: 100%; max-width: 320px; transition: transform 0.2s; }
+        .assistance-card:hover { transform: translateY(-2px); }
+        .checkout-footer { background: #0b0f19; color: #94a3b8; padding: 4rem 5% 2rem; border-top: 1px solid #1e293b; }
+        .checkout-footer-col { display: flex; flexDirection: column; gap: 0.75rem; }
+        .checkout-footer-col h4 { color: #fff; font-weight: 600; font-size: 0.85rem; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.05em; }
+        .checkout-footer-col a { color: #94a3b8; font-size: 0.9rem; transition: color 0.2s; text-decoration: none; }
+        .checkout-footer-col a:hover { color: #facc15; }
+        @media (max-width: 768px) {
+          .hide-mobile { display: none !important; }
+        }
       `}</style>
-      
+
+
+
+      {/* 2. Cobalt Blue Sub-header Bar */}
       <div style={{
-        position: 'sticky', top: 0, zIndex: 100, overflow: 'hidden',
-        padding: '1.5rem 5%',
-        background: 'linear-gradient(135deg, #0f172a 0%, #1e3a8a 50%, #2563eb 100%)',
-        boxShadow: '0 4px 20px rgba(0,0,0,0.1)'
+        background: '#0A57D0',
+        padding: '1.25rem 5%',
+        color: '#fff'
       }}>
-        <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, background: 'radial-gradient(circle at top right, rgba(255,255,255,0.1) 0%, transparent 60%)' }} />
-        <img src="/images/cart nav.png" alt="" aria-hidden="true" className="checkout-header-img" />
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', fontWeight: 900, fontSize: '1.4rem', color: '#fff', maxWidth: '1100px', margin: '0 auto', width: '100%', position: 'relative', zIndex: 1, letterSpacing: '-0.02em' }}>
-          Secure Checkout
+        <div style={{
+          maxWidth: '1100px',
+          margin: '0 auto',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          flexWrap: 'wrap',
+          gap: '0.75rem'
+        }}>
+          <div>
+            <h1 style={{ margin: 0, fontSize: '1.65rem', fontWeight: 600, letterSpacing: '-0.01em' }}>Secure Checkout</h1>
+            <p style={{ margin: '4px 0 0', fontSize: '0.85rem', color: 'rgba(255,255,255,0.85)', fontWeight: 400 }}>Finish your booking in few simple steps</p>
+          </div>
+          <div className="hide-mobile" style={{ fontStyle: 'italic', fontSize: '0.85rem', fontWeight: 500, opacity: 0.9, letterSpacing: '0.05em' }}>
+            India's Trusted Marketplace
+          </div>
         </div>
       </div>
 
@@ -500,7 +529,7 @@ const Checkout = () => {
               <div style={{ background: '#fee2e2', padding: '0.5rem', borderRadius: '10px', display: 'flex' }}>
                 <Info size={20} color="#dc2626" />
               </div>
-              <span style={{ color: '#991b1b', fontWeight: 600, fontSize: '0.95rem' }}>{paymentError}</span>
+              <span style={{ color: '#991b1b', fontWeight: 500, fontSize: '0.95rem' }}>{paymentError}</span>
             </div>
             <button onClick={() => setPaymentError('')} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '0.25rem', color: '#dc2626' }}>
               <X size={20} />
@@ -515,7 +544,9 @@ const Checkout = () => {
         opacity: (!isAuthenticated || isInitializing) ? 0.4 : 1,
         pointerEvents: (!isAuthenticated || isInitializing) ? 'none' : 'auto',
         filter: (!isAuthenticated || isInitializing) ? 'blur(8px)' : 'none',
-        transition: 'all 0.5s cubic-bezier(0.16, 1, 0.3, 1)'
+        transition: 'all 0.5s cubic-bezier(0.16, 1, 0.3, 1)',
+        width: '100%',
+        boxSizing: 'border-box'
       }}>
 
         {(!isAuthenticated && !isInitializing) && (
@@ -523,46 +554,65 @@ const Checkout = () => {
             <div style={{ background: '#eff6ff', width: '70px', height: '70px', borderRadius: '20px', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1.5rem', border: '1px solid #dbeafe' }}>
               <Lock size={32} color="#2563eb" />
             </div>
-            <h3 style={{ fontSize: '1.5rem', fontWeight: 900, color: '#0f172a', marginBottom: '0.75rem', letterSpacing: '-0.02em' }}>Login Required</h3>
+            <h3 style={{ fontSize: '1.5rem', fontWeight: 600, color: '#0f172a', marginBottom: '0.75rem', letterSpacing: '-0.02em' }}>Login Required</h3>
             <p style={{ color: '#64748b', fontSize: '1rem', marginBottom: '2rem', lineHeight: 1.5 }}>Please verify your phone number to view checkout details and proceed with booking.</p>
-            <button onClick={() => setIsAuthModalOpen(true)} style={{ width: '100%', background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)', color: '#fff', border: 'none', padding: '1.1rem', borderRadius: '14px', fontWeight: 800, fontSize: '1.05rem', cursor: 'pointer', boxShadow: '0 8px 20px rgba(15,23,42,0.2)', transition: 'transform 0.2s' }} onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-2px)'} onMouseLeave={e => e.currentTarget.style.transform = 'translateY(0)'}>Verify Now</button>
+            <button onClick={() => setIsAuthModalOpen(true)} style={{ width: '100%', background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)', color: '#fff', border: 'none', padding: '1.1rem', borderRadius: '14px', fontWeight: 600, fontSize: '1.05rem', cursor: 'pointer', boxShadow: '0 8px 20px rgba(15,23,42,0.2)', transition: 'transform 0.2s' }} onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-2px)'} onMouseLeave={e => e.currentTarget.style.transform = 'translateY(0)'}>Verify Now</button>
           </div>
         )}
 
-        {/* FIRST SECTION (ON MOBILE: Summary & Cart) */}
-        <div style={{ order: isMobile ? 1 : 2, display: 'flex', flexDirection: 'column', gap: '1.5rem', width: isMobile ? '100%' : '42%' }}>
-
-          {/* Cart Block */}
+        {/* LEFT COLUMN: Service Cards (64% width on desktop, 100% on mobile) */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', width: isMobile ? '100%' : '64%' }}>
+          
+          {/* Painting Services Card */}
           <div className="checkout-card" style={{ padding: '1.75rem' }}>
-            <h3 style={{ fontSize: '1.35rem', fontWeight: 900, color: '#0f172a', margin: '0 0 1.5rem 0', letterSpacing: '-0.02em' }}>{checkoutCategory === 'painter' ? 'Painting Services' : 'Booking Details'}</h3>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+              <h3 style={{ fontSize: '1.35rem', fontWeight: 600, color: '#0f172a', margin: 0, letterSpacing: '-0.02em' }}>
+                {checkoutCategory === 'painter' ? 'Painting Services' : 'Booking Details'}
+              </h3>
+              <span className="badge-assured">
+                <ShieldCheck size={16} color="#0A57D0" fill="#eff6ff" /> Professional Assured
+              </span>
+            </div>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', marginBottom: '2rem' }}>
               {cartItems.map((item) => (
-                <div key={item.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '1rem' }}>
-                  <div style={{ flex: 1 }}>
-                    <div style={{ fontSize: '1rem', color: '#0f172a', fontWeight: 700, lineHeight: 1.4 }}>{item.title}</div>
+                <div key={item.id} style={{ display: 'flex', alignItems: 'center', gap: '1rem', flexWrap: 'wrap' }}>
+                  {/* Thumbnail Image */}
+                  <div style={{ width: '60px', height: '60px', borderRadius: '12px', overflow: 'hidden', border: '1px solid #e2e8f0', flexShrink: 0, background: '#f8fafc' }}>
+                    <img src={item.image || "/favicon.png"} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                   </div>
 
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', background: '#fff', border: '1px solid #e2e8f0', borderRadius: '10px', padding: '0.2rem' }}>
-                      <button className="checkout-qty-btn" onClick={() => updateQuantity(item.id, -1)}>−</button>
-                      <span style={{ width: '28px', textAlign: 'center', fontSize: '0.95rem', fontWeight: 800, color: '#2563eb' }}>{item.quantity}</span>
+                  {/* Title & Description */}
+                  <div style={{ flex: 1, minWidth: '150px' }}>
+                    <div style={{ fontSize: '1.05rem', color: '#0f172a', fontWeight: 500, lineHeight: 1.3, marginBottom: '2px' }}>{item.title}</div>
+                    <div style={{ fontSize: '0.85rem', color: '#64748b', fontWeight: 400 }}>
+                      {item.title?.toLowerCase().includes('consultation') ? 'Specialized assessment & cost estimation' : 'Premium service warranty'}
+                    </div>
+                  </div>
+
+                  {/* Quantity and Price Container */}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem', justifyContent: 'space-between', minWidth: '180px' }}>
+                    {/* Quantity Counter */}
+                    <div style={{ display: 'flex', alignItems: 'center', background: '#f1f5f9', borderRadius: '8px', padding: '0.2rem', border: '1px solid #e2e8f0' }}>
+                      <button className="checkout-qty-btn" onClick={() => updateQuantity(item.id, -1)} style={{ background: 'transparent' }}>−</button>
+                      <span style={{ width: '28px', textAlign: 'center', fontSize: '0.95rem', fontWeight: 500, color: '#0A57D0' }}>{item.quantity}</span>
                       <button
                         className="checkout-qty-btn"
                         style={{
                           cursor: item.title?.toLowerCase().includes('consultation') ? 'not-allowed' : 'pointer',
                           color: item.title?.toLowerCase().includes('consultation') ? '#cbd5e1' : '#475569',
-                          background: item.title?.toLowerCase().includes('consultation') ? '#f8fafc' : '#f1f5f9'
+                          background: 'transparent'
                         }}
                         onClick={() => updateQuantity(item.id, 1)}
                         disabled={item.title?.toLowerCase().includes('consultation')}
                       >+</button>
                     </div>
 
+                    {/* Price */}
                     <div style={{ textAlign: 'right', minWidth: '65px' }}>
-                      <div style={{ fontSize: '1.1rem', fontWeight: 900, color: '#0f172a' }}>₹{Number(item.discountPrice || 0).toFixed(0)}</div>
+                      <div style={{ fontSize: '1.15rem', fontWeight: 600, color: '#0A57D0' }}>₹{Number(item.discountPrice || 0).toFixed(0)}</div>
                       {item.originalPrice > item.discountPrice && (
-                        <div style={{ fontSize: '0.85rem', color: '#94a3b8', textDecoration: 'line-through', fontWeight: 600 }}>₹{Number(item.originalPrice || 0).toFixed(0)}</div>
+                        <div style={{ fontSize: '0.85rem', color: '#94a3b8', textDecoration: 'line-through', fontWeight: 400 }}>₹{Number(item.originalPrice || 0).toFixed(0)}</div>
                       )}
                     </div>
                   </div>
@@ -572,33 +622,38 @@ const Checkout = () => {
 
             {/* Expert arrival instruction */}
             <div style={{ borderTop: '2px dashed #f1f5f9', paddingTop: '1.5rem' }}>
-              <div style={{ fontSize: '0.85rem', fontWeight: 800, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '1rem' }}>Expert Arrival Preference</div>
-              <div style={{ display: 'flex', gap: '0.75rem' }}>
+              <div style={{ fontSize: '0.85rem', fontWeight: 600, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '1rem' }}>Expert Arrival Preference</div>
+              <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
                 {[
-                  { id: 'direct', label: 'Arrive directly', sub: "Don't call" },
-                  { id: 'call', label: 'Call me first', sub: 'Before coming' },
+                  { id: 'direct', label: 'Arrive directly', sub: "Don't call", icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M18 20V10M12 20V4M6 20v-6"/></svg> },
+                  { id: 'call', label: 'Call me first', sub: 'Before coming', icon: <Phone size={18} /> },
                 ].map(opt => (
                   <button
                     key={opt.id}
                     onClick={() => setArrivalPref(opt.id)}
                     style={{
-                      flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px',
+                      flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px',
                       padding: '0.85rem 0.5rem',
                       borderRadius: '14px',
-                      border: arrivalPref === opt.id ? '2px solid #2563eb' : '2px solid #f1f5f9',
+                      border: arrivalPref === opt.id ? '2px solid #0a57d0' : '2px solid #f1f5f9',
                       background: arrivalPref === opt.id ? '#eff6ff' : '#fff',
                       cursor: 'pointer',
                       transition: 'all 0.2s',
-                      boxShadow: arrivalPref === opt.id ? '0 4px 15px rgba(37,99,235,0.1)' : 'none'
+                      boxShadow: arrivalPref === opt.id ? '0 4px 15px rgba(10,87,208,0.1)' : 'none',
+                      minWidth: '120px'
                     }}
                   >
-                    <span style={{ fontSize: '0.85rem', fontWeight: 800, color: arrivalPref === opt.id ? '#1e40af' : '#475569' }}>{opt.label}</span>
-                    <span style={{ fontSize: '0.7rem', color: arrivalPref === opt.id ? '#3b82f6' : '#94a3b8', fontWeight: 600 }}>{opt.sub}</span>
+                    <div style={{ color: arrivalPref === opt.id ? '#0a57d0' : '#64748b', display: 'flex', marginBottom: '2px' }}>
+                      {opt.icon}
+                    </div>
+                    <span style={{ fontSize: '0.85rem', fontWeight: 600, color: arrivalPref === opt.id ? '#0a57d0' : '#475569' }}>{opt.label}</span>
+                    <span style={{ fontSize: '0.7rem', color: arrivalPref === opt.id ? '#3b82f6' : '#94a3b8', fontWeight: 400 }}>{opt.sub}</span>
                   </button>
                 ))}
               </div>
+              
               {arrivalPref === 'call' && (
-                <div style={{ marginTop: '1rem', animation: 'fadeIn 0.2s' }}>
+                <div style={{ marginTop: '1.25rem', animation: 'fadeIn 0.2s' }}>
                   <input
                     type="tel"
                     value={arrivalNote}
@@ -609,151 +664,190 @@ const Checkout = () => {
                 </div>
               )}
               {arrivalPref === 'direct' && (
-                <div style={{ marginTop: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#059669', fontSize: '0.85rem', fontWeight: 600, background: '#ecfdf5', padding: '0.75rem', borderRadius: '10px' }}>
-                  <span style={{ display: 'flex', background: '#34d399', color: '#fff', borderRadius: '50%', padding: '2px' }}><CheckCircle size={14} /></span>
-                  Expert will head straight to your address
+                <div className="blue-info-banner" style={{ marginTop: '1.25rem' }}>
+                  <Info size={16} />
+                  <span>Expert will head straight to your address</span>
                 </div>
               )}
             </div>
           </div>
 
-          {/* Payment Summary */}
-          <div className="checkout-card">
-            <div style={{ padding: '1.75rem' }}>
-              <h3 style={{ fontSize: '1.35rem', fontWeight: 900, color: '#0f172a', margin: '0 0 1.5rem 0', letterSpacing: '-0.02em' }}>Payment summary</h3>
+          {/* Service Slot Card */}
+          <div className="checkout-card" style={{ padding: '1.25rem 1.75rem' }}>
+             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem' }}>
+               <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem' }}>
+                 <div style={{ width: '48px', height: '48px', borderRadius: '12px', background: '#0A57D0', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', flexShrink: 0 }}>
+                   <Calendar size={24} />
+                 </div>
+                 <div>
+                   <div style={{ fontWeight: 600, color: '#0f172a', fontSize: '1.05rem', marginBottom: '2px' }}>Service Slot</div>
+                   <div style={{ fontSize: '0.9rem', color: selectedDate ? '#0A57D0' : '#64748b', fontWeight: selectedDate ? 500 : 400 }}>
+                     {selectedDate ? `${selectedDate} at ${selectedTime}` : 'Please select a date & time'}
+                   </div>
+                 </div>
+               </div>
+               <button onClick={() => setIsSlotModalOpen(true)} className="outline-btn-dhoond">
+                 {selectedDate ? 'Change' : 'Select'}
+               </button>
+             </div>
+          </div>
 
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', color: '#475569', fontWeight: 600, fontSize: '0.95rem', marginBottom: '1.75rem' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <span style={{ color: '#64748b' }}>Item total</span>
-                  <span style={{ textDecoration: 'line-through', color: '#94a3b8', fontWeight: 700 }}>₹{subtotal.toFixed(0)}</span>
-                </div>
-
-                {totalDiscount > 0 && (
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#f0fdf4', padding: '0.75rem 1rem', borderRadius: '10px' }}>
-                    <span style={{ color: '#059669', display: 'flex', alignItems: 'center', gap: '6px' }}><Tag size={16} /> Promotional Discount</span>
-                    <span style={{ color: '#059669', fontWeight: 800 }}>− ₹{totalDiscount.toFixed(0)}</span>
-                  </div>
-                )}
-
-                <div style={{ borderTop: '2px dashed #f1f5f9' }} />
-
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <span>Price (excl. GST)</span>
-                  <span style={{ color: '#0f172a', fontWeight: 800 }}>₹{netPrice.toFixed(2)}</span>
-                </div>
-
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <span>GST <span style={{ fontSize: '0.75rem', background: '#f1f5f9', color: '#64748b', padding: '2px 8px', borderRadius: '8px', fontWeight: 800 }}>18%</span></span>
-                  <span style={{ color: '#0f172a', fontWeight: 800 }}>+ ₹{inclusiveTax.toFixed(2)}</span>
-                </div>
-
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid #e2e8f0', paddingTop: '1.25rem', marginTop: '0.25rem' }}>
-                  <span style={{ color: '#0f172a', fontWeight: 800, fontSize: '1.05rem' }}>Total</span>
-                  <span style={{ color: '#0f172a', fontWeight: 900, fontSize: '1.15rem' }}>₹{total.toFixed(0)}</span>
-                </div>
-
-                {tipAmount > 0 && (
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', animation: 'fadeIn 0.3s ease-out' }}>
-                    <span style={{ color: '#2563eb', fontWeight: 700 }}>Tip for Professional</span>
-                    <span style={{ color: '#2563eb', fontWeight: 800 }}>+ ₹{tipAmount}</span>
-                  </div>
-                )}
-
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)', borderRadius: '16px', padding: '1.25rem', marginTop: '0.5rem', boxShadow: '0 8px 20px rgba(15,23,42,0.15)' }}>
-                  <span style={{ color: '#fff', fontWeight: 800, fontSize: '1.05rem' }}>Amount to Pay</span>
-                  <span style={{ color: '#fef08a', fontWeight: 900, fontSize: '1.4rem', textShadow: '0 2px 10px rgba(254,240,138,0.2)' }}>₹{finalAmountToPay.toFixed(0)}</span>
-                </div>
+          {/* Service Address Card */}
+          <div className="checkout-card" style={{ padding: '1.75rem' }}>
+            {isEditingAddress ? (
+              <div style={{ width: '100%', animation: 'fadeIn 0.2s' }}>
+                 <div style={{ display: 'flex', alignItems: 'center', marginBottom: '1.25rem' }}>
+                   <div style={{ width: '48px', height: '48px', borderRadius: '12px', background: '#0A57D0', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', marginRight: '1.25rem', flexShrink: 0 }}><MapPin size={24} /></div>
+                   <div style={{ fontWeight: 600, color: '#0f172a', fontSize: '1.05rem' }}>Service Address</div>
+                 </div>
+                 <div style={{ width: '100%', height: '220px', background: '#f8fafc', borderRadius: '12px', marginBottom: '1.25rem', position: 'relative', overflow: 'hidden', border: '1px solid #e2e8f0' }}>
+                   <div style={{ position: 'absolute', inset: 0, backgroundImage: 'radial-gradient(#cbd5e1 1px, transparent 1px)', backgroundSize: '20px 20px', opacity: 0.5 }}></div>
+                   <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', background: '#fff', padding: '1rem', borderRadius: '50%', boxShadow: '0 10px 25px rgba(37,99,235,0.2)' }}><MapPin size={32} color="#0a57d0" /></div>
+                   <button onClick={handleFetchLocation} style={{ position: 'absolute', bottom: '1rem', left: '50%', transform: 'translateX(-50%)', background: '#111', color: '#fff', padding: '0.6rem 1.25rem', borderRadius: '8px', border: 'none', fontWeight: 500, cursor: 'pointer', boxShadow: '0 4px 15px rgba(0,0,0,0.2)', whiteSpace: 'nowrap', fontSize: '0.85rem' }}>{locating ? 'Locating...' : 'Use Current Location'}</button>
+                 </div>
+                 <textarea value={formData.address} onChange={e => setFormData({ ...formData, address: e.target.value })} rows={3} className="form-input" style={{ resize: 'none' }} placeholder="Enter full address details" />
+                 <button onClick={() => setIsEditingAddress(false)} style={{ width: '100%', background: '#0a57d0', color: '#fff', padding: '0.9rem', borderRadius: '10px', marginTop: '1rem', border: 'none', fontWeight: 600, cursor: 'pointer', boxShadow: '0 4px 15px rgba(10,87,208,0.1)' }}>Confirm Address</button>
               </div>
-
-              {/* Tip Selector */}
-              <div style={{ background: '#f8fafc', padding: '1.25rem', borderRadius: '16px', border: '1px solid #f1f5f9' }}>
-                <div style={{ fontSize: '1rem', fontWeight: 800, color: '#0f172a', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '6px' }}><Sparkles size={18} color="#2563eb" /> Add a tip to thank the Professional</div>
-                <div style={{ display: 'flex', gap: '0.75rem', marginBottom: isCustomTipping ? '1rem' : 0 }}>
-                  {[50, 75, 100].map(amt => (
-                    <button key={amt} onClick={() => { setTipAmount(amt === tipAmount ? 0 : amt); setIsCustomTipping(false); }} style={{ flex: 1, padding: '0.85rem 0', borderRadius: '12px', border: tipAmount === amt ? '2px solid #2563eb' : '1px solid #e2e8f0', background: tipAmount === amt ? '#eff6ff' : '#fff', color: tipAmount === amt ? '#1e40af' : '#475569', fontWeight: 800, fontSize: '1rem', cursor: 'pointer', transition: 'all 0.2s', boxShadow: tipAmount === amt ? '0 4px 15px rgba(37,99,235,0.1)' : '0 2px 5px rgba(0,0,0,0.02)' }}>₹{amt}</button>
-                  ))}
-                  <button onClick={() => { setIsCustomTipping(v => !v); setCustomTip(''); }} style={{ flex: 1, padding: '0.85rem 0', borderRadius: '12px', border: isCustomTipping ? '2px solid #2563eb' : '1px solid #e2e8f0', background: isCustomTipping ? '#eff6ff' : '#fff', color: isCustomTipping ? '#1e40af' : '#475569', fontWeight: 800, fontSize: '1rem', cursor: 'pointer', transition: 'all 0.2s' }}>{isCustomTipping ? 'Cancel' : 'Custom'}</button>
-                </div>
-                {isCustomTipping && (
-                  <div style={{ marginTop: '1rem', animation: 'fadeIn 0.2s ease-out' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', background: '#fff', border: '2px solid #e2e8f0', borderRadius: '12px', padding: '0.3rem 0.3rem 0.3rem 1rem', gap: '8px', transition: 'border-color 0.2s' }}>
-                      <span style={{ fontWeight: 800, color: '#475569', fontSize: '1.1rem' }}>₹</span>
-                      <input type="number" value={customTip} onChange={e => setCustomTip(Math.min(Number(e.target.value.replace(/\D/g, '')), 500).toString())} placeholder="Enter amount (max ₹500)" style={{ flex: 1, border: 'none', outline: 'none', background: 'transparent', fontSize: '1.05rem', fontWeight: 700, color: '#0f172a' }} autoFocus />
-                      <button onClick={() => { const val = Number(customTip); if (val > 0) { setTipAmount(val); setIsCustomTipping(false); setCustomTip(''); } }} style={{ padding: '0.75rem 1.25rem', borderRadius: '10px', background: '#2563eb', color: '#fff', border: 'none', fontWeight: 800, cursor: 'pointer', boxShadow: '0 4px 15px rgba(37,99,235,0.2)' }}>Apply</button>
+            ) : (
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem', flex: 1, minWidth: '200px' }}>
+                  <div style={{ width: '48px', height: '48px', borderRadius: '12px', background: '#0A57D0', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', flexShrink: 0 }}>
+                    <MapPin size={24} />
+                  </div>
+                  <div>
+                    <div style={{ fontWeight: 600, color: '#0f172a', fontSize: '1.05rem', marginBottom: '2px' }}>Service Address</div>
+                    <div style={{ fontSize: '0.9rem', color: '#64748b', fontWeight: 400, lineHeight: 1.4 }}>
+                      {formData.address || 'Please provide your address'}
                     </div>
                   </div>
-                )}
+                </div>
+                <button onClick={() => setIsEditingAddress(true)} className="outline-btn-dhoond">
+                  Edit
+                </button>
               </div>
-            </div>
+            )}
+          </div>
+
+          {/* Contact Number Card */}
+          <div className="checkout-card" style={{ padding: '1.75rem' }}>
+            {isEditingPhone ? (
+              <div style={{ width: '100%', animation: 'fadeIn 0.2s' }}>
+                <div style={{ display: 'flex', alignItems: 'center', marginBottom: '1.25rem' }}>
+                  <div style={{ width: '48px', height: '48px', borderRadius: '12px', background: '#0A57D0', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', marginRight: '1.25rem', flexShrink: 0 }}><Phone size={24} /></div>
+                  <div style={{ fontWeight: 600, color: '#0f172a', fontSize: '1.05rem' }}>Contact Number</div>
+                </div>
+                <div style={{ display: 'flex', gap: '0.75rem' }}>
+                  <input type="tel" value={formData.phone} onChange={e => setFormData({ ...formData, phone: e.target.value })} className="form-input" autoFocus />
+                  <button onClick={() => setIsEditingPhone(false)} style={{ background: '#0a57d0', color: '#fff', padding: '0 1.5rem', borderRadius: '10px', fontWeight: 500, border: 'none', cursor: 'pointer' }}>Save</button>
+                </div>
+              </div>
+            ) : (
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem' }}>
+                  <div style={{ width: '48px', height: '48px', borderRadius: '12px', background: '#0A57D0', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', flexShrink: 0 }}>
+                    <Phone size={24} />
+                  </div>
+                  <div>
+                    <div style={{ fontWeight: 600, color: '#0f172a', fontSize: '1.05rem', marginBottom: '2px' }}>Contact Number</div>
+                    <div style={{ fontSize: '0.95rem', color: '#64748b', fontWeight: 400 }}>
+                      {formData.phone || 'Please verify your phone number'}
+                    </div>
+                  </div>
+                </div>
+                <button onClick={() => setIsEditingPhone(true)} className="outline-btn-dhoond">
+                  Edit
+                </button>
+              </div>
+            )}
           </div>
         </div>
 
-        {/* SECOND SECTION */}
-        <div style={{ order: isMobile ? 2 : 1, display: 'flex', flexDirection: 'column', gap: '1.5rem', width: isMobile ? '100%' : '58%' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#059669', fontWeight: 800, fontSize: '0.95rem', marginBottom: '0.25rem', background: '#ecfdf5', padding: '0.75rem 1.25rem', borderRadius: '12px', border: '1px solid #d1fae5' }}>
-             <Tag size={18} /> You are saving ₹{totalDiscount.toFixed(0)} on this order
-          </div>
+        {/* RIGHT COLUMN: Summary Details (36% width on desktop, 100% on mobile) */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', width: isMobile ? '100%' : '36%' }}>
+          
+          {/* Payment Summary card */}
+          <div className="checkout-card" style={{ padding: '1.75rem' }}>
+            <h3 style={{ fontSize: '1.35rem', fontWeight: 600, color: '#0f172a', margin: '0 0 1.5rem 0', letterSpacing: '-0.02em' }}>Payment summary</h3>
 
-          <div className="checkout-card">
-            <div style={{ padding: '1.75rem', borderBottom: '1px solid #f1f5f9' }}>
-              {isEditingPhone ? (
-                <div style={{ display: 'flex', gap: '1rem' }}>
-                  <input type="tel" value={formData.phone} onChange={e => setFormData({ ...formData, phone: e.target.value })} className="form-input" autoFocus />
-                  <button onClick={() => setIsEditingPhone(false)} style={{ background: '#0f172a', color: '#fff', padding: '0 1.75rem', borderRadius: '12px', fontWeight: 800, border: 'none', cursor: 'pointer' }}>Save</button>
-                </div>
-              ) : (
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                  <div style={{ display: 'flex', alignItems: 'center' }}>
-                    <div style={{ background: '#eff6ff', padding: '0.85rem', borderRadius: '14px', marginRight: '1.25rem', color: '#2563eb' }}><Phone size={24} /></div>
-                    <div><div style={{ fontWeight: 800, color: '#0f172a', fontSize: '1.05rem', marginBottom: '2px' }}>Contact Number</div><div style={{ fontSize: '0.95rem', color: '#64748b', fontWeight: 500 }}>{formData.phone}</div></div>
-                  </div>
-                  <button onClick={() => setIsEditingPhone(true)} style={{ color: '#2563eb', fontWeight: 800, background: '#eff6ff', border: 'none', padding: '0.5rem 1rem', borderRadius: '8px', cursor: 'pointer', transition: 'background 0.2s' }} onMouseEnter={e => e.currentTarget.style.background = '#dbeafe'} onMouseLeave={e => e.currentTarget.style.background = '#eff6ff'}>Edit</button>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', color: '#475569', fontWeight: 500, fontSize: '0.95rem', marginBottom: '1.75rem' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <span style={{ color: '#64748b' }}>Item total</span>
+                <span style={{ textDecoration: 'line-through', color: '#94a3b8', fontWeight: 500 }}>₹{subtotal.toFixed(0)}</span>
+              </div>
+
+              {totalDiscount > 0 && (
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#f0fdf4', padding: '0.75rem 1rem', borderRadius: '10px', border: '1px solid #d1fae5' }}>
+                  <span style={{ color: '#0F8A5F', display: 'flex', alignItems: 'center', gap: '6px', fontWeight: 600 }}><Tag size={16} /> Promotional Discount</span>
+                  <span style={{ color: '#0F8A5F', fontWeight: 600 }}>− ₹{totalDiscount.toFixed(0)}</span>
                 </div>
               )}
-            </div>
 
-            <div style={{ padding: '1.75rem', borderBottom: '1px solid #f1f5f9' }}>
-              {isEditingAddress ? (
-                <div style={{ animation: 'fadeIn 0.2s' }}>
-                   <div style={{ width: '100%', height: '240px', background: '#f8fafc', borderRadius: '16px', marginBottom: '1.25rem', position: 'relative', overflow: 'hidden', border: '1px solid #e2e8f0' }}>
-                     <div style={{ position: 'absolute', inset: 0, backgroundImage: 'radial-gradient(#cbd5e1 1px, transparent 1px)', backgroundSize: '20px 20px', opacity: 0.5 }}></div>
-                     <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', background: '#fff', padding: '1rem', borderRadius: '50%', boxShadow: '0 10px 25px rgba(37,99,235,0.2)' }}><MapPin size={32} color="#2563eb" /></div>
-                     <button onClick={handleFetchLocation} style={{ position: 'absolute', bottom: '1rem', left: '50%', transform: 'translateX(-50%)', background: '#111', color: '#fff', padding: '0.75rem 1.5rem', borderRadius: '12px', border: 'none', fontWeight: 800, cursor: 'pointer', boxShadow: '0 4px 15px rgba(0,0,0,0.2)', whiteSpace: 'nowrap' }}>{locating ? 'Locating...' : 'Use Current Location'}</button>
-                   </div>
-                   <textarea value={formData.address} onChange={e => setFormData({ ...formData, address: e.target.value })} rows={3} className="form-input" style={{ resize: 'none' }} placeholder="Enter full address details" />
-                   <button onClick={() => setIsEditingAddress(false)} style={{ width: '100%', background: '#0f172a', color: '#fff', padding: '1.1rem', borderRadius: '12px', fontWeight: 800, marginTop: '1.25rem', border: 'none', cursor: 'pointer', boxShadow: '0 4px 15px rgba(15,23,42,0.1)' }}>Confirm Address</button>
-                </div>
-              ) : (
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                  <div style={{ display: 'flex', alignItems: 'center' }}>
-                    <div style={{ background: '#eff6ff', padding: '0.85rem', borderRadius: '14px', marginRight: '1.25rem', color: '#2563eb' }}><MapPin size={24} /></div>
-                    <div><div style={{ fontWeight: 800, color: '#0f172a', fontSize: '1.05rem', marginBottom: '2px' }}>Service Address</div><div style={{ fontSize: '0.95rem', color: '#64748b', maxWidth: '240px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontWeight: 500 }}>{formData.address}</div></div>
-                  </div>
-                  <button onClick={() => setIsEditingAddress(true)} style={{ color: '#2563eb', fontWeight: 800, background: '#eff6ff', border: 'none', padding: '0.5rem 1rem', borderRadius: '8px', cursor: 'pointer', transition: 'background 0.2s' }} onMouseEnter={e => e.currentTarget.style.background = '#dbeafe'} onMouseLeave={e => e.currentTarget.style.background = '#eff6ff'}>Edit</button>
+              <div style={{ borderTop: '2px dashed #f1f5f9' }} />
+
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <span>Price (excl. GST)</span>
+                <span style={{ color: '#0f172a', fontWeight: 500 }}>₹{netPrice.toFixed(2)}</span>
+              </div>
+
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <span>GST <span style={{ fontSize: '0.75rem', background: '#f1f5f9', color: '#64748b', padding: '2px 8px', borderRadius: '8px', fontWeight: 600 }}>18%</span></span>
+                <span style={{ color: '#0f172a', fontWeight: 500 }}>+ ₹{inclusiveTax.toFixed(2)}</span>
+              </div>
+
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid #e2e8f0', paddingTop: '1.25rem', marginTop: '0.25rem' }}>
+                <span style={{ color: '#0f172a', fontWeight: 600, fontSize: '1.05rem' }}>Total</span>
+                <span style={{ color: '#0f172a', fontWeight: 600, fontSize: '1.15rem' }}>₹{total.toFixed(0)}</span>
+              </div>
+
+              {tipAmount > 0 && (
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', animation: 'fadeIn 0.3s ease-out' }}>
+                  <span style={{ color: '#2563eb', fontWeight: 600 }}>Tip for Professional</span>
+                  <span style={{ color: '#2563eb', fontWeight: 600 }}>+ ₹{tipAmount}</span>
                 </div>
               )}
-            </div>
 
-            <div style={{ padding: '1.75rem', borderBottom: '1px solid #f1f5f9' }}>
-               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                 <div style={{ display: 'flex', alignItems: 'center' }}>
-                   <div style={{ background: selectedDate ? '#ecfdf5' : '#eff6ff', padding: '0.85rem', borderRadius: '14px', marginRight: '1.25rem', color: selectedDate ? '#059669' : '#2563eb', transition: 'all 0.3s' }}><Calendar size={24} /></div>
-                   <div><div style={{ fontWeight: 800, color: '#0f172a', fontSize: '1.05rem', marginBottom: '2px' }}>Service Slot</div><div style={{ fontSize: '0.95rem', color: selectedDate ? '#059669' : '#64748b', fontWeight: selectedDate ? 700 : 500 }}>{selectedDate ? `${selectedDate} at ${selectedTime}` : 'Please select a date & time'}</div></div>
-                 </div>
-                 <button onClick={() => setIsSlotModalOpen(true)} style={{ color: selectedDate ? '#059669' : '#2563eb', fontWeight: 800, background: selectedDate ? '#ecfdf5' : '#eff6ff', border: 'none', padding: '0.5rem 1rem', borderRadius: '8px', cursor: 'pointer', transition: 'background 0.2s' }} onMouseEnter={e => e.currentTarget.style.background = selectedDate ? '#d1fae5' : '#dbeafe'} onMouseLeave={e => e.currentTarget.style.background = selectedDate ? '#ecfdf5' : '#eff6ff'}>{selectedDate ? 'Change' : 'Select'}</button>
-               </div>
-            </div>
-
-            <div style={{ padding: '1.75rem', background: '#f8fafc' }}>
-              <button onClick={handleBook} disabled={status === 'booking' || status === 'payment'} style={{ width: '100%', background: 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)', color: '#fff', padding: '1.25rem', borderRadius: '16px', border: 'none', fontWeight: 800, fontSize: '1.15rem', boxShadow: '0 8px 30px rgba(37,99,235,0.35)', cursor: (status === 'booking' || status === 'payment') ? 'not-allowed' : 'pointer', transition: 'all 0.25s', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }} onMouseEnter={e => { if(status !== 'booking' && status !== 'payment') { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 12px 35px rgba(37,99,235,0.45)'; } }} onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 8px 30px rgba(37,99,235,0.35)'; }}>
-                {status === 'booking' || status === 'payment' ? 'Processing Securely...' : `Proceed to Pay • ₹${finalAmountToPay.toFixed(0)}`}
-                {status !== 'booking' && status !== 'payment' && <ArrowRight size={20} />}
-              </button>
-              <div style={{ textAlign: 'center', marginTop: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', color: '#64748b', fontSize: '0.8rem', fontWeight: 600 }}>
-                <ShieldCheck size={14} color="#059669" /> Payments are 100% secure & encrypted
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)', borderRadius: '16px', padding: '1.25rem', marginTop: '0.5rem', boxShadow: '0 8px 20px rgba(15,23,42,0.15)' }}>
+                <span style={{ color: '#fff', fontWeight: 600, fontSize: '1.05rem' }}>Amount to Pay</span>
+                <span style={{ color: '#fef08a', fontWeight: 600, fontSize: '1.4rem', textShadow: '0 2px 10px rgba(254,240,138,0.2)' }}>₹{finalAmountToPay.toFixed(0)}</span>
               </div>
             </div>
+
+            <button onClick={handleBook} disabled={status === 'booking' || status === 'payment'} style={{ width: '100%', background: '#0a57d0', color: '#fff', padding: '1.25rem', borderRadius: '16px', border: 'none', fontWeight: 600, fontSize: '1.15rem', boxShadow: '0 8px 30px rgba(10,87,208,0.35)', cursor: (status === 'booking' || status === 'payment') ? 'not-allowed' : 'pointer', transition: 'all 0.25s', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }} onMouseEnter={e => { if(status !== 'booking' && status !== 'payment') { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 12px 35px rgba(10,87,208,0.45)'; } }} onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 8px 30px rgba(10,87,208,0.35)'; }}>
+              {status === 'booking' || status === 'payment' ? 'Processing Securely...' : `Proceed to Pay • ₹${finalAmountToPay.toFixed(0)}`}
+              {status !== 'booking' && status !== 'payment' && <ArrowRight size={20} />}
+            </button>
+            <div style={{ textAlign: 'center', marginTop: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', color: '#64748b', fontSize: '0.8rem', fontWeight: 500 }}>
+              <ShieldCheck size={14} color="#059669" /> Payments are 100% secure & encrypted
+            </div>
+
+            {/* Tip Selector Section */}
+            <div style={{ background: '#f8fafc', padding: '1.25rem', borderRadius: '16px', border: '1px solid #f1f5f9', marginTop: '1.5rem' }}>
+              <div style={{ fontSize: '0.9rem', fontWeight: 600, color: '#0f172a', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '6px' }}><Sparkles size={18} color="#2563eb" /> Add a tip to thank the Professional</div>
+              <div style={{ display: 'flex', gap: '0.75rem', marginBottom: isCustomTipping ? '1rem' : 0 }}>
+                {[50, 75, 100].map(amt => (
+                  <button key={amt} onClick={() => { setTipAmount(amt === tipAmount ? 0 : amt); setIsCustomTipping(false); }} style={{ flex: 1, padding: '0.85rem 0', borderRadius: '12px', border: tipAmount === amt ? '2px solid #0a57d0' : '1px solid #e2e8f0', background: tipAmount === amt ? '#eff6ff' : '#fff', color: tipAmount === amt ? '#0a57d0' : '#475569', fontWeight: 600, fontSize: '1rem', cursor: 'pointer', transition: 'all 0.2s', boxShadow: tipAmount === amt ? '0 4px 15px rgba(10,87,208,0.1)' : '0 2px 5px rgba(0,0,0,0.02)' }}>₹{amt}</button>
+                ))}
+                <button onClick={() => { setIsCustomTipping(v => !v); setCustomTip(''); }} style={{ flex: 1, padding: '0.85rem 0', borderRadius: '12px', border: isCustomTipping ? '2px solid #0a57d0' : '1px solid #e2e8f0', background: isCustomTipping ? '#eff6ff' : '#fff', color: isCustomTipping ? '#0a57d0' : '#475569', fontWeight: 600, fontSize: '1rem', cursor: 'pointer', transition: 'all 0.2s' }}>{isCustomTipping ? 'Cancel' : 'Custom'}</button>
+              </div>
+              {isCustomTipping && (
+                <div style={{ marginTop: '1rem', animation: 'fadeIn 0.2s ease-out' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', background: '#fff', border: '2px solid #e2e8f0', borderRadius: '12px', padding: '0.3rem 0.3rem 0.3rem 1rem', gap: '8px', transition: 'border-color 0.2s' }}>
+                    <span style={{ fontWeight: 600, color: '#475569', fontSize: '1.1rem' }}>₹</span>
+                    <input type="number" value={customTip} onChange={e => setCustomTip(Math.min(Number(e.target.value.replace(/\D/g, '')), 500).toString())} placeholder="Enter amount (max ₹500)" style={{ flex: 1, border: 'none', outline: 'none', background: 'transparent', fontSize: '1.05rem', fontWeight: 500, color: '#0f172a' }} autoFocus />
+                    <button onClick={() => { const val = Number(customTip); if (val > 0) { setTipAmount(val); setIsCustomTipping(false); setCustomTip(''); } }} style={{ padding: '0.75rem 1.25rem', borderRadius: '10px', background: '#0a57d0', color: '#fff', border: 'none', fontWeight: 600, cursor: 'pointer', boxShadow: '0 4px 15px rgba(10,87,208,0.2)' }}>Apply</button>
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
+
+          {/* Yellow Savings banner */}
+          {totalDiscount > 0 && (
+            <div className="yellow-saving-banner">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}><path d="M19 12a7 7 0 1 1-14 0c0-2.8 1.8-5.3 4.5-6.2L12 3l2.5 2.8C17.2 6.7 19 9.2 19 12z"/><path d="M12 9v6M9 12h6"/></svg>
+              <span>You are saving ₹{totalDiscount.toFixed(0)} on this order</span>
+            </div>
+          )}
         </div>
       </div>
 
@@ -762,26 +856,26 @@ const Checkout = () => {
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(15,23,42,0.4)', backdropFilter: 'blur(4px)', display: 'flex', alignItems: 'flex-end', justifyContent: 'center', zIndex: 1000, animation: 'fadeIn 0.2s' }}>
           <div style={{ background: '#fff', width: '100%', maxWidth: '600px', borderTopLeftRadius: '28px', borderTopRightRadius: '28px', padding: '2rem', boxShadow: '0 -10px 40px rgba(0,0,0,0.1)', animation: 'slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1)' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.75rem' }}>
-              <h3 style={{ fontWeight: 900, fontSize: '1.4rem', color: '#0f172a', margin: 0 }}>Select Service Slot</h3>
+              <h3 style={{ fontWeight: 600, fontSize: '1.4rem', color: '#0f172a', margin: 0 }}>Select Service Slot</h3>
               <button onClick={() => setIsSlotModalOpen(false)} style={{ background: '#f1f5f9', border: 'none', width: '36px', height: '36px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#475569', transition: 'background 0.2s' }} onMouseEnter={e => e.currentTarget.style.background = '#e2e8f0'} onMouseLeave={e => e.currentTarget.style.background = '#f1f5f9'}><X size={18} /></button>
             </div>
             
-            <div style={{ fontSize: '0.9rem', fontWeight: 700, color: '#64748b', marginBottom: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>1. Pick a Date</div>
+            <div style={{ fontSize: '0.9rem', fontWeight: 600, color: '#64748b', marginBottom: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>1. Pick a Date</div>
             <div style={{ display: 'flex', gap: '0.75rem', overflowX: 'auto', paddingBottom: '1rem', marginBottom: '1.5rem', scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
               {dates.map(d => (
                 <button key={d.id} onClick={() => { setTempDate(d.display); setTempTime(''); }} style={{ padding: '0.85rem 1.25rem', borderRadius: '14px', flexShrink: 0, background: tempDate === d.display ? '#2563eb' : '#fff', color: tempDate === d.display ? '#fff' : '#475569', border: tempDate === d.display ? '2px solid #2563eb' : '2px solid #e2e8f0', cursor: 'pointer', transition: 'all 0.2s', minWidth: '100px' }}>
-                  <div style={{ fontSize: '0.75rem', fontWeight: tempDate === d.display ? 600 : 700, opacity: tempDate === d.display ? 0.9 : 0.6, marginBottom: '2px' }}>{d.label}</div>
-                  <div style={{ fontSize: '1.05rem', fontWeight: 800 }}>{d.date.split(' ')[0]} <span style={{ fontSize: '0.85rem' }}>{d.date.split(' ')[1]}</span></div>
+                  <div style={{ fontSize: '0.75rem', fontWeight: tempDate === d.display ? 500 : 600, opacity: tempDate === d.display ? 0.9 : 0.6, marginBottom: '2px' }}>{d.label}</div>
+                  <div style={{ fontSize: '1.05rem', fontWeight: 600 }}>{d.date.split(' ')[0]} <span style={{ fontSize: '0.85rem' }}>{d.date.split(' ')[1]}</span></div>
                 </button>
               ))}
             </div>
 
             {tempDate && (
               <div style={{ animation: 'fadeIn 0.3s' }}>
-                <div style={{ fontSize: '0.9rem', fontWeight: 700, color: '#64748b', marginBottom: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>2. Pick a Time</div>
+                <div style={{ fontSize: '0.9rem', fontWeight: 600, color: '#64748b', marginBottom: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>2. Pick a Time</div>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem', marginBottom: '2.5rem' }}>
                   {getAvailableSlots(tempDate).map(slot => (
-                    <button key={slot.time} onClick={() => setTempTime(slot.time)} style={{ padding: '1rem', borderRadius: '12px', background: tempTime === slot.time ? '#eff6ff' : '#fff', color: tempTime === slot.time ? '#1e40af' : '#475569', border: tempTime === slot.time ? '2px solid #2563eb' : '2px solid #e2e8f0', fontWeight: 700, fontSize: '0.95rem', cursor: 'pointer', transition: 'all 0.2s' }}>
+                    <button key={slot.time} onClick={() => setTempTime(slot.time)} style={{ padding: '1rem', borderRadius: '12px', background: tempTime === slot.time ? '#eff6ff' : '#fff', color: tempTime === slot.time ? '#1e40af' : '#475569', border: tempTime === slot.time ? '2px solid #2563eb' : '2px solid #e2e8f0', fontWeight: tempTime === slot.time ? 600 : 500, fontSize: '0.95rem', cursor: 'pointer', transition: 'all 0.2s' }}>
                       {slot.time}
                     </button>
                   ))}
@@ -789,7 +883,7 @@ const Checkout = () => {
               </div>
             )}
             
-            <button onClick={handleConfirmSlot} disabled={!tempDate || !tempTime} style={{ width: '100%', padding: '1.25rem', borderRadius: '14px', border: 'none', background: (tempDate && tempTime) ? 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)' : '#e2e8f0', color: (tempDate && tempTime) ? '#fff' : '#94a3b8', fontWeight: 800, fontSize: '1.05rem', cursor: (tempDate && tempTime) ? 'pointer' : 'not-allowed', boxShadow: (tempDate && tempTime) ? '0 8px 20px rgba(15,23,42,0.2)' : 'none', transition: 'all 0.2s' }} onMouseEnter={e => { if(tempDate && tempTime) e.currentTarget.style.transform = 'translateY(-2px)' }} onMouseLeave={e => { if(tempDate && tempTime) e.currentTarget.style.transform = 'translateY(0)' }}>Confirm Slot</button>
+            <button onClick={handleConfirmSlot} disabled={!tempDate || !tempTime} style={{ width: '100%', padding: '1.25rem', borderRadius: '14px', border: 'none', background: (tempDate && tempTime) ? 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)' : '#e2e8f0', color: (tempDate && tempTime) ? '#fff' : '#94a3b8', fontWeight: 600, fontSize: '1.05rem', cursor: (tempDate && tempTime) ? 'pointer' : 'not-allowed', boxShadow: (tempDate && tempTime) ? '0 8px 20px rgba(15,23,42,0.2)' : 'none', transition: 'all 0.2s' }} onMouseEnter={e => { if(tempDate && tempTime) e.currentTarget.style.transform = 'translateY(-2px)' }} onMouseLeave={e => { if(tempDate && tempTime) e.currentTarget.style.transform = 'translateY(0)' }}>Confirm Slot</button>
           </div>
         </div>
       )}
