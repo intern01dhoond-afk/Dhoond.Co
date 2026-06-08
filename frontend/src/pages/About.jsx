@@ -202,7 +202,7 @@ const About = () => {
         </section>
 
         {/* Mission & Stats */}
-        <section className="max-w-[1400px] mx-auto px-[5%] py-10 md:py-16 w-full">
+        <section className="max-w-[1400px] mx-auto px-[5%] py-6 md:py-8 w-full">
           <div className="grid md:grid-cols-2 gap-8 md:gap-16 items-start">
             <div className="bg-white p-6 md:p-10 rounded-[24px] border border-[#eef1f6] shadow-[0_4px_20px_rgba(0,0,0,0.02)]">
               <div className="w-12 h-12 bg-[#4ef0c6] rounded-[12px] flex items-center justify-center mb-6">
@@ -231,7 +231,7 @@ const About = () => {
         </section>
 
         {/* Our Story Section */}
-        <section className="bg-slate-50 py-10 md:py-16 px-[5%] w-full">
+        <section className="bg-slate-50 py-6 md:py-8 px-[5%] w-full">
           <div className="max-w-[1400px] mx-auto grid md:grid-cols-2 gap-8 md:gap-16 items-center">
             <div className="relative group">
               <img 
@@ -258,9 +258,9 @@ const About = () => {
         </section>
 
         {/* What We Do - Service Grid */}
-        <section className="bg-[#f8fafc] py-10 md:py-16 px-[5%] w-full">
+        <section className="bg-[#f8fafc] py-6 md:py-8 px-[5%] w-full">
           <div className="max-w-[1400px] mx-auto">
-            <div className="text-center mb-8 md:mb-12">
+            <div className="text-center mb-6 md:mb-8">
               <h2 className="text-3xl md:text-4xl font-bold mb-4 font-headline-lg text-slate-900">What We Do</h2>
               <p className="text-slate-500 max-w-2xl mx-auto font-body-md text-sm md:text-base">
                 Dhoond offers a comprehensive range of home and commercial services through a single digital platform.
@@ -304,7 +304,7 @@ const About = () => {
         </section>
 
         {/* Empowering Professionals Section */}
-        <section className="max-w-[1400px] mx-auto px-[5%] py-10 md:py-16 w-full">
+        <section className="max-w-[1400px] mx-auto px-[5%] py-6 md:py-8 w-full">
           <div className="flex flex-col md:flex-row overflow-hidden rounded-3xl bg-blue-700">
             <div className="flex-1 p-6 md:p-12 text-white">
               <h2 className="text-2xl md:text-4xl font-bold mb-4 font-headline-lg">Empowering Service Professionals</h2>
@@ -342,7 +342,7 @@ const About = () => {
         </section>
 
         {/* Our Vision & Mission Text */}
-        <section className="max-w-[1400px] mx-auto px-[5%] py-10 md:py-16 grid md:grid-cols-2 gap-8 md:gap-16 border-t border-slate-100 w-full">
+        <section className="max-w-[1400px] mx-auto px-[5%] py-6 md:py-8 grid md:grid-cols-2 gap-8 md:gap-16 border-t border-slate-100 w-full">
           <div className="border-l-4 border-blue-700 pl-4 md:pl-8">
             <h2 className="text-xl md:text-2xl font-bold mb-4 md:mb-6 font-headline-lg">Our Vision</h2>
             <p className="text-xl md:text-3xl font-bold italic text-slate-800 leading-tight font-headline-xl">
@@ -369,9 +369,9 @@ const About = () => {
         </section>
 
         {/* Why Choose Dhoond */}
-        <section className="bg-slate-50 py-10 md:py-16 px-[5%] w-full">
+        <section className="bg-slate-50 py-6 md:py-8 px-[5%] w-full">
           <div className="max-w-[1400px] mx-auto text-center">
-            <h2 className="text-3xl md:text-4xl font-bold mb-8 md:mb-16 font-headline-lg">Why Choose Dhoond?</h2>
+            <h2 className="text-3xl md:text-4xl font-bold mb-6 md:mb-8 font-headline-lg">Why Choose Dhoond?</h2>
             <div className="grid grid-cols-2 md:grid-cols-5 gap-6 md:gap-8">
               {[
                 { label: 'Trusted Pros', icon: 'verified_user', sub: 'Verification & Assessment' },
@@ -395,9 +395,9 @@ const About = () => {
         </section>
 
         {/* Core Values */}
-        <section className="bg-slate-900 text-white py-10 md:py-16 px-[5%] w-full">
+        <section className="bg-slate-900 text-white py-6 md:py-8 px-[5%] w-full">
           <div className="max-w-[1400px] mx-auto">
-            <h2 className="text-3xl md:text-4xl font-bold mb-8 md:mb-16 text-center font-headline-lg">Core Values</h2>
+            <h2 className="text-3xl md:text-4xl font-bold mb-6 md:mb-8 text-center font-headline-lg">Core Values</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-8 md:gap-12">
               {[
                 { title: 'Trust', desc: 'Building lasting relationships through honesty.' },
