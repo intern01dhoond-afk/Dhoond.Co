@@ -117,6 +117,25 @@ const Checkout = () => {
     }
   }, [isAuthenticated, authLoading]);
 
+  // Load Razorpay SDK dynamically
+  useEffect(() => {
+    if (window.Razorpay) return;
+    const script = document.createElement('script');
+    script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+    script.async = true;
+    script.onload = () => console.log('Razorpay SDK loaded successfully.');
+    script.onerror = () => {
+      console.error('Failed to load Razorpay SDK.');
+      setPaymentError('Razorpay SDK failed to load. Please check your connection.');
+    };
+    document.body.appendChild(script);
+    return () => {
+      if (document.body.contains(script)) {
+        document.body.removeChild(script);
+      }
+    };
+  }, []);
+
   // Tip State
   const [tipAmount, setTipAmount] = useState(0);
   const [customTip, setCustomTip] = useState('');
