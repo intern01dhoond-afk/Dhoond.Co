@@ -1,6 +1,6 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route, Link, useLocation, useNavigate, Outlet } from 'react-router-dom';
-import { ShoppingCart, Menu, X, Search, User, ChevronDown, MapPin, Zap, LogOut, Package, LayoutDashboard, ChevronLeft, Home as HomeIcon, Paintbrush, Phone, Store, ArrowUpRight } from 'lucide-react';
+import { ShoppingCart, Menu, X, Search, User, ChevronDown, MapPin, Zap, LogOut, Package, LayoutDashboard, ChevronLeft, Home as HomeIcon, Paintbrush, Phone, Store, ArrowUpRight, Info } from 'lucide-react';
 import Home from './pages/Home';
 import Shop from './pages/Shop';
 import Checkout from './pages/Checkout';
@@ -10,6 +10,7 @@ import CommercialPainting from './pages/CommercialPainting';
 import Profile from './pages/Profile';
 import Admin from './pages/Admin';
 import PrivacyPolicy from './pages/PrivacyPolicy';
+import About from './pages/About';
 import Footer from './components/Footer';
 import { CartProvider, useCart } from './context/CartContext';
 import { AuthProvider, useAuth } from './context/AuthContext';
@@ -264,6 +265,7 @@ const Navbar = () => {
   const PHONE_NUMBER = '+919102740274';
   const NAV_LINKS = [
     { label: 'Home', to: '/' },
+    { label: 'About Us', to: '/about' },
     { label: 'Painting', to: '/painting', badge: 'New' },
     { label: 'Contact', href: `tel:${PHONE_NUMBER}` },
   ];
@@ -708,6 +710,7 @@ const Navbar = () => {
             <nav style={{ flex: 1, padding: '0.75rem', display: 'flex', flexDirection: 'column', gap: '0.25rem', overflowY: 'auto' }}>
               {[
                 { label: 'Home', to: '/', icon: <HomeIcon size={20} /> },
+                { label: 'About Us', to: '/about', icon: <Info size={20} /> },
                 { label: 'Painting', to: '/painting', icon: <Paintbrush size={20} />, badge: 'New', restricted: !isBengaluru },
                 { label: 'My Bookings', to: '/profile', icon: <Package size={20} /> },
                 { label: 'Contact', href: `tel:${PHONE_NUMBER}`, icon: <Phone size={20} /> },
@@ -839,6 +842,7 @@ function App() {
                 <Route path="/commercial-painting" element={<CommercialPainting />} />
                 <Route path="/profile" element={<Profile />} />
                 <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+                <Route path="/about" element={<About />} />
               </Route>
             </Routes>
           </BrowserRouter>

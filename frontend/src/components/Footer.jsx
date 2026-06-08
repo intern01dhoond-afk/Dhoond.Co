@@ -132,6 +132,7 @@ const Footer = () => {
                           if (lower === 'washing machine repair') return "/shop?cat=technician&subcat=washing";
                           if (lower === 'refrigerator repair') return "/shop?cat=technician&subcat=fridge";
                           if (lower === 'privacy policy') return "/privacy-policy";
+                          if (lower === 'about us') return "/about";
                           return "#";
                         })()}
                         onClick={(e) => {
