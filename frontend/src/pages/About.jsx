@@ -267,7 +267,7 @@ const About = () => {
               </p>
             </div>
             
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 md:gap-6">
               {[
                 { name: 'Painting', icon: 'brush', path: '/painting' },
                 { name: 'AC Service', icon: 'ac_unit', path: '/shop?cat=technician&subcat=ac' },
@@ -287,13 +287,13 @@ const About = () => {
                         navigate(service.path);
                       }
                     }}
-                    className={`bg-white p-6 md:p-10 rounded-[16px] border border-slate-100/80 shadow-[0_4px_20px_rgba(0,0,0,0.01)] hover:shadow-md transition-all text-center cursor-pointer flex flex-col items-center justify-center ${!isAvailable ? 'opacity-70 grayscale-[30%]' : ''}`}
+                    className={`bg-white p-4 md:p-6 rounded-[16px] border border-slate-100/80 shadow-[0_4px_20px_rgba(0,0,0,0.01)] hover:shadow-md transition-all text-center cursor-pointer flex flex-col items-center justify-center ${!isAvailable ? 'opacity-70 grayscale-[30%]' : ''}`}
                   >
-                    <div className="text-3xl mb-4 text-[#0052cc] flex items-center justify-center">
-                      <span className="material-symbols-outlined text-4xl">{service.icon}</span>
+                    <div className="text-2xl mb-3 text-[#0052cc] flex items-center justify-center">
+                      <span className="material-symbols-outlined text-3xl">{service.icon}</span>
                     </div>
-                    <h3 className="text-lg font-bold mb-1 text-slate-700 font-headline-md">{service.name}</h3>
-                    <span className={`text-[10px] font-bold uppercase tracking-widest mt-1 ${isAvailable ? 'text-green-600' : 'text-slate-400'}`}>
+                    <h3 className="text-xs md:text-sm font-bold mb-1 text-slate-700 font-headline-md h-10 flex items-center justify-center">{service.name}</h3>
+                    <span className={`text-[8px] md:text-[9px] font-bold uppercase tracking-widest mt-1 ${isAvailable ? 'text-green-600' : 'text-slate-400'}`}>
                       {isAvailable ? 'AVAILABLE NOW' : 'COMING SOON'}
                     </span>
                   </div>
