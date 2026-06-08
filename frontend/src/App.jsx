@@ -832,6 +832,7 @@ function App() {
             <ScrollToTop />
             <Routes>
               <Route path="/admin/*" element={<Admin />} />
+              <Route path="/about" element={<About />} />
               <Route element={<MainLayout />}>
                 <Route path="/" element={<Home />} />
                 <Route path="/shop" element={<Shop />} />
@@ -842,7 +843,6 @@ function App() {
                 <Route path="/commercial-painting" element={<CommercialPainting />} />
                 <Route path="/profile" element={<Profile />} />
                 <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-                <Route path="/about" element={<About />} />
               </Route>
             </Routes>
           </BrowserRouter>
