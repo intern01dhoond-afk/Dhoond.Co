@@ -566,9 +566,13 @@ const PrivacyPolicy = () => {
               marginTop: '1rem',
             }}>
               <p style={{ fontWeight: 800, fontSize: '1.05rem', color: '#0f172a', marginBottom: '1rem' }}>
-                Dhoond Technologies
+                AMEC CODEX PRIVATE LIMITED
               </p>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                  <span style={{ fontSize: '0.85rem', color: '#64748b', fontWeight: 600, minWidth: '110px' }}>CIN:</span>
+                  <span style={{ fontWeight: 600, color: '#334155', fontSize: '0.95rem' }}>U62091MH2024PTC425971</span>
+                </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
                   <span style={{ fontSize: '0.85rem', color: '#64748b', fontWeight: 600, minWidth: '110px' }}>Email:</span>
                   <a href="mailto:support@dhoond.co" style={{ fontWeight: 700, color: '#2563eb', fontSize: '0.95rem' }}>support@dhoond.co</a>
@@ -581,9 +585,11 @@ const PrivacyPolicy = () => {
                   <span style={{ fontSize: '0.85rem', color: '#64748b', fontWeight: 600, minWidth: '110px' }}>Phone:</span>
                   <a href="tel:+919102740274" style={{ fontWeight: 700, color: '#2563eb', fontSize: '0.95rem' }}>+91 91027 40274</a>
                 </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                  <span style={{ fontSize: '0.85rem', color: '#64748b', fontWeight: 600, minWidth: '110px' }}>Address:</span>
-                  <span style={{ fontWeight: 600, color: '#334155', fontSize: '0.95rem' }}>Bengaluru, Karnataka, India</span>
+                <div style={{ display: 'flex', alignItems: 'start', gap: '0.75rem' }}>
+                  <span style={{ fontSize: '0.85rem', color: '#64748b', fontWeight: 600, minWidth: '110px', marginTop: '2px' }}>Registered Address:</span>
+                  <span style={{ fontWeight: 600, color: '#334155', fontSize: '0.95rem', lineHeight: '1.4' }}>
+                    Plot No. 5A, 13 A, MIDC, Hingna MIDC, Nagpur, Maharashtra, India, 440016
+                  </span>
                 </div>
               </div>
             </div>

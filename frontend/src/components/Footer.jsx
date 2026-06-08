@@ -34,6 +34,8 @@ const Footer = () => {
             .mobile-centered-col { align-items: center !important; text-align: center !important; }
             .mobile-bottom-links { flex-direction: column !important; gap: 1rem !important; }
             .simplified-footer-hide-mobile { display: none !important; }
+            .mobile-text-center > div { grid-column: span 1 !important; }
+            .footer-links-grid { grid-template-columns: 1fr !important; }
           }
         `}</style>
         <div className="mobile-stack" style={{ maxWidth: '1280px', margin: '0 auto', display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', gap: '2rem' }}>
@@ -84,7 +86,7 @@ const Footer = () => {
 
       {/* Main links section */}
       <div className={isSimplifiedPage ? "simplified-footer-hide-mobile" : ""} style={{ maxWidth: '1400px', margin: '0 auto', padding: 'var(--footer-main-pad, 4.5rem 5% 3rem)' }}>
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--footer-main-gap, 4rem)' }}>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--footer-main-gap, 4rem)', justifyContent: 'flex-start' }}>
 
           {/* Brand Column */}
           <div style={{ flex: '1 1 300px', maxWidth: '400px' }} className="mobile-text-center">
@@ -103,14 +105,16 @@ const Footer = () => {
           <div style={{
             flex: '2 1 500px',
             display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))',
-            gap: 'var(--footer-main-gap, 3.5rem 2.5rem)'
-          }} className="mobile-text-center">
+            gridTemplateColumns: 'repeat(5, 1fr)',
+            gap: 'var(--footer-main-gap, 3.5rem 2.5rem)',
+            justifyContent: 'start'
+          }} className="mobile-text-center footer-links-grid">
             {[
               { title: 'Company', links: ['About Us', 'Careers', 'Blog', 'Press'] },
               { title: 'Services', links: ['Painting', 'AC Service', 'RO Service', 'Electrician', 'Washing Machine Repair', 'Refrigerator Repair'] },
-              { title: 'Partners', links: ['Join as Expert', 'Partner with Us', 'Training Center'] },
-              { title: 'Support', links: ['Help Center', 'FAQs', 'Privacy Policy', 'Terms of Service', 'Refund Policy'] },
+              { title: 'Partners', links: ['Join as Expert', 'Partner with Us'] },
+              { title: 'Support', links: ['Help Center', 'FAQs', 'Privacy Policy', 'Terms of Service'] },
+              { title: 'Cities', links: ['Bangalore', 'Nagpur'] },
             ].map(col => (
               <div key={col.title}>
                 <h4 style={{ fontWeight: 800, fontSize: '0.85rem', color: '#fff', marginBottom: '1rem', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
@@ -180,7 +184,9 @@ const Footer = () => {
       {/* Bottom bar */}
       <div style={{ borderTop: '1px solid #1e293b', padding: '2rem 5%' }}>
         <div style={{ maxWidth: '1280px', margin: '0 auto', width: '100%', display: 'flex', flexWrap: 'wrap', justifyContent: 'center', alignItems: 'center', gap: '1rem' }} className="mobile-stack mobile-text-center">
-          <span style={{ color: '#64748b', fontSize: '0.9rem', fontWeight: 500 }}>© 2023 DhoondApp. All rights reserved.</span>
+          <span style={{ color: '#64748b', fontSize: '0.9rem', fontWeight: 500, textAlign: 'center', lineHeight: '1.6' }}>
+            © Copyright 2026 AMEC CODEX PRIVATE LIMITED. All rights reserved. | CIN: U62091MH2024PTC425971
+          </span>
         </div>
       </div>
     </footer>

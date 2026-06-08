@@ -265,7 +265,6 @@ const Navbar = () => {
   const PHONE_NUMBER = '+919102740274';
   const NAV_LINKS = [
     { label: 'Home', to: '/' },
-    { label: 'About Us', to: '/about' },
     { label: 'Painting', to: '/painting', badge: 'New' },
     { label: 'Contact', href: `tel:${PHONE_NUMBER}` },
   ];
@@ -283,25 +282,20 @@ const Navbar = () => {
       }}
     >
       <MapPin size={16} color="#64748b" style={{ flexShrink: 0 }} />
-      <div style={{ display: 'flex', flexDirection: 'column', overflow: 'hidden', flex: 1 }}>
-        <span style={{ fontSize: '9px', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em', lineHeight: 1.1 }}>
-          Current Location
+      <div style={{ display: 'flex', alignItems: 'center', gap: '4px', overflow: 'hidden', flex: 1 }}>
+        <span style={{ 
+          fontSize: '12.5px', 
+          fontWeight: 700, 
+          color: '#1e293b', 
+          overflow: 'hidden', 
+          textOverflow: 'ellipsis', 
+          whiteSpace: 'nowrap', 
+          lineHeight: 1.3,
+          maxWidth: '180px'
+        }}>
+          {locationLabel || 'Bengaluru, Karnataka'}
         </span>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '4px', overflow: 'hidden' }}>
-          <span style={{ 
-            fontSize: '12.5px', 
-            fontWeight: 700, 
-            color: '#1e293b', 
-            overflow: 'hidden', 
-            textOverflow: 'ellipsis', 
-            whiteSpace: 'nowrap', 
-            lineHeight: 1.3,
-            maxWidth: '160px'
-          }}>
-            {locationLabel || 'Bengaluru, Karnataka'}
-          </span>
-          <ChevronDown size={14} color="#64748b" style={{ flexShrink: 0 }} />
-        </div>
+        <ChevronDown size={14} color="#64748b" style={{ flexShrink: 0 }} />
       </div>
     </div>
   );
@@ -710,7 +704,6 @@ const Navbar = () => {
             <nav style={{ flex: 1, padding: '0.75rem', display: 'flex', flexDirection: 'column', gap: '0.25rem', overflowY: 'auto' }}>
               {[
                 { label: 'Home', to: '/', icon: <HomeIcon size={20} /> },
-                { label: 'About Us', to: '/about', icon: <Info size={20} /> },
                 { label: 'Painting', to: '/painting', icon: <Paintbrush size={20} />, badge: 'New', restricted: !isBengaluru },
                 { label: 'My Bookings', to: '/profile', icon: <Package size={20} /> },
                 { label: 'Contact', href: `tel:${PHONE_NUMBER}`, icon: <Phone size={20} /> },
@@ -832,9 +825,9 @@ function App() {
             <ScrollToTop />
             <Routes>
               <Route path="/admin/*" element={<Admin />} />
-              <Route path="/about" element={<About />} />
               <Route element={<MainLayout />}>
                 <Route path="/" element={<Home />} />
+                <Route path="/about" element={<About />} />
                 <Route path="/shop" element={<Shop />} />
                 <Route path="/shop/cart" element={<Cart />} />
                 <Route path="/cart" element={<Cart />} />

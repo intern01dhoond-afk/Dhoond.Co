@@ -270,7 +270,8 @@ const Home = () => {
         .service-scroll::-webkit-scrollbar, .testi-scroll::-webkit-scrollbar { display: none; }
         .desktop-flex { display: flex; gap: 4rem; align-items: center; }
         .mobile-only { display: none; }
-        .hero-section, .hero-section * { font-family: 'Hanken Grotesk', -apple-system, BlinkMacSystemFont, sans-serif !important; }
+        .hero-section, .hero-section * { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important; }
+        .hero-section h1, .hero-section h2, .hero-section h3, .hero-section h4, .hero-section h5, .hero-section h6 { font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif !important; }
         .hero-text { flex: 1 1 460px; order: 1; }
         .hero-video { flex: 1 1 460px; order: 2; }
         
@@ -314,6 +315,7 @@ const Home = () => {
            
             .section-pad { padding: 1.5rem 5% 3rem !important; }
             .section-pad * { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important; }
+            .section-pad h1, .section-pad h2, .section-pad h3, .section-pad h4, .section-pad h5, .section-pad h6 { font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif !important; }
             .section-pad h2 { font-size: 1.75rem !important; line-height: 1.2 !important; }
             .section-pad p { font-size: 0.85rem !important; }
            .pop-scroll-mobile { padding-left: 5% !important; padding-right: 5% !important; scroll-snap-type: x mandatory; }
@@ -981,8 +983,10 @@ const Home = () => {
                       position: 'relative',
                       zIndex: 1,
                       filter: 'drop-shadow(0 20px 40px rgba(0,0,0,0.4))',
-                      maskImage: 'linear-gradient(to bottom, black 85%, transparent 100%)',
-                      WebkitMaskImage: 'linear-gradient(to bottom, black 85%, transparent 100%)',
+                      maskImage: 'linear-gradient(to right, transparent, black 8%, black 92%, transparent), linear-gradient(to bottom, transparent 0%, black 8%, black 82%, transparent 100%)',
+                      WebkitMaskImage: 'linear-gradient(to right, transparent, black 8%, black 92%, transparent), linear-gradient(to bottom, transparent 0%, black 8%, black 82%, transparent 100%)',
+                      maskComposite: 'intersect',
+                      WebkitMaskComposite: 'source-in',
                     }}
                   />
                 </div>

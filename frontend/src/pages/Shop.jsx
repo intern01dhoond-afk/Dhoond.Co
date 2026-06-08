@@ -126,20 +126,37 @@ const Shop = () => {
                           locationLabel !== 'Detecting…';
     if (!locationReady) return;
 
-    if (category === 'painter' && !isBengaluru) {
+    if (isBengaluru) {
+      if (category !== 'painter') {
+        if (category !== 'all') {
+          openComingSoon();
+        }
+        navigate('/painting');
+      }
+    } else if (category === 'painter') {
       openComingSoon();
       const params = new URLSearchParams(searchParams);
       params.delete('cat');
       setSearchParams(params);
       setPaintingView(null);
-    } else if (category && category !== 'all' && category !== 'painter' && !isNagpur) {
+    } else if (category && category !== 'all' && !isNagpur) {
       openComingSoon();
       const params = new URLSearchParams(searchParams);
       params.delete('cat');
       params.delete('subcat');
       setSearchParams(params);
     }
-  }, [category, isBengaluru, isNagpur, openComingSoon, searchParams, setSearchParams, locationLabel]);
+  }, [category, isBengaluru, isNagpur, openComingSoon, searchParams, setSearchParams, locationLabel, navigate]);
+
+  useEffect(() => {
+    if (category === 'painter') {
+      if (!paintingView) {
+        setPaintingView('choose');
+      }
+    } else {
+      setPaintingView(null);
+    }
+  }, [category, paintingView]);
 
   useEffect(() => {
     if (window.fbq) {
