@@ -167,24 +167,24 @@ const About = () => {
     <div className="font-sans text-gray-900 bg-white min-h-screen">
       <main className="flex-grow">
         {/* Hero Section */}
-        <section className="relative w-full h-[600px] overflow-hidden flex items-center">
+        <section className="relative w-full h-[400px] md:h-[500px] lg:h-[600px] overflow-hidden flex items-center bg-slate-50">
           <div className="absolute inset-0 z-0">
             <img 
               src={heroImg} 
               alt="Dhoond Service Professionals" 
-              className="w-full h-full object-cover object-right"
+              className="w-full h-full object-cover object-[center_right] md:object-right"
             />
-            <div className="absolute inset-0 bg-gradient-to-r from-white via-white/80 to-transparent"></div>
+            <div className="absolute inset-0 bg-gradient-to-r from-white via-white/70 to-transparent"></div>
           </div>
           
           <div className="relative z-10 max-w-[1400px] mx-auto px-[5%] w-full">
-            <span className="inline-block bg-blue-600 text-white text-xs font-bold px-3 py-1 rounded uppercase tracking-wider mb-6">
+            <span className="inline-block bg-blue-600 text-white text-[10px] md:text-xs font-bold px-2.5 py-1 rounded uppercase tracking-wider mb-4 md:mb-6">
               About Dhoond
             </span>
-            <h1 className="text-5xl md:text-6xl font-bold text-slate-900 leading-tight mb-6 max-w-2xl">
+            <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold text-slate-900 leading-tight mb-4 md:mb-6 max-w-2xl">
               Building India's Most Trusted On-Demand Service Ecosystem
             </h1>
-            <p className="text-lg text-slate-600 max-w-xl mb-8 leading-relaxed font-body-lg">
+            <p className="text-sm md:text-base lg:text-lg text-slate-600 max-w-xl mb-6 md:mb-8 leading-relaxed font-body-lg">
               Dhoond is a technology-driven platform connecting customers with verified professionals for home, commercial, and business services. Our goal is simple — make quality services accessible, reliable, and available whenever they are needed.
             </p>
             <button 
@@ -194,7 +194,7 @@ const About = () => {
                   document.querySelector('#services-section')?.scrollIntoView({ behavior: 'smooth' });
                 }, 100);
               }}
-              className="bg-blue-800 text-white px-8 py-4 rounded-lg font-bold text-lg hover:bg-blue-900 transition-colors shadow-lg"
+              className="bg-blue-800 text-white px-6 py-3 md:px-8 md:py-4 rounded-lg font-bold text-base md:text-lg hover:bg-blue-900 transition-colors shadow-lg"
             >
               Explore Services
             </button>
@@ -202,14 +202,14 @@ const About = () => {
         </section>
 
         {/* Mission & Stats */}
-        <section className="max-w-[1400px] mx-auto px-[5%] py-16 w-full">
-          <div className="grid md:grid-cols-2 gap-16 items-start">
-            <div className="bg-white p-10 rounded-[24px] border border-[#eef1f6] shadow-[0_4px_20px_rgba(0,0,0,0.02)]">
+        <section className="max-w-[1400px] mx-auto px-[5%] py-10 md:py-16 w-full">
+          <div className="grid md:grid-cols-2 gap-8 md:gap-16 items-start">
+            <div className="bg-white p-6 md:p-10 rounded-[24px] border border-[#eef1f6] shadow-[0_4px_20px_rgba(0,0,0,0.02)]">
               <div className="w-12 h-12 bg-[#4ef0c6] rounded-[12px] flex items-center justify-center mb-6">
                 <span className="material-symbols-outlined text-[#0a644f] text-2xl" style={{ fontVariationSettings: "'FILL' 0, 'wght' 500" }}>rocket_launch</span>
               </div>
-              <h2 className="text-3xl font-bold mb-4 font-headline-lg text-slate-900">Our Mission</h2>
-              <p className="text-slate-600 leading-relaxed font-body-md">
+              <h2 className="text-2xl md:text-3xl font-bold mb-4 font-headline-lg text-slate-900">Our Mission</h2>
+              <p className="text-slate-600 leading-relaxed font-body-md text-sm md:text-base">
                 We are transforming the way people discover, book, and manage professional services by creating a seamless ecosystem that benefits both customers and service partners. Through technology, transparency, and trust, Dhoond bridges the gap between demand and skilled professionals, enabling faster service delivery and better customer experiences.
               </p>
             </div>
@@ -221,8 +221,8 @@ const About = () => {
                 { label: 'CITIES SERVED', value: '2', colorClass: 'text-[#3b5998]' },
                 { label: 'CUSTOMER RATING', value: '4.9★', colorClass: 'text-slate-800' }
               ].map((stat, idx) => (
-                <div key={idx} className="bg-[#e9ecef] p-8 rounded-xl text-center flex flex-col justify-center items-center">
-                  <div className={`text-2xl font-bold ${stat.colorClass} mb-2 font-headline-lg`}>{stat.value}</div>
+                <div key={idx} className="bg-[#e9ecef] py-6 px-4 md:p-8 rounded-xl text-center flex flex-col justify-center items-center">
+                  <div className={`text-xl md:text-2xl font-bold ${stat.colorClass} mb-2 font-headline-lg`}>{stat.value}</div>
                   <div className="text-[10px] font-bold text-slate-500 tracking-widest leading-normal">{stat.label}</div>
                 </div>
               ))}
@@ -231,13 +231,13 @@ const About = () => {
         </section>
 
         {/* Our Story Section */}
-        <section className="bg-slate-50 py-16 px-[5%] w-full">
-          <div className="max-w-[1400px] mx-auto grid md:grid-cols-2 gap-16 items-center">
+        <section className="bg-slate-50 py-10 md:py-16 px-[5%] w-full">
+          <div className="max-w-[1400px] mx-auto grid md:grid-cols-2 gap-8 md:gap-16 items-center">
             <div className="relative group">
               <img 
                 src={techImg} 
                 alt="Technician interacting with customer" 
-                className="w-full h-[420px] object-cover rounded-[24px] shadow-lg"
+                className="w-full h-[300px] md:h-[420px] object-cover rounded-[24px] shadow-lg"
               />
               <div className="absolute bottom-6 left-6 right-6 bg-white/90 backdrop-blur-md p-5 rounded-[16px] border border-white/20 shadow-lg">
                 <p className="text-[#0052cc] font-medium italic text-center text-sm font-body-sm leading-relaxed">
@@ -246,11 +246,11 @@ const About = () => {
               </div>
             </div>
             <div>
-              <h2 className="text-4xl font-bold mb-6 font-headline-lg">Our Story</h2>
-              <p className="text-slate-600 leading-relaxed mb-6 font-body-md">
+              <h2 className="text-3xl md:text-4xl font-bold mb-4 md:mb-6 font-headline-lg">Our Story</h2>
+              <p className="text-slate-600 leading-relaxed mb-4 md:mb-6 font-body-md text-sm md:text-base">
                 Dhoond was founded with a vision to solve one of the most common challenges faced by individuals and businesses — finding trustworthy professionals quickly and efficiently.
               </p>
-              <p className="text-slate-600 leading-relaxed font-body-md">
+              <p className="text-slate-600 leading-relaxed font-body-md text-sm md:text-base">
                 Traditional service discovery often involves uncertainty, delays, inconsistent quality, and limited accountability. Dhoond was built to change that by establishing a standardized, technology-first approach to on-demand services.
               </p>
             </div>
@@ -258,11 +258,11 @@ const About = () => {
         </section>
 
         {/* What We Do - Service Grid */}
-        <section className="bg-[#f8fafc] py-16 px-[5%] w-full">
+        <section className="bg-[#f8fafc] py-10 md:py-16 px-[5%] w-full">
           <div className="max-w-[1400px] mx-auto">
-            <div className="text-center mb-12">
-              <h2 className="text-4xl font-bold mb-4 font-headline-lg text-slate-900">What We Do</h2>
-              <p className="text-slate-500 max-w-2xl mx-auto font-body-md">
+            <div className="text-center mb-8 md:mb-12">
+              <h2 className="text-3xl md:text-4xl font-bold mb-4 font-headline-lg text-slate-900">What We Do</h2>
+              <p className="text-slate-500 max-w-2xl mx-auto font-body-md text-sm md:text-base">
                 Dhoond offers a comprehensive range of home and commercial services through a single digital platform.
               </p>
             </div>
@@ -287,7 +287,7 @@ const About = () => {
                         navigate(service.path);
                       }
                     }}
-                    className={`bg-white p-10 rounded-[16px] border border-slate-100/80 shadow-[0_4px_20px_rgba(0,0,0,0.01)] hover:shadow-md transition-all text-center cursor-pointer flex flex-col items-center justify-center ${!isAvailable ? 'opacity-70 grayscale-[30%]' : ''}`}
+                    className={`bg-white p-6 md:p-10 rounded-[16px] border border-slate-100/80 shadow-[0_4px_20px_rgba(0,0,0,0.01)] hover:shadow-md transition-all text-center cursor-pointer flex flex-col items-center justify-center ${!isAvailable ? 'opacity-70 grayscale-[30%]' : ''}`}
                   >
                     <div className="text-3xl mb-4 text-[#0052cc] flex items-center justify-center">
                       <span className="material-symbols-outlined text-4xl">{service.icon}</span>
@@ -304,14 +304,14 @@ const About = () => {
         </section>
 
         {/* Empowering Professionals Section */}
-        <section className="max-w-[1400px] mx-auto px-[5%] py-16 w-full">
+        <section className="max-w-[1400px] mx-auto px-[5%] py-10 md:py-16 w-full">
           <div className="flex flex-col md:flex-row overflow-hidden rounded-3xl bg-blue-700">
-            <div className="flex-1 p-12 text-white">
-              <h2 className="text-4xl font-bold mb-4 font-headline-lg">Empowering Service Professionals</h2>
-              <p className="text-blue-100 mb-10 leading-relaxed font-body-lg">
+            <div className="flex-1 p-6 md:p-12 text-white">
+              <h2 className="text-2xl md:text-4xl font-bold mb-4 font-headline-lg">Empowering Service Professionals</h2>
+              <p className="text-blue-100 mb-6 md:mb-10 leading-relaxed font-body-lg text-sm md:text-base">
                 Our Partner Platform empowers technicians, electricians, painters, delivery associates, and service experts to grow their careers with dignity and technology.
               </p>
-              <ul className="space-y-6">
+              <ul className="space-y-4 md:space-y-6">
                 {[
                   { title: 'Verified Work Opportunities', desc: 'Consistent job flow from a trusted platform.' },
                   { title: 'Transparent Earnings', desc: 'Real-time tracking of payments and incentives.' },
@@ -331,26 +331,26 @@ const About = () => {
                 ))}
               </ul>
             </div>
-            <div className="md:w-2/5 min-h-[300px] md:min-h-0">
+            <div className="md:w-2/5 min-h-[250px] md:min-h-0">
               <img 
                 src={storyImg} 
                 alt="Empowered Professionals" 
-                className="w-full h-full max-h-[420px] md:max-h-none object-cover"
+                className="w-full h-full max-h-[300px] md:max-h-none object-cover"
               />
             </div>
           </div>
         </section>
 
         {/* Our Vision & Mission Text */}
-        <section className="max-w-[1400px] mx-auto px-[5%] py-16 grid md:grid-cols-2 gap-16 border-t border-slate-100 w-full">
-          <div className="border-l-4 border-blue-700 pl-8">
-            <h2 className="text-2xl font-bold mb-6 font-headline-lg">Our Vision</h2>
-            <p className="text-3xl font-bold italic text-slate-800 leading-tight font-headline-xl">
+        <section className="max-w-[1400px] mx-auto px-[5%] py-10 md:py-16 grid md:grid-cols-2 gap-8 md:gap-16 border-t border-slate-100 w-full">
+          <div className="border-l-4 border-blue-700 pl-4 md:pl-8">
+            <h2 className="text-xl md:text-2xl font-bold mb-4 md:mb-6 font-headline-lg">Our Vision</h2>
+            <p className="text-xl md:text-3xl font-bold italic text-slate-800 leading-tight font-headline-xl">
               "To become India's most trusted and innovative service marketplace that empowers millions of customers and service professionals through technology."
             </p>
           </div>
           <div>
-            <h2 className="text-2xl font-bold mb-6 font-headline-lg">Our Mission</h2>
+            <h2 className="text-xl md:text-2xl font-bold mb-4 md:mb-6 font-headline-lg">Our Mission</h2>
             <ul className="space-y-4">
               {[
                 "Deliver reliable services with speed and transparency.",
@@ -359,7 +359,7 @@ const About = () => {
                 "Use technology to simplify service discovery and management.",
                 "Continuously innovate to improve customer and partner experiences."
               ].map((text, idx) => (
-                <li key={idx} className="flex gap-4 items-start text-slate-600 font-body-md">
+                <li key={idx} className="flex gap-4 items-start text-slate-600 font-body-md text-sm md:text-base">
                   <span className="text-blue-700 font-bold">0{idx + 1}.</span>
                   <span>{text}</span>
                 </li>
@@ -369,10 +369,10 @@ const About = () => {
         </section>
 
         {/* Why Choose Dhoond */}
-        <section className="bg-slate-50 py-16 px-[5%] w-full">
+        <section className="bg-slate-50 py-10 md:py-16 px-[5%] w-full">
           <div className="max-w-[1400px] mx-auto text-center">
-            <h2 className="text-4xl font-bold mb-16 font-headline-lg">Why Choose Dhoond?</h2>
-            <div className="grid grid-cols-2 md:grid-cols-5 gap-8">
+            <h2 className="text-3xl md:text-4xl font-bold mb-8 md:mb-16 font-headline-lg">Why Choose Dhoond?</h2>
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-6 md:gap-8">
               {[
                 { label: 'Trusted Pros', icon: 'verified_user', sub: 'Verification & Assessment' },
                 { label: 'Seamless', icon: 'touch_app', sub: 'Book, track & manage' },
@@ -381,13 +381,13 @@ const About = () => {
                 { label: 'Satisfaction', icon: 'favorite', sub: 'Customer-centric heart' }
               ].map((item, idx) => (
                 <div key={idx} className="flex flex-col items-center">
-                  <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center shadow-sm mb-4">
-                    <span className="material-symbols-outlined text-primary text-3xl" style={{ fontVariationSettings: "'FILL' 1" }}>
+                  <div className="w-12 h-12 md:w-16 md:h-16 bg-white rounded-full flex items-center justify-center shadow-sm mb-4">
+                    <span className="material-symbols-outlined text-primary text-2xl md:text-3xl" style={{ fontVariationSettings: "'FILL' 1" }}>
                       {item.icon}
                     </span>
                   </div>
-                  <h4 className="font-bold text-slate-800 text-sm mb-1 font-label-md">{item.label}</h4>
-                  <p className="text-[10px] text-slate-500 uppercase tracking-tighter font-body-sm">{item.sub}</p>
+                  <h4 className="font-bold text-slate-800 text-xs md:text-sm mb-1 font-label-md">{item.label}</h4>
+                  <p className="text-[9px] md:text-[10px] text-slate-500 uppercase tracking-tighter font-body-sm">{item.sub}</p>
                 </div>
               ))}
             </div>
@@ -395,10 +395,10 @@ const About = () => {
         </section>
 
         {/* Core Values */}
-        <section className="bg-slate-900 text-white py-16 px-[5%] w-full">
+        <section className="bg-slate-900 text-white py-10 md:py-16 px-[5%] w-full">
           <div className="max-w-[1400px] mx-auto">
-            <h2 className="text-4xl font-bold mb-16 text-center font-headline-lg">Core Values</h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-12">
+            <h2 className="text-3xl md:text-4xl font-bold mb-8 md:mb-16 text-center font-headline-lg">Core Values</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-8 md:gap-12">
               {[
                 { title: 'Trust', desc: 'Building lasting relationships through honesty.' },
                 { title: 'Excellence', desc: 'Striving for the highest quality in every task.' },
@@ -406,10 +406,10 @@ const About = () => {
                 { title: 'Empowerment', desc: 'Giving partners the tools to succeed.' },
                 { title: 'Reliability', desc: 'Being there exactly when you need us.' }
               ].map((value, idx) => (
-                <div key={idx} className="space-y-4">
+                <div key={idx} className="space-y-3 md:space-y-4">
                   <div className="h-1 w-12 bg-blue-500"></div>
-                  <h4 className="text-lg font-bold font-headline-md">{value.title}</h4>
-                  <p className="text-slate-400 text-sm leading-relaxed font-body-sm">{value.desc}</p>
+                  <h4 className="text-base md:text-lg font-bold font-headline-md">{value.title}</h4>
+                  <p className="text-slate-400 text-xs md:text-sm leading-relaxed font-body-sm">{value.desc}</p>
                 </div>
               ))}
             </div>
