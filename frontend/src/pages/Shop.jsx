@@ -352,9 +352,9 @@ const Shop = () => {
           placeholder="Search services..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          style={{ width: '100%', padding: '0.75rem 1.25rem', background: '#fff', border: '1px solid #e2e8f0', borderRadius: '12px', fontSize: '0.9rem', outline: 'none', boxShadow: '0 1px 4px rgba(0,0,0,0.04)' }}
+          style={{ width: '100%', padding: '0.62rem 1.15rem 0.62rem 2.6rem', background: '#fff', border: '1px solid #e2e8f0', borderRadius: '12px', fontSize: '0.9rem', outline: 'none', boxShadow: '0 1px 4px rgba(0,0,0,0.04)' }}
         />
-        <Search size={16} color="#94a3b8" style={{ position: 'absolute', right: '1rem', top: '50%', transform: 'translateY(-50%)' }} />
+        <Search size={16} color="#94a3b8" style={{ position: 'absolute', left: '0.9rem', top: '50%', transform: 'translateY(-50%)' }} />
       </div>
 
       {(() => {

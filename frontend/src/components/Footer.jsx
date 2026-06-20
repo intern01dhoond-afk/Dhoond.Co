@@ -35,7 +35,31 @@ const Footer = () => {
             .mobile-bottom-links { flex-direction: column !important; gap: 1rem !important; }
             .simplified-footer-hide-mobile { display: none !important; }
             .mobile-text-center > div { grid-column: span 1 !important; }
-            .footer-links-grid { grid-template-columns: 1fr !important; }
+            .footer-links-grid { grid-template-columns: repeat(2, 1fr) !important; gap: 2.5rem 1.5rem !important; }
+            
+            /* Left-align only the main links grid and brand column */
+            .footer-main-links-section { text-align: left !important; }
+            .footer-main-links-section .mobile-text-center { text-align: left !important; }
+            .footer-main-links-section .mobile-stack { align-items: flex-start !important; text-align: left !important; }
+            
+            /* Align brand logo and description text perfectly on mobile */
+            .footer-brand-col {
+              display: flex !important;
+              flex-direction: column !important;
+              align-items: flex-start !important;
+              text-align: left !important;
+            }
+            .footer-brand-col a {
+              display: flex !important;
+              justify-content: flex-start !important;
+              align-self: flex-start !important;
+              margin-left: 0 !important;
+              margin-right: auto !important;
+            }
+            .footer-brand-col img {
+              margin-left: 0 !important;
+              margin-right: auto !important;
+            }
           }
         `}</style>
         <div className="mobile-stack" style={{ maxWidth: '1280px', margin: '0 auto', display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', gap: '2rem' }}>
@@ -85,11 +109,11 @@ const Footer = () => {
       </div>
 
       {/* Main links section */}
-      <div className={isSimplifiedPage ? "simplified-footer-hide-mobile" : ""} style={{ maxWidth: '1400px', margin: '0 auto', padding: 'var(--footer-main-pad, 4.5rem 5% 3rem)' }}>
+      <div className={`footer-main-links-section ${isSimplifiedPage ? "simplified-footer-hide-mobile" : ""}`} style={{ maxWidth: '1400px', margin: '0 auto', padding: 'var(--footer-main-pad, 4.5rem 5% 3rem)' }}>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--footer-main-gap, 4rem)', justifyContent: 'flex-start' }}>
 
           {/* Brand Column */}
-          <div style={{ flex: '1 1 300px', maxWidth: '400px' }} className="mobile-text-center">
+          <div style={{ flex: '1 1 300px', maxWidth: '400px' }} className="footer-brand-col">
             <Link to="/" style={{ display: 'inline-block', marginBottom: '0.75rem' }}>
               <img src="/images/cart%20nav.png" alt="Dhoond" style={{ height: 'auto', maxHeight: '80px', width: 'auto', objectFit: 'contain', transition: 'transform 0.3s' }}
                 onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.05)'}

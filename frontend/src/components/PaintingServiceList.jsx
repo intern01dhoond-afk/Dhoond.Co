@@ -8,6 +8,7 @@ import {
   Paintbrush, Home, Building2, Sparkles, ChevronUp, Minus,
   ShoppingCart, Phone, XCircle, CheckCheck, ClipboardList, Headphones, BadgePercent, Percent
 } from 'lucide-react';
+import consultationImg from '../assets/consultation.png';
 
 const API_URL = import.meta.env.VITE_API_URL || '';
 
@@ -102,7 +103,7 @@ const FILTER_TITLES = {
 const pickImage = (title = '') => {
   const t = title.toLowerCase();
   if (t.includes('on call')) return '/services/free_consultation.webp';
-  if (t.includes('consultation') || t.includes('expert')) return '/consultation.png';
+  if (t.includes('consultation') || t.includes('expert')) return consultationImg;
   if (t.includes('single')) return '/images/single%20wall.jpg';
   if (t.includes('exterior') || t.includes('weather')) return '/images/exterior_painting.webp';
   if (t.includes('waterproofing') || t.includes('damp')) return '/images/waterproofing.png';
@@ -443,7 +444,7 @@ const PaintingServiceList = ({ service, onClose }) => {
                     <div
                       key={svc.id}
                       style={{
-                        background: '#fff', borderRadius: '0px',
+                        background: '#fff', borderRadius: '24px',
                         border: qty > 0 && isConsultation && group.key === 'consultation' ? '2px solid #2563eb' : '1px solid #f1f5f9',
                         padding: '1.1rem 1.25rem',
                         display: 'flex', flexDirection: isExpanded ? 'column' : 'row', 
@@ -454,7 +455,7 @@ const PaintingServiceList = ({ service, onClose }) => {
                     >
                       <div style={{ display: 'flex', width: '100%', gap: '1rem', alignItems: 'flex-start' }}>
                         {/* Image */}
-                        <div style={{ width: '72px', height: '72px', borderRadius: '0px', overflow: 'hidden', flexShrink: 0, background: '#f1f5f9' }}>
+                        <div style={{ width: '72px', height: '72px', borderRadius: '16px', overflow: 'hidden', flexShrink: 0, background: '#f1f5f9' }}>
                           <img src={svc.image} alt={svc.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                             onError={e => { e.target.src = '/interior.jpg'; }} />
                         </div>
@@ -661,19 +662,19 @@ const PaintingServiceList = ({ service, onClose }) => {
 
         {!loading && !error && (
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.75rem', marginTop: '2rem', padding: '0 0.5rem' }}>
-            <div style={{ background: '#f0fdf4', borderRadius: '0px', padding: '1rem 0.5rem', textAlign: 'center', border: '1px solid #dcfce7' }}>
+            <div style={{ background: '#f0fdf4', borderRadius: '16px', padding: '1rem 0.5rem', textAlign: 'center', border: '1px solid #dcfce7' }}>
               <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px' }}>
                 <CheckCircle2 size={24} color="#22c55e" weight="fill" />
                 <span style={{ fontSize: '0.72rem', fontWeight: 800, color: '#166534', lineHeight: 1.2 }}>Verified<br/>Pros</span>
               </div>
             </div>
-            <div style={{ background: '#eff6ff', borderRadius: '0px', padding: '1rem 0.5rem', textAlign: 'center', border: '1px solid #dbeafe' }}>
+            <div style={{ background: '#eff6ff', borderRadius: '16px', padding: '1rem 0.5rem', textAlign: 'center', border: '1px solid #dbeafe' }}>
               <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px' }}>
                 <ShieldCheck size={24} color="#2563eb" />
                 <span style={{ fontSize: '0.72rem', fontWeight: 800, color: '#1e40af', lineHeight: 1.2 }}>Insured<br/>Work</span>
               </div>
             </div>
-            <div style={{ background: '#fffbeb', borderRadius: '0px', padding: '1rem 0.5rem', textAlign: 'center', border: '1px solid #fef3c7' }}>
+            <div style={{ background: '#fffbeb', borderRadius: '16px', padding: '1rem 0.5rem', textAlign: 'center', border: '1px solid #fef3c7' }}>
               <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px' }}>
                 <Star size={24} color="#f59e0b" fill="#f59e0b" />
                 <span style={{ fontSize: '0.72rem', fontWeight: 800, color: '#92400e', lineHeight: 1.2 }}>4.9<br/>Rated</span>
@@ -688,7 +689,7 @@ const PaintingServiceList = ({ service, onClose }) => {
         <div style={{
           background: '#fff',
           border: '1px solid #e2e8f0',
-          borderRadius: '0px',
+          borderRadius: '24px',
           padding: '24px',
           boxShadow: '0 10px 30px rgba(0,0,0,0.03)',
           marginBottom: '16px',
@@ -750,7 +751,7 @@ const PaintingServiceList = ({ service, onClose }) => {
                     background: '#2563eb',
                     color: '#fff',
                     border: 'none',
-                    borderRadius: '12px',
+                    borderRadius: '16px',
                     padding: '14px',
                     fontWeight: 800,
                     fontSize: '0.95rem',
@@ -777,7 +778,7 @@ const PaintingServiceList = ({ service, onClose }) => {
         <div style={{
           background: '#fff',
           border: '1px solid #e2e8f0',
-          borderRadius: '0px',
+          borderRadius: '24px',
           padding: '24px',
           boxShadow: '0 10px 30px rgba(0,0,0,0.03)',
           marginBottom: '16px'
@@ -800,7 +801,7 @@ const PaintingServiceList = ({ service, onClose }) => {
         <div style={{
           background: '#fff',
           border: '1px solid #e2e8f0',
-          borderRadius: '0px',
+          borderRadius: '24px',
           padding: '24px',
           boxShadow: '0 10px 30px rgba(0,0,0,0.03)'
         }}>

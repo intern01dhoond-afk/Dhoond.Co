@@ -35,13 +35,13 @@ const Home = () => {
   useEffect(() => {
     const timer = setInterval(() => {
       setCurrentSlide(prev => (prev + 1) % HERO_SLIDES.length);
-    }, 4000);
+    }, 1000);
     return () => clearInterval(timer);
   }, []);
   
   // SEO Integration
   useSEO({
-    title: "Dhoond.co — Home Services & Professional Painting in 15 Min",
+    title: "Dhoond.co - Home Services & Professional Painting in 15 Min",
     description: "Book professional painters, electricians, AC technicians, and more in Bengaluru and Nagpur. Reliable home services delivered to your spot in just 15 minutes.",
     canonicalPath: "/"
   });
@@ -286,7 +286,7 @@ const Home = () => {
            .desktop-flex { flex-direction: column; gap: 1rem !important; align-items: stretch !important; }
            .mobile-only { display: block; }
            .desktop-only { display: none !important; }
-           .hero-section { padding-left: 0 !important; padding-right: 0 !important; }
+           .hero-section { padding: 0.75rem 0 1.5rem !important; }
            .hero-text { order: 1; flex: none; width: 100%; text-align: center; padding: 0 5% !important; }
            #services-section { padding: 0 5% !important; }
            .hero-text p { margin-left: auto; margin-right: auto; }
@@ -296,8 +296,8 @@ const Home = () => {
            .hero-cta-row { flex-direction: column !important; width: 100%; }
            .hero-cta-row button { width: 100% !important; justify-content: center !important; margin-bottom: 0.5rem; }
            .hero-trust { justify-content: center !important; width: 100%; margin-top: 1rem; }
-           .hero-main-img-container { height: auto !important; aspect-ratio: 3/2 !important; border-radius: 16px !important; }
-           .hero-images-collage { width: 100% !important; flex: none !important; gap: 0 !important; margin-top: 1.5rem !important; padding: 0 1.25rem !important; }
+           .hero-main-img-container { height: auto !important; aspect-ratio: 3/2 !important; border-radius: 0 !important; }
+           .hero-images-collage { width: 100% !important; flex: none !important; gap: 0 !important; margin-top: 1.5rem !important; padding: 0 !important; }
            
            .service-grid-mobile { display: grid !important; grid-template-columns: repeat(3, 1fr) !important; gap: 0.75rem !important; padding: 0 !important; }
            .service-grid-mobile > div { width: 100% !important; background: transparent !important; border: none !important; box-shadow: none !important; padding: 0 !important; border-radius: 0 !important; overflow: visible !important; height: 100% !important; }
@@ -423,20 +423,17 @@ const Home = () => {
       `}</style>
 
       <div style={{ position: 'relative', zIndex: 1 }}>
-        <section className="hero-section" style={{ background: 'linear-gradient(180deg, #f8fafc 0%, #ffffff 100%)', borderBottom: '1px solid #f1f5f9', padding: '2.5rem 5% 2rem' }}>
+        <section className="hero-section" style={{ background: 'linear-gradient(180deg, #f8fafc 0%, #ffffff 100%)', borderBottom: '1px solid #f1f5f9', padding: '1.75rem 5% 1.5rem' }}>
           <div style={{ maxWidth: '1280px', margin: '0 auto' }}>
             <div className="desktop-flex">
               <div className="hero-text">
-                <span style={{ display: 'inline-block', padding: '0.45rem 1.15rem', background: '#eff6ff', color: '#1d4ed8', borderRadius: '99px', fontWeight: 700, fontSize: '0.75rem', letterSpacing: '0.06em', textTransform: 'uppercase', marginBottom: '1.75rem', border: '1px solid #dbeafe' }}>
-                  🛡️ VERIFIED HOME &amp; COMMERCIAL SERVICES
-                </span>
                 <h1 style={{ fontSize: 'clamp(2.5rem, 5vw, 4.25rem)', fontWeight: 700, color: '#0f172a', lineHeight: 1.15, marginBottom: '1.5rem', letterSpacing: '-0.02em', maxWidth: '620px' }}>
                   Reliable Home &amp;<br />
-                  Commercial Services,<br />
+                  Commercial Services<br />
                   <span style={{ color: '#0a57d0', fontWeight: 700 }}>Right at Your Spot</span>
                 </h1>
                 <p style={{ fontSize: '1.05rem', fontWeight: 400, color: '#64748b', marginBottom: '2rem', lineHeight: 1.7, maxWidth: '500px' }}>
-                  From routine maintenance to major upgrades — book trusted professionals for all your home and commercial service needs.
+                  From routine maintenance to major upgrades - book trusted professionals for all your home and commercial service needs.
                 </p>
 
                 <div className="hero-cta-row" style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem', marginBottom: '2rem' }}>
@@ -478,13 +475,9 @@ const Home = () => {
               </div>
 
               <div className="hero-images-collage" style={{ position: 'relative', flex: '1 1 540px', order: 2, display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-                {/* Main image / mobile slider */}
+                {/* Main image / slider */}
                 <div className="hero-main-img-container" style={{ position: 'relative', width: '100%', borderRadius: '24px', overflow: 'hidden', boxShadow: '0 20px 40px rgba(0,0,0,0.06)' }}>
-                  {/* Desktop static image */}
-                  <img src={painterHero} alt="Reliable Home & Commercial Services" style={{ width: '100%', height: '100%', objectFit: 'cover' }} className="desktop-only" />
-                  
-                  {/* Mobile hero slider */}
-                  <div className="mobile-only" style={{ width: '100%', height: '100%', position: 'absolute', inset: 0 }}>
+                  <div style={{ width: '100%', height: '100%', position: 'absolute', inset: 0 }}>
                     {HERO_SLIDES.map((slide, idx) => (
                       <div
                         key={idx}
@@ -493,7 +486,7 @@ const Home = () => {
                           position: 'absolute',
                           inset: 0,
                           opacity: currentSlide === idx ? 1 : 0,
-                          transition: 'opacity 0.6s ease-in-out',
+                          transition: 'opacity 0.3s ease-in-out',
                           zIndex: currentSlide === idx ? 2 : 1,
                           cursor: 'pointer'
                         }}
@@ -530,15 +523,78 @@ const Home = () => {
                   {/* Spacer matching the width of the absolute Rating Card */}
                   <div style={{ width: '180px', flexShrink: 0 }} className="desktop-only" />
                   
-                  {/* 3 small images */}
-                  <div style={{ flex: 1, height: '130px', borderRadius: '20px', overflow: 'hidden', boxShadow: '0 10px 25px rgba(0,0,0,0.04)' }}>
-                    <img src={acHero} alt="AC Service" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  {/* 3 dynamic small images */}
+                  <div style={{ flex: 1, height: '130px', borderRadius: '20px', overflow: 'hidden', boxShadow: '0 10px 25px rgba(0,0,0,0.04)', position: 'relative' }}>
+                    {HERO_SLIDES.map((slide, idx) => {
+                      const isActive = ((currentSlide + 1) % 4) === idx;
+                      return (
+                        <img
+                          key={idx}
+                          src={slide}
+                          alt=""
+                          onClick={() => handleSlideClick(idx)}
+                          style={{
+                            position: 'absolute',
+                            inset: 0,
+                            width: '100%',
+                            height: '100%',
+                            objectFit: 'cover',
+                            opacity: isActive ? 1 : 0,
+                            transition: 'opacity 0.3s ease-in-out',
+                            zIndex: isActive ? 2 : 1,
+                            cursor: 'pointer'
+                          }}
+                        />
+                      );
+                    })}
                   </div>
-                  <div style={{ flex: 1, height: '130px', borderRadius: '20px', overflow: 'hidden', boxShadow: '0 10px 25px rgba(0,0,0,0.04)' }}>
-                    <img src={plumberHero} alt="Plumbing Service" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  <div style={{ flex: 1, height: '130px', borderRadius: '20px', overflow: 'hidden', boxShadow: '0 10px 25px rgba(0,0,0,0.04)', position: 'relative' }}>
+                    {HERO_SLIDES.map((slide, idx) => {
+                      const isActive = ((currentSlide + 2) % 4) === idx;
+                      return (
+                        <img
+                          key={idx}
+                          src={slide}
+                          alt=""
+                          onClick={() => handleSlideClick(idx)}
+                          style={{
+                            position: 'absolute',
+                            inset: 0,
+                            width: '100%',
+                            height: '100%',
+                            objectFit: 'cover',
+                            opacity: isActive ? 1 : 0,
+                            transition: 'opacity 0.3s ease-in-out',
+                            zIndex: isActive ? 2 : 1,
+                            cursor: 'pointer'
+                          }}
+                        />
+                      );
+                    })}
                   </div>
-                  <div style={{ flex: 1, height: '130px', borderRadius: '20px', overflow: 'hidden', boxShadow: '0 10px 25px rgba(0,0,0,0.04)' }}>
-                    <img src={drillHero} alt="Drilling Service" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  <div style={{ flex: 1, height: '130px', borderRadius: '20px', overflow: 'hidden', boxShadow: '0 10px 25px rgba(0,0,0,0.04)', position: 'relative' }}>
+                    {HERO_SLIDES.map((slide, idx) => {
+                      const isActive = ((currentSlide + 3) % 4) === idx;
+                      return (
+                        <img
+                          key={idx}
+                          src={slide}
+                          alt=""
+                          onClick={() => handleSlideClick(idx)}
+                          style={{
+                            position: 'absolute',
+                            inset: 0,
+                            width: '100%',
+                            height: '100%',
+                            objectFit: 'cover',
+                            opacity: isActive ? 1 : 0,
+                            transition: 'opacity 0.3s ease-in-out',
+                            zIndex: isActive ? 2 : 1,
+                            cursor: 'pointer'
+                          }}
+                        />
+                      );
+                    })}
                   </div>
                 </div>
 
@@ -749,7 +805,7 @@ const Home = () => {
                 <span style={{ display: 'inline-block', background: '#eff6ff', color: '#1d4ed8', fontSize: '0.65rem', fontWeight: 700, padding: '4px 14px', borderRadius: '99px', letterSpacing: '0.14em', textTransform: 'uppercase', marginBottom: '1rem', border: '1px solid #dbeafe' }}>Popular Choices</span>
                 <h2 style={{ fontSize: 'clamp(2.25rem, 5vw, 3.5rem)', fontWeight: 700, color: '#0f172a', margin: '0 0 0.75rem', lineHeight: 1.08, letterSpacing: '-0.03em' }}>Top Demanding Services</h2>
                 <p style={{ color: '#94a3b8', fontWeight: 400, fontSize: '1.05rem', margin: 0, letterSpacing: '0.01em', lineHeight: 1.65 }}>
-                  {isNagpur && !isBengaluru ? 'Reliable home and commercial services at transparent pricing' : isBengaluru && !isNagpur ? 'Book a consultation — our expert visits and gives exact pricing' : 'Explore our top-rated services across India'}
+                  {isNagpur && !isBengaluru ? 'Reliable home and commercial services at transparent pricing' : isBengaluru && !isNagpur ? 'Book a consultation - our expert visits and gives exact pricing' : 'Explore our top-rated services across India'}
                 </p>
               </div>
             </div>
@@ -925,7 +981,7 @@ const Home = () => {
                   </span>{' '}Happy Customers
                 </h2>
                 <p className="description" style={{ color: '#cbd5e1', fontSize: '1.05rem', fontWeight: 500, maxWidth: '480px', margin: '0 0 3.5rem', lineHeight: 1.65 }}>
-                  India's trusted platform for home and commercial services — verified professionals, transparent pricing, and on-demand support.
+                  India's trusted platform for home and commercial services - verified professionals, transparent pricing, and on-demand support.
                 </p>
 
                 {/* Features List */}

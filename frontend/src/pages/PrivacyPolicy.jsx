@@ -10,6 +10,7 @@ const PrivacyPolicy = () => {
   });
 
   const { openComingSoon } = useUI();
+  const isAppMode = new URLSearchParams(window.location.search).get('app') === 'true';
   const [activeSection, setActiveSection] = useState('introduction');
 
   useEffect(() => {
@@ -192,16 +193,49 @@ const PrivacyPolicy = () => {
             padding: 24px 16px;
           }
         }
+
+        .policy-banner-inner {
+          max-width: 1280px;
+          margin: 0 auto;
+          padding: 36px 24px;
+        }
+        @media (max-width: 860px) {
+          .policy-banner-inner {
+            padding: 24px 16px;
+          }
+        }
       `}</style>
 
-      {/* Breadcrumb Navigation Bar */}
-      <div style={{ background: '#ffffff', borderBottom: '1px solid #e2e8f0', padding: '14px 24px' }}>
-        <div style={{ maxWidth: '1280px', margin: '0 auto', display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.82rem', color: '#64748b', fontWeight: 550 }}>
-          <a href="/" style={{ color: '#64748b', textDecoration: 'none', transition: 'color 0.2s' }} onMouseEnter={e => e.currentTarget.style.color = '#2563eb'} onMouseLeave={e => e.currentTarget.style.color = '#64748b'}>Home</a>
-          <span style={{ color: '#cbd5e1' }}>/</span>
-          <span style={{ color: '#94a3b8' }}>Legal</span>
-          <span style={{ color: '#cbd5e1' }}>/</span>
-          <span style={{ color: '#0f172a', fontWeight: 700 }}>Privacy Policy</span>
+      {/* Full-width Gradient Banner Box */}
+      <div style={{
+        background: 'linear-gradient(180deg, #3b82f6 0%, #eff6ff 100%)',
+        borderTopLeftRadius: '24px',
+        borderTopRightRadius: '24px',
+        width: '100%',
+        marginTop: '16px',
+      }}>
+        <div className="policy-banner-inner">
+          {/* Breadcrumbs inside the banner */}
+          {!isAppMode && (
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.85rem', color: '#1e293b', fontWeight: 600, marginBottom: '16px' }}>
+              <span>Home</span>
+              <span style={{ color: '#1e293b', opacity: 0.6 }}>/</span>
+              <span>Privacy Policy</span>
+            </div>
+          )}
+          <h1 style={{
+            fontSize: 'clamp(1.75rem, 5vw, 2.5rem)',
+            fontWeight: 900,
+            color: '#0f172a',
+            letterSpacing: '-0.03em',
+            lineHeight: 1.15,
+            marginBottom: '8px',
+          }}>
+            Privacy Policy
+          </h1>
+          <p style={{ color: '#475569', fontSize: '0.9rem', fontWeight: 600, margin: 0 }}>
+            Last Updated: June 3, 2026
+          </p>
         </div>
       </div>
 
@@ -211,18 +245,8 @@ const PrivacyPolicy = () => {
 
         {/* Center Content Column (Flat View, No Card Background/Borders) */}
         <div className="policy-content">
-          <h1 style={{
-            fontSize: 'clamp(2rem, 4vw, 2.5rem)',
-            fontWeight: 900,
-            color: '#0f172a',
-            letterSpacing: '-0.03em',
-            lineHeight: 1.15,
-            marginBottom: '6px',
-          }}>
-            Privacy Policy
-          </h1>
-          <p style={{ color: '#94a3b8', fontSize: '0.9rem', fontWeight: 600, marginBottom: '32px' }}>
-            Last Updated: June 3, 2026
+          <p style={{ color: '#334155', fontSize: '0.95rem', fontWeight: 700, marginBottom: '28px' }}>
+            Last Updated on June 3, 2026
           </p>
 
           {/* 1. Introduction */}

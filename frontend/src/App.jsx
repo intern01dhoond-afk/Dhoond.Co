@@ -33,6 +33,7 @@ const SEARCH_SUGGESTIONS = [
 
 const Navbar = () => {
   const location = useLocation();
+  const isPrivacyPolicy = location.pathname === '/privacy-policy';
   const navigate = useNavigate();
   const { cartItems } = useCart();
   const { user, logout, isAuthenticated } = useAuth();
@@ -371,7 +372,13 @@ const Navbar = () => {
           {/* COLUMN 1: LEFT (Back/Menu on mobile, Dhoond Logo + LocationButton + NAV_LINKS on desktop) */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem', flex: 1 }}>
             <div className="mobile-only">
-              {location.pathname !== '/' && !location.pathname.startsWith('/admin') ? (
+              {isPrivacyPolicy ? (
+                <div style={{ display: 'flex', alignItems: 'center', height: '100%' }}>
+                  <div className="dhoond-logo-container" style={{ width: '110px', justifyContent: 'flex-start' }}>
+                    <img src="/logo.png" alt="Dhoond" className="dhoond-logo" style={{ width: '100%', objectFit: 'contain' }} />
+                  </div>
+                </div>
+              ) : location.pathname !== '/' && !location.pathname.startsWith('/admin') ? (
                 <button className="icon-btn" onClick={() => navigate(-1)} aria-label="Go back">
                   <ChevronLeft size={28} />
                 </button>
@@ -382,15 +389,25 @@ const Navbar = () => {
               )}
             </div>
 
-            <Link to="/" className="desktop-only" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center' }}>
-              <div className="dhoond-logo-container" style={{ width: '130px', justifyContent: 'flex-start' }}>
-                <img src="/logo.png" alt="Dhoond" className="dhoond-logo dhoond-logo-desktop" style={{ width: 'auto', objectFit: 'contain' }} />
+            {isPrivacyPolicy ? (
+              <div className="desktop-only" style={{ display: 'flex', alignItems: 'center' }}>
+                <div className="dhoond-logo-container" style={{ width: '130px', justifyContent: 'flex-start' }}>
+                  <img src="/logo.png" alt="Dhoond" className="dhoond-logo dhoond-logo-desktop" style={{ width: 'auto', objectFit: 'contain' }} />
+                </div>
               </div>
-            </Link>
+            ) : (
+              <Link to="/" className="desktop-only" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center' }}>
+                <div className="dhoond-logo-container" style={{ width: '130px', justifyContent: 'flex-start' }}>
+                  <img src="/logo.png" alt="Dhoond" className="dhoond-logo dhoond-logo-desktop" style={{ width: 'auto', objectFit: 'contain' }} />
+                </div>
+              </Link>
+            )}
 
-            <div className="desktop-only" style={{ marginLeft: '0.25rem' }}>
-              <LocationButton onClick={openLocation} />
-            </div>
+            {!isPrivacyPolicy && (
+              <div className="desktop-only" style={{ marginLeft: '0.25rem' }}>
+                <LocationButton onClick={openLocation} />
+              </div>
+            )}
 
             <div className="desktop-only" style={{ display: 'flex', gap: '1.75rem', alignItems: 'center', marginLeft: '0.75rem' }}>
               {NAV_LINKS.map(link => {
@@ -440,66 +457,72 @@ const Navbar = () => {
 
           {/* COLUMN 2: CENTER (Mobile Logo on mobile, empty on desktop) */}
           <div className="mobile-only" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flex: 1, height: '100%' }}>
-            <Link to="/" style={{ display: 'flex', alignItems: 'center', height: '100%', textDecoration: 'none' }}>
-              <div className="dhoond-logo-container" style={{ width: '110px' }}>
-                <img src="/logo.png" alt="Dhoond" className="dhoond-logo" style={{ width: '100%', objectFit: 'contain' }} />
-              </div>
-            </Link>
+            {!isPrivacyPolicy && (
+              <Link to="/" style={{ display: 'flex', alignItems: 'center', height: '100%', textDecoration: 'none' }}>
+                <div className="dhoond-logo-container" style={{ width: '110px' }}>
+                  <img src="/logo.png" alt="Dhoond" className="dhoond-logo" style={{ width: '100%', objectFit: 'contain' }} />
+                </div>
+              </Link>
+            )}
           </div>
 
           {/* COLUMN 3: RIGHT (Actions on desktop/mobile) */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flex: 1, justifyContent: 'flex-end' }}>
-            <div className="desktop-only" style={{ position: 'relative', width: '210px', marginRight: '0.75rem' }} ref={searchRef}>
-              <div style={{ display: 'flex', alignItems: 'center', background: '#f1f5f9', borderRadius: '99px', padding: '0.45rem 1rem' }}>
-                <Search size={15} color="#64748b" style={{ flexShrink: 0 }} />
-                <input type="text" placeholder="search services" value={searchQuery} onChange={e => setSearchQuery(e.target.value)} onFocus={() => setShowSuggestions(true)} onKeyDown={e => e.key === 'Enter' && handleSearchSubmit()} style={{ background: 'none', border: 'none', outline: 'none', marginLeft: '6px', fontSize: '13.5px', color: '#1e293b', width: '100%' }} />
-              </div>
-              {showSuggestions && filteredSuggestions.length > 0 && (
-                <div style={{ position: 'absolute', top: '110%', left: 0, right: 0, background: '#fff', borderRadius: '16px', boxShadow: '0 10px 30px rgba(0,0,0,0.08)', border: '1px solid #f1f5f9', zIndex: 1000, overflow: 'hidden' }}>
-                  {filteredSuggestions.map(s => (
-                    <div key={s.label} onClick={() => handleSearchSubmit(s)} className="suggest-item" style={{ padding: '0.85rem 1.25rem', fontSize: '14px', color: '#334155', fontWeight: 500, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                      <Search size={14} color="#0a57d0" />
-                      {s.label}
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-
-            <button className="icon-btn mobile-only" onClick={() => setIsSearchOpen(true)}>
-              <Search size={24} />
-            </button>
-
-            <div style={{ position: 'relative' }} className="desktop-only">
-              <button className="icon-btn" onClick={() => isAuthenticated ? setIsProfileOpen(!isProfileOpen) : setIsAuthOpen(true)}>
-                <User size={24} color={isAuthenticated ? '#2563eb' : 'currentColor'} />
-              </button>
-
-              {isAuthenticated && isProfileOpen && (
-                <>
-                  <div style={{ position: 'fixed', inset: 0, zIndex: 900 }} onClick={() => setIsProfileOpen(false)} />
-                  <div style={{ position: 'absolute', top: 'calc(100% + 12px)', right: 0, width: '240px', background: '#fff', borderRadius: '20px', boxShadow: '0 20px 50px rgba(0,0,0,0.12)', border: '1px solid #f1f5f9', zIndex: 1000, overflow: 'hidden', padding: '0.75rem', animation: 'dropdownFade 0.2s ease-out' }}>
-                    <div style={{ padding: '0.75rem', borderBottom: '1px solid #f1f5f9', marginBottom: '0.5rem' }}>
-                      <div style={{ fontWeight: 600, fontSize: '0.95rem', color: '#111' }}>{userName}</div>
-                      <div style={{ fontSize: '0.8rem', color: '#64748b', fontWeight: 500 }}>+91 {userMobile}</div>
-                    </div>
-                    <Link to="/profile" onClick={() => setIsProfileOpen(false)} style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.75rem', borderRadius: '12px', textDecoration: 'none', color: '#475569', fontWeight: 500, fontSize: '0.9rem' }} className="profile-item"><User size={18} /> My Profile</Link>
-                    <Link to="/profile" onClick={() => setIsProfileOpen(false)} style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.75rem', borderRadius: '12px', textDecoration: 'none', color: '#475569', fontWeight: 500, fontSize: '0.9rem' }} className="profile-item"><Package size={18} /> My Bookings</Link>
-                    <div style={{ height: '1px', background: '#f1f5f9', margin: '0.5rem 0' }} />
-                    <button onClick={() => { logout(); setIsProfileOpen(false); navigate('/'); }} style={{ width: '100%', display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.75rem', borderRadius: '12px', border: 'none', background: 'transparent', color: '#ef4444', fontWeight: 500, fontSize: '0.9rem', cursor: 'pointer' }} className="profile-logout"><LogOut size={18} /> Logout</button>
+            {isPrivacyPolicy ? null : (
+              <>
+                <div className="desktop-only" style={{ position: 'relative', width: '210px', marginRight: '0.75rem' }} ref={searchRef}>
+                  <div style={{ display: 'flex', alignItems: 'center', background: '#f1f5f9', borderRadius: '99px', padding: '0.38rem 1rem' }}>
+                    <Search size={15} color="#64748b" style={{ flexShrink: 0 }} />
+                    <input type="text" placeholder="search services" value={searchQuery} onChange={e => setSearchQuery(e.target.value)} onFocus={() => setShowSuggestions(true)} onKeyDown={e => e.key === 'Enter' && handleSearchSubmit()} style={{ background: 'none', border: 'none', outline: 'none', marginLeft: '6px', fontSize: '13px', color: '#1e293b', width: '100%', padding: 0 }} />
                   </div>
-                </>
-              )}
-            </div>
+                  {showSuggestions && filteredSuggestions.length > 0 && (
+                    <div style={{ position: 'absolute', top: '110%', left: 0, right: 0, background: '#fff', borderRadius: '16px', boxShadow: '0 10px 30px rgba(0,0,0,0.08)', border: '1px solid #f1f5f9', zIndex: 1000, overflow: 'hidden' }}>
+                      {filteredSuggestions.map(s => (
+                        <div key={s.label} onClick={() => handleSearchSubmit(s)} className="suggest-item" style={{ padding: '0.85rem 1.25rem', fontSize: '14px', color: '#334155', fontWeight: 500, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                          <Search size={14} color="#0a57d0" />
+                          {s.label}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
 
-            <button className="icon-btn" onClick={() => navigate('/shop/cart')} style={{ position: 'relative' }}>
-              <ShoppingCart size={24} />
-              {totalItems > 0 && (
-                <span style={{ position: 'absolute', top: '2px', right: '2px', background: '#facc15', color: '#1e293b', borderRadius: '50%', width: '16px', height: '16px', fontSize: '9px', fontWeight: 800, display: 'flex', alignItems: 'center', justifyContent: 'center', border: '2px solid #fff' }}>
-                  {totalItems}
-                </span>
-              )}
-            </button>
+                <button className="icon-btn mobile-only" onClick={() => setIsSearchOpen(true)}>
+                  <Search size={24} />
+                </button>
+
+                <div style={{ position: 'relative' }} className="desktop-only">
+                  <button className="icon-btn" onClick={() => isAuthenticated ? setIsProfileOpen(!isProfileOpen) : setIsAuthOpen(true)}>
+                    <User size={24} color={isAuthenticated ? '#2563eb' : 'currentColor'} />
+                  </button>
+
+                  {isAuthenticated && isProfileOpen && (
+                    <>
+                      <div style={{ position: 'fixed', inset: 0, zIndex: 900 }} onClick={() => setIsProfileOpen(false)} />
+                      <div style={{ position: 'absolute', top: 'calc(100% + 12px)', right: 0, width: '240px', background: '#fff', borderRadius: '20px', boxShadow: '0 20px 50px rgba(0,0,0,0.12)', border: '1px solid #f1f5f9', zIndex: 1000, overflow: 'hidden', padding: '0.75rem', animation: 'dropdownFade 0.2s ease-out' }}>
+                        <div style={{ padding: '0.75rem', borderBottom: '1px solid #f1f5f9', marginBottom: '0.5rem' }}>
+                          <div style={{ fontWeight: 600, fontSize: '0.95rem', color: '#111' }}>{userName}</div>
+                          <div style={{ fontSize: '0.8rem', color: '#64748b', fontWeight: 500 }}>+91 {userMobile}</div>
+                        </div>
+                        <Link to="/profile" onClick={() => setIsProfileOpen(false)} style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.75rem', borderRadius: '12px', textDecoration: 'none', color: '#475569', fontWeight: 500, fontSize: '0.9rem' }} className="profile-item"><User size={18} /> My Profile</Link>
+                        <Link to="/profile" onClick={() => setIsProfileOpen(false)} style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.75rem', borderRadius: '12px', textDecoration: 'none', color: '#475569', fontWeight: 500, fontSize: '0.9rem' }} className="profile-item"><Package size={18} /> My Bookings</Link>
+                        <div style={{ height: '1px', background: '#f1f5f9', margin: '0.5rem 0' }} />
+                        <button onClick={() => { logout(); setIsProfileOpen(false); navigate('/'); }} style={{ width: '100%', display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.75rem', borderRadius: '12px', border: 'none', background: 'transparent', color: '#ef4444', fontWeight: 500, fontSize: '0.9rem', cursor: 'pointer' }} className="profile-logout"><LogOut size={18} /> Logout</button>
+                      </div>
+                    </>
+                  )}
+                </div>
+
+                <button className="icon-btn" onClick={() => navigate('/shop/cart')} style={{ position: 'relative' }}>
+                  <ShoppingCart size={24} />
+                  {totalItems > 0 && (
+                    <span style={{ position: 'absolute', top: '2px', right: '2px', background: '#facc15', color: '#1e293b', borderRadius: '50%', width: '16px', height: '16px', fontSize: '9px', fontWeight: 800, display: 'flex', alignItems: 'center', justifyContent: 'center', border: '2px solid #fff' }}>
+                      {totalItems}
+                    </span>
+                  )}
+                </button>
+              </>
+            )}
           </div>
         </nav>
 
@@ -507,11 +530,13 @@ const Navbar = () => {
         <AuthModal isOpen={isAuthOpen} onClose={() => setIsAuthOpen(false)} />
 
         {/* MOBILE: Location Bar */}
-        <div className="mobile-only" onClick={openLocation} style={{ padding: '0.5rem 1rem', borderTop: '1px solid #f8fafc', display: 'flex', alignItems: 'center', gap: '0.5rem', background: '#fafbfc', cursor: 'pointer' }}>
-          <MapPin size={13} color="#2563eb" style={{ flexShrink: 0 }} />
-          <span style={{ fontSize: '12px', fontWeight: 600, color: '#475569', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{locationLabel}</span>
-          <ChevronDown size={12} color="#94a3b8" style={{ flexShrink: 0 }} />
-        </div>
+        {!isPrivacyPolicy && (
+          <div className="mobile-only" onClick={openLocation} style={{ padding: '0.5rem 1rem', borderTop: '1px solid #f8fafc', display: 'flex', alignItems: 'center', gap: '0.5rem', background: '#fafbfc', cursor: 'pointer' }}>
+            <MapPin size={13} color="#2563eb" style={{ flexShrink: 0 }} />
+            <span style={{ fontSize: '12px', fontWeight: 600, color: '#475569', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{locationLabel}</span>
+            <ChevronDown size={12} color="#94a3b8" style={{ flexShrink: 0 }} />
+          </div>
+        )}
       </div>
 
       {/* LOCATION MODAL */}
@@ -770,9 +795,9 @@ const Navbar = () => {
         <div style={{ position: 'fixed', inset: 0, background: '#fff', zIndex: 1300, display: 'flex', flexDirection: 'column' }}>
           <div style={{ padding: '1rem', display: 'flex', alignItems: 'center', gap: '1rem', borderBottom: '1px solid #f1f5f9' }}>
             <button className="icon-btn" onClick={() => setIsSearchOpen(false)}><X size={24} /></button>
-            <div style={{ flex: 1, display: 'flex', alignItems: 'center', background: '#f3f4f6', borderRadius: '99px', padding: '0.65rem 1rem' }}>
-              <Search size={18} color="#6b7280" />
-              <input autoFocus type="text" placeholder="Search..." value={searchQuery} onChange={e => setSearchQuery(e.target.value)} onKeyDown={e => e.key === 'Enter' && handleSearchSubmit()} style={{ background: 'none', border: 'none', outline: 'none', marginLeft: '8px', fontSize: '16px', width: '100%' }} />
+            <div style={{ flex: 1, display: 'flex', alignItems: 'center', background: '#f3f4f6', borderRadius: '99px', padding: '0.55rem 1rem' }}>
+              <Search size={17} color="#6b7280" style={{ flexShrink: 0 }} />
+              <input autoFocus type="text" placeholder="Search..." value={searchQuery} onChange={e => setSearchQuery(e.target.value)} onKeyDown={e => e.key === 'Enter' && handleSearchSubmit()} style={{ background: 'none', border: 'none', outline: 'none', marginLeft: '8px', fontSize: '15px', color: '#1e293b', width: '100%', padding: 0 }} />
             </div>
           </div>
           <div style={{ flex: 1, overflow: 'auto', padding: '1rem' }}>
@@ -788,12 +813,15 @@ const Navbar = () => {
 
 const MainLayout = () => {
   const { showComingSoon, closeComingSoon } = useUI();
+  const location = useLocation();
+  const isAppMode = new URLSearchParams(location.search).get('app') === 'true';
+
   return (
     <>
       <MetaBrowserPopup />
-      <Navbar />
+      {!isAppMode && <Navbar />}
       <Outlet />
-      <Footer />
+      {!isAppMode && <Footer />}
       {showComingSoon && <ComingSoonModal onClose={closeComingSoon} />}
     </>
   );

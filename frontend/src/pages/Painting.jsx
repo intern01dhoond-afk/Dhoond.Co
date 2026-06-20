@@ -11,9 +11,16 @@ import commercialImg from '../assets/commercial_painting.jpg';
 import interiorImg from '../assets/interior.jpg';
 import exteriorImg from '../assets/exterior_painting.webp';
 import specialtyImg from '../assets/grill_gate.png';
+import waterproofingImg from '../assets/waterproofing.png';
+import textureImg from '../assets/texture_painting.png';
+import asianPaintsLogo from '../assets/AP logo.png';
+import birlaOpusLogo from '../assets/BO Logo.png';
+import nerolacLogo from '../assets/Ner.png';
 import hemanthImg from '../assets/Kuruba Hemanth Kishore.png';
 import rahulImg from '../assets/rahul_avatar.png';
 import sunitaImg from '../assets/sunita_avatar.png';
+import woodMetalImg from '../assets/ChatGPT Image Jun 20, 2026, 03_54_58 PM.png';
+
 
 function loadScript(src) {
   return new Promise((res) => {
@@ -44,6 +51,7 @@ export default function Painting() {
   const [activeService, setActiveService] = useState('Painting');
   const [selectedService, setSelectedService] = useState(null);
   const [faqOpen, setFaqOpen] = useState(null);
+  const [showAllServices, setShowAllServices] = useState(false);
   const { openComingSoon, locationLabel, locationSubtext } = useUI();
   const { addToCart, cartItems, updateQuantity, removeFromCart } = useCart();
 
@@ -378,20 +386,21 @@ export default function Painting() {
         /* ── SERVICES STRIP ── */
         .p-services-strip { padding: 24px 0; background: #fff; display: flex; flex-direction: column; position: relative; z-index: 2; max-width: 720px; margin: 0 auto; }
         .p-services-strip::-webkit-scrollbar { display: none; }
-        .p-service-item { flex-shrink: 0; padding: 16px; margin-bottom: 12px; border-radius: 0px; border: 1.5px solid #f1f5f9; display: flex; align-items: center; gap: 16px; opacity: 0; transform: translateY(22px); cursor: pointer; transition: all .3s ease; width: 100%; justify-content: space-between; background: #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
+        .p-service-item { position: relative; flex-shrink: 0; padding: 16px; height: 136px; margin-bottom: 12px; border-radius: 24px; border: 1px solid #f1f5f9; display: flex; align-items: center; gap: 16px; opacity: 0; transform: translateY(22px); cursor: pointer; transition: all .3s ease; width: 100%; justify-content: space-between; background: #fff; box-shadow: 0px 2px 8px 0px rgba(0,0,0,0.04); }
         .p-service-item:last-child { margin-bottom: 0; }
         .p-service-item:hover { border-color: #2563eb; transform: translateY(-2px); box-shadow: 0 8px 28px rgba(37,99,235,0.12); }
-        .p-si-img { width: 88px; height: 88px; border-radius: 0px; overflow: hidden; flex-shrink: 0; }
+        .p-si-img { width: 104px; height: 104px; border-radius: 16px; overflow: hidden; flex-shrink: 0; }
         .p-si-img img { width: 100%; height: 100%; object-fit: cover; transition: transform .5s; }
         .p-service-item:hover .p-si-img img { transform: scale(1.06); }
         .p-service-info { flex: 1; }
         .p-service-info h3 { font-size: 1.1rem; font-weight: 800; color: #111; margin-bottom: 5px; letter-spacing: -0.01em; }
         .p-service-info p { font-size: 0.88rem; color: #64748b; margin: 0; line-height: 1.5; font-weight: 400; }
-        .p-si-chevron { color: #cbd5e1; transition: all 0.25s; width: 36px; height: 36px; border-radius: 0px; display: flex; align-items: center; justify-content: center; background: #f8fafc; flex-shrink: 0; }
-        .p-service-item:hover .p-si-chevron { background: #2563eb; color: #fff; transform: translateX(2px); }
+        .p-si-chevron { color: #2563eb; transition: all 0.25s; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .p-service-badge-absolute { position: absolute; top: -10px; right: 24px; background: #facc15; color: #5b3e00; font-size: 9px; font-weight: 800; padding: 3px 10px; border-radius: 6px; text-transform: uppercase; letter-spacing: 0.5px; box-shadow: 0 2px 6px rgba(0,0,0,0.1); z-index: 5; }
+        .p-service-item:hover .p-si-chevron { transform: translateX(2px); }
         @media (min-width: 900px) {
-          .p-services-strip { padding: 40px 2rem; }
-          .p-services-strip-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+          .p-services-strip { padding: 0; max-width: 896px !important; height: 616px; margin: 0 auto; }
+          .p-services-strip-grid { display: grid; grid-template-columns: 418px 418px; gap: 24px 57px; }
         }
         @media (max-width: 480px) {
           .p-si-img { width: 70px; height: 70px; }
@@ -409,7 +418,7 @@ export default function Painting() {
         .p-brush-line { width: 60px; height: 3px; background: linear-gradient(90deg, #2563eb, #facc15); border-radius: 2px; margin: 12px auto 16px; }
 
         /* ── INTRO ── */
-        .p-intro { padding: 80px 5vw; background: #fff; position: relative; }
+        .p-intro { padding: 40px 5vw; background: #fff; position: relative; }
         .p-intro-inner { display: flex; flex-direction: column; gap: 50px; }
         .p-intro-imgs { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; position: relative; }
         .p-intro-img { border-radius: 20px; overflow: hidden; aspect-ratio: 3/4; position: relative; box-shadow: 0 30px 60px -12px rgba(0,0,0,0.22); transition: transform .5s; }
@@ -420,7 +429,7 @@ export default function Painting() {
         .p-intro-text h2 { font-size: clamp(26px, 4.5vw, 44px); font-weight: 900; line-height: 1.15; letter-spacing: -.8px; color: #1a1a1a; margin-bottom: 20px; }
         .p-intro-text h2 em { color: #2563eb; font-style: italic; }
         @media (min-width: 860px) {
-          .p-intro { padding: 120px 5vw; }
+          .p-intro { padding: 60px 5vw; }
           .p-intro-inner { flex-direction: row; gap: 80px; align-items: center; }
           .p-intro-imgs { flex: 0 0 45%; gap: 18px; }
           .p-intro-text { flex: 1; }
@@ -428,7 +437,7 @@ export default function Painting() {
         }
 
         /* ── STATS ── */
-        .p-stats { padding: 80px 5vw; background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 50%, #1d4ed8 100%); display: grid; grid-template-columns: 1fr 1fr; position: relative; overflow: hidden; }
+        .p-stats { padding: 40px 5vw; background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 50%, #1d4ed8 100%); display: grid; grid-template-columns: 1fr 1fr; position: relative; overflow: hidden; }
         .p-stats > :nth-child(3) { grid-column: span 2; border-top: 1px solid rgba(255,255,255,0.08); border-right: none; }
         .p-stats-glow { position: absolute; inset: 0; background: radial-gradient(ellipse at 50% 0%, rgba(96,165,250,0.18), transparent 70%); pointer-events: none; }
         .p-stat { padding: 44px 28px; border-right: 1px solid rgba(255,255,255,0.10); text-align: center; opacity: 0; transform: translateY(22px); position: relative; will-change: transform; }
@@ -442,7 +451,7 @@ export default function Painting() {
         }
 
         /* ── PROCESS ── */
-        .p-process { padding: 80px 0; background: #fff; position: relative; overflow: hidden; }
+        .p-process { padding: 40px 0; background: #fff; position: relative; overflow: hidden; }
         .p-process .p-section-header { padding: 0 5vw; }
         .p-process-grid { display: flex; gap: 20px; overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; padding: 8px 5vw 24px; }
         .p-process-grid::-webkit-scrollbar { display: none; }
@@ -463,15 +472,15 @@ export default function Painting() {
         .process-card h3 { font-size: 17px; font-weight: 600; color: #2B2B2B; margin-bottom: 10px; }
         .process-card p { font-size: 13px; color: #8C8679; line-height: 1.65; font-weight: 300; margin: 0; }
         @media (max-width: 768px) {
-          .p-process { padding: 60px 0 !important; }
-          .p-section-header { margin-bottom: 32px !important; }
+          .p-process { padding: 30px 0 !important; }
+          .p-section-header { margin-bottom: 24px !important; }
           .p-section-header h2 { font-size: 32px !important; line-height: 1.15 !important; letter-spacing: -0.5px !important; }
           .p-process-grid { padding-top: 10px !important; }
-          .p-intro { padding: 60px 5vw !important; }
-          .p-stats { padding: 60px 5vw !important; }
-          .p-gallery { padding: 60px 5vw !important; }
-          .p-testimonials { padding: 60px 5vw !important; }
-          .p-why { padding: 60px 5vw !important; }
+          .p-intro { padding: 30px 5vw !important; }
+          .p-stats { padding: 30px 5vw !important; }
+          .p-gallery { padding: 30px 5vw !important; }
+          .p-testimonials { padding: 30px 5vw !important; }
+          .p-why { padding: 30px 5vw !important; }
         }
         @media (min-width: 1024px) {
           .p-process-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 24px; overflow: visible; padding: 8px 5vw 0; }
@@ -485,9 +494,9 @@ export default function Painting() {
         }
 
         /* ── GALLERY ── */
-        .p-gallery { padding: 80px 5vw; background: #f1f5f9; }
+        .p-gallery { padding: 40px 5vw; background: #f1f5f9; }
         .p-gallery-grid { display: grid; grid-template-columns: 1fr; gap: 14px; margin-top: 48px; }
-        .gitem { border-radius: 0px; overflow: hidden; position: relative; opacity: 0; cursor: pointer; height: 280px; box-shadow: 0 4px 24px rgba(0,0,0,0.10); transition: box-shadow .4s, transform .4s; }
+        .gitem { border-radius: 12px; overflow: hidden; position: relative; opacity: 0; cursor: pointer; height: 280px; box-shadow: 0 4px 24px rgba(0,0,0,0.10); transition: box-shadow .4s, transform .4s; }
         .gitem:hover { transform: translateY(-4px); box-shadow: 0 20px 48px rgba(0,0,0,0.18); }
         .p-gbg { position: absolute; inset: 0; transition: transform 1.3s cubic-bezier(.16,1,.3,1), filter .5s; background-size: cover !important; background-position: center 30% !important; }
         .gitem:hover .p-gbg { transform: scale(1.08); }
@@ -496,7 +505,7 @@ export default function Painting() {
         .gitem:hover .p-glabel, .gitem:focus .p-glabel { transform: translateY(0); opacity: 1; }
         .p-glabel span { color: #fff; font-size: 16px; font-weight: 700; display: block; letter-spacing: -.01em; }
         .p-glabel p { color: rgba(255,255,255,0.7); font-size: 12px; margin-top: 4px; margin-bottom: 0; display: flex; align-items: center; gap: 4px; }
-        .p-g-badge { position: absolute; top: 14px; right: 14px; background: rgba(255,255,255,0.92); backdrop-filter: blur(8px); color: #1a1a1a; padding: 4px 12px; border-radius: 0px; font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: .8px; border: 1px solid rgba(255,255,255,0.5); }
+        .p-g-badge { position: absolute; top: 14px; right: 14px; background: rgba(255,255,255,0.92); backdrop-filter: blur(8px); color: #1a1a1a; padding: 4px 12px; border-radius: 6px; font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: .8px; border: 1px solid rgba(255,255,255,0.5); }
         .p-g-loc-icon { width: 10px; height: 10px; }
         @media (min-width: 640px) {
           .p-gallery-grid { grid-template-columns: repeat(2, 1fr); gap: 16px; }
@@ -510,7 +519,7 @@ export default function Painting() {
         }
 
         /* ── TESTIMONIALS ── */
-        .p-testimonials { padding: 80px 5vw; background: #FAF8F4; }
+        .p-testimonials { padding: 40px 5vw; background: #FAF8F4; }
         .p-tgrid { 
           display: flex; 
           flex-direction: row; 
@@ -526,7 +535,7 @@ export default function Painting() {
         }
         .p-tgrid::-webkit-scrollbar { display: none; }
         .p-tcard { 
-          background: #fff; border-radius: 0px; padding: 32px; border: 1px solid rgba(0,0,0,0.05); 
+          background: #fff; border-radius: 12px; padding: 32px; border: 1px solid rgba(0,0,0,0.05); 
           opacity: 0; transform: translateY(24px); transition: all .35s; 
           flex: 0 0 80vw;
           scroll-snap-align: center;
@@ -559,30 +568,24 @@ export default function Painting() {
           .p-tcard-featured { grid-column: span 1; }
         }
 
-        /* ── WHY ── */
-        .p-why { padding: 80px 5vw; background: #fff; }
-        .p-why-inner { display: flex; flex-direction: column; gap: 40px; max-width: 1100px; margin: 0 auto; text-align: center; }
+        /* ── WHY + BRANDS (Combined) ── */
+        .p-why { padding: 60px 5vw; background: #fff; }
+        .p-why-brands-row { display: grid; grid-template-columns: 1fr; gap: 48px; margin: 0 auto; align-items: start; }
         .p-why-text { opacity: 0; transform: translateY(28px); will-change: transform; }
-        .p-why-text h2 { font-size: clamp(28px, 4.5vw, 44px); font-weight: 900; line-height: 1.2; color: #1a1a1a; margin-bottom: 48px; }
-        .p-wlist { display: grid; grid-template-columns: 1fr; gap: 32px; text-align: left; }
-        .p-witem { display: flex; flex-direction: column; gap: 14px; align-items: center; text-align: center; }
-        .p-wdot { width: 44px; height: 44px; border-radius: 12px; background: rgba(196,130,90,0.1); display: flex; align-items: center; justify-content: center; transition: all .3s; }
-        .p-witem:hover .p-wdot { background: #C4825A; transform: scale(1.08) rotate(6deg); }
-        .p-wdot svg { width: 20px; height: 20px; stroke: #2563eb; fill: none; stroke-width: 1.5; transition: stroke .3s; }
-        .p-witem:hover .p-wdot svg { stroke: #fff; }
-        .p-wtext h4 { font-size: 15px; font-weight: 700; color: #2B2B2B; margin-bottom: 6px; }
-        .p-wtext p { font-size: 14px; color: #777; line-height: 1.6; font-weight: 400; margin: 0; max-width: 260px; }
+        .p-why-text .p-eyebrow { text-align: left; }
+        .p-brands-compact { }
+        .p-brands-compact h3 { letter-spacing: -0.02em; }
         
-        @media (min-width: 600px) {
-          .p-wlist { grid-template-columns: 1fr 1fr; }
+        @media (min-width: 768px) {
+          .p-why-brands-row { grid-template-columns: 1fr 1fr; gap: 80px; }
         }
-        @media (min-width: 900px) {
-          .p-why { padding: 120px 5vw; }
-          .p-wlist { grid-template-columns: repeat(4, 1fr); gap: 24px; }
+        @media (max-width: 767px) {
+          .p-why { padding: 40px 5vw; }
+          .p-brands-compact { border-top: 1px solid #f1f5f9; padding-top: 32px; }
         }
 
         /* ── CTA ── */
-        .p-cta-wrap { padding: 0 5vw 80px; background: #fff; }
+        .p-cta-wrap { padding: 0 5vw 40px; background: #fff; }
         #p-ctaEl {
           border-radius: 28px;
           background: linear-gradient(135deg, #1e3a8a 0%, #111 100%);
@@ -641,20 +644,23 @@ export default function Painting() {
         .mobile-sticky-cta-call:active { transform: scale(0.97); }
         /* Show/hide */
         @media (min-width: 860px) { .mobile-sticky-cta { display: none; } }
-        @media (max-width: 859px) { .p-cta-wrap { padding-bottom: calc(80px + env(safe-area-inset-bottom) + 16px); } }
+        @media (max-width: 859px) { .p-cta-wrap { padding-bottom: calc(40px + env(safe-area-inset-bottom) + 16px); } }
 
         @media (max-width: 859px) { .p-wa-fab { display: none; } }
 
         .painting-desktop-layout {
           padding: 0 16px;
+          max-width: 100%;
+          margin: 0 auto;
         }
         @media (min-width: 900px) {
           .painting-desktop-layout {
             display: grid !important;
-            grid-template-columns: 1fr 360px !important;
+            grid-template-columns: 896px 360px !important;
             gap: 40px !important;
             align-items: start !important;
-            padding: 0 5% !important;
+            padding: 0 24px !important;
+            max-width: 1344px !important;
           }
           .painting-sidebar-container {
             display: block !important;
@@ -666,11 +672,42 @@ export default function Painting() {
             padding: 0 !important;
           }
         }
+        .p-show-more-btn {
+          display: none;
+        }
         @media (max-width: 899px) {
           .painting-sidebar-container {
             display: none !important;
           }
+          .p-services-strip .p-service-item:nth-child(n+5) {
+            display: none !important;
+          }
+          .p-services-strip.show-all .p-service-item:nth-child(n+5) {
+            display: flex !important;
+          }
+          .p-show-more-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            background: #fff;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 14px;
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: #2563eb;
+            cursor: pointer;
+            margin-top: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            transition: all 0.2s;
+          }
+          .p-show-more-btn:hover {
+            background: #f8fafc;
+            border-color: #cbd5e1;
+          }
         }
+
 
         /* ── Misc ── */
         .p-stroke-dec { position: absolute; pointer-events: none; opacity: .08; z-index: 0; }
@@ -699,7 +736,7 @@ export default function Painting() {
               <span className="p-line-wrap"><em><span className="p-line-inner">Dream Space</span></em></span>
               <span className="p-line-wrap"><span className="p-line-inner">With Expert Painting Services</span></span>
             </h1>
-            <p className="p-hero-sub">Dhoond brings verified painting professionals to your spot — interior, exterior &amp; texture painting done right, on time.</p>
+            <p className="p-hero-sub">Dhoond brings verified painting professionals to your spot - interior, exterior &amp; texture painting done right, on time.</p>
 
 
 
@@ -736,36 +773,41 @@ export default function Painting() {
 
         {/* ── SERVICES STRIP ── */}
         <div style={{ background: '#fff', paddingTop: '24px', paddingBottom: '24px' }}>
-          <div className="painting-desktop-layout" style={{ maxWidth: '1100px', margin: '0 auto' }}>
-            <div className="p-services-strip p-services-strip-grid" id="p-sstrip" role="list">
-              {[
-                { img: consultationImg, title: 'Expert Consultation on Site', sub: 'Talk to an expert — ₹49', filter: 'consultation', badge: 'Popular' },
-                { img: commercialImg, title: 'Commercial Painting', sub: 'Offices, Schools & warehouses', filter: 'commercial', badge: null },
-                { img: interiorImg, title: 'Interior Painting', sub: 'Walls, ceilings & trims', filter: 'interior', badge: null },
-                { img: exteriorImg, title: 'Exterior Painting', sub: 'Weather-resistant finishes', filter: 'exterior', badge: null },
-                { img: '/images/waterproofing.png', title: 'Waterproofing Services', sub: 'Damp-proofing & terrace coatings', filter: 'waterproofing', badge: null },
-                { img: '/images/texture_painting.png', title: 'Texture Painting', sub: 'Metallic, non-metallic & designer walls', filter: 'texture', badge: null },
-                { img: '/images/wood_metal.png', title: 'Wood & Metal Painting', sub: 'Polishing, varnishing & metal coat', filter: 'wood_metal', badge: null },
-                { img: specialtyImg, title: 'Specialty Coatings', sub: 'Epoxy for Grills, Gates & Doors', filter: 'coatings', badge: null },
-              ].map(s => (
-                <div key={s.title} className="p-service-item" role="listitem" style={{ cursor: 'pointer', position: 'relative' }} onClick={() => {
-                  navigate(`?service=${encodeURIComponent(s.title)}&sub=${encodeURIComponent(s.sub)}&filter=${s.filter}`);
-                }}>
-                  <div className="p-si-img">
-                    <img src={s.img} alt={s.title} loading="lazy" />
+          <div className="painting-desktop-layout">
+            <div className="p-services-column" style={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
+              <div className={`p-services-strip p-services-strip-grid ${showAllServices ? 'show-all' : ''}`} id="p-sstrip" role="list">
+                {[
+                  { img: consultationImg, title: 'Expert Consultation on Site', sub: 'Talk to an expert — ₹49', filter: 'consultation', badge: 'Popular' },
+                  { img: commercialImg, title: 'Commercial Painting', sub: 'Offices, Schools & warehouses', filter: 'commercial', badge: null },
+                  { img: interiorImg, title: 'Interior Painting', sub: 'Walls, ceilings & trims', filter: 'interior', badge: null },
+                  { img: exteriorImg, title: 'Exterior Painting', sub: 'Weather-resistant finishes', filter: 'exterior', badge: null },
+                  { img: waterproofingImg, title: 'Waterproofing Services', sub: 'Damp-proofing & terrace coatings', filter: 'waterproofing', badge: null },
+                  { img: textureImg, title: 'Texture Painting', sub: 'Metallic, non-metallic & designer walls', filter: 'texture', badge: null },
+                  { img: woodMetalImg, title: 'Wood & Metal Painting', sub: 'Polishing, varnishing & metal coat', filter: 'wood_metal', badge: null },
+                  { img: specialtyImg, title: 'Specialty Coatings', sub: 'Epoxy for Grills, Gates & Doors', filter: 'coatings', badge: null },
+                ].map(s => (
+                  <div key={s.title} className="p-service-item" role="listitem" style={{ cursor: 'pointer', position: 'relative' }} onClick={() => {
+                    navigate(`?service=${encodeURIComponent(s.title)}&sub=${encodeURIComponent(s.sub)}&filter=${s.filter}`);
+                  }}>
+                    {s.badge && <div className="p-service-badge-absolute">{s.badge}</div>}
+                    <div className="p-si-img">
+                      <img src={s.img} alt={s.title} loading="lazy" />
+                    </div>
+                    <div className="p-service-info">
+                      <h3 style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        {s.title}
+                      </h3>
+                      <p>{s.sub}</p>
+                    </div>
+                    <div className="p-si-chevron">
+                      <ChevronRight size={18} />
+                    </div>
                   </div>
-                  <div className="p-service-info">
-                    <h3 style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                      {s.title}
-                      {s.badge && <span style={{ background: '#facc15', color: '#111', fontSize: '9px', fontWeight: 800, padding: '2px 8px', borderRadius: '99px', textTransform: 'uppercase', letterSpacing: '0.5px', flexShrink: 0 }}>{s.badge}</span>}
-                    </h3>
-                    <p>{s.sub}</p>
-                  </div>
-                  <div className="p-si-chevron">
-                    <ChevronRight size={18} />
-                  </div>
-                </div>
-              ))}
+                ))}
+              </div>
+              <button className="p-show-more-btn" onClick={() => setShowAllServices(!showAllServices)}>
+                {showAllServices ? 'Show Less' : 'Show More'}
+              </button>
             </div>
 
             <div className="painting-sidebar-container">
@@ -773,7 +815,7 @@ export default function Painting() {
               <div style={{
                 background: '#fff',
                 border: '1px solid #e2e8f0',
-                borderRadius: '0px',
+                borderRadius: '24px',
                 padding: '24px',
                 boxShadow: '0 10px 30px rgba(0,0,0,0.03)',
                 marginBottom: '16px'
@@ -787,7 +829,7 @@ export default function Painting() {
                     return (
                       <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                          <ShoppingCart size={22} color="#64748b" style={{ opacity: 0.8 }} />
+                          <ShoppingCart size={22} color="#2563eb" />
                           <span style={{ fontSize: '0.9rem', color: '#64748b', fontWeight: 600 }}>Start with a site consultation</span>
                         </div>
                         <button
@@ -797,7 +839,7 @@ export default function Painting() {
                             background: '#2563eb',
                             color: '#fff',
                             border: 'none',
-                            borderRadius: '0px',
+                            borderRadius: '8px',
                             padding: '14px',
                             fontWeight: 800,
                             fontSize: '0.95rem',
@@ -870,7 +912,7 @@ export default function Painting() {
                           background: '#2563eb',
                           color: '#fff',
                           border: 'none',
-                          borderRadius: '0px',
+                          borderRadius: '8px',
                           padding: '14px',
                           fontWeight: 800,
                           fontSize: '0.95rem',
@@ -906,62 +948,45 @@ export default function Painting() {
                 })()}
               </div>
 
-              {/* Card 2: Painting Guarantee Box */}
+              {/* Card 2: Why Dhoond? */}
               <div style={{
                 background: '#fff',
                 border: '1px solid #e2e8f0',
-                borderRadius: '0px',
-                padding: '24px',
-                boxShadow: '0 10px 30px rgba(0,0,0,0.03)',
-                marginBottom: '16px'
-              }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '18px' }}>
-                  <div style={{ background: '#ecfdf5', border: '1px solid #dcfce7', borderRadius: '50%', width: '40px', height: '40px', display: 'flex', alignItems: 'center', justify_content: 'center', flexShrink: 0 }}>
-                    <ShieldCheck size={20} color="#16a34a" />
-                  </div>
-                  <span style={{ fontSize: '0.88rem', color: '#1e293b', fontWeight: 700 }}>1-Year Service Warranty</span>
-                </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-                  <div style={{ background: '#fffbeb', border: '1px solid #fef3c7', borderRadius: '50%', width: '40px', height: '40px', display: 'flex', alignItems: 'center', justify_content: 'center', flexShrink: 0 }}>
-                    <Sparkles size={18} color="#d97706" />
-                  </div>
-                  <span style={{ fontSize: '0.88rem', color: '#1e293b', fontWeight: 700 }}>Dust-free masking &amp; cleanup</span>
-                </div>
-              </div>
-
-              {/* Card 3: Why Dhoond? */}
-              <div style={{
-                background: '#fff',
-                border: '1px solid #e2e8f0',
-                borderRadius: '0px',
+                borderRadius: '24px',
                 padding: '24px',
                 boxShadow: '0 10px 30px rgba(0,0,0,0.03)'
               }}>
                 <h4 style={{ fontSize: '1rem', fontWeight: 800, color: '#0f172a', marginBottom: '20px' }}>Why Dhoond?</h4>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
-                    <div style={{ background: '#eff6ff', borderRadius: '8px', width: '36px', height: '36px', display: 'flex', alignItems: 'center', justify_content: 'center', flexShrink: 0 }}>
+                    <div style={{ background: '#eff6ff', borderRadius: '8px', width: '36px', height: '36px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                       <ClipboardList size={18} color="#2563eb" />
                     </div>
                     <span style={{ fontSize: '0.85rem', color: '#334155', fontWeight: 700 }}>Verified Painting Professionals</span>
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
-                    <div style={{ background: '#eff6ff', borderRadius: '8px', width: '36px', height: '36px', display: 'flex', alignItems: 'center', justify_content: 'center', flexShrink: 0 }}>
+                    <div style={{ background: '#eff6ff', borderRadius: '8px', width: '36px', height: '36px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                       <ShieldCheck size={18} color="#2563eb" />
                     </div>
                     <span style={{ fontSize: '0.85rem', color: '#334155', fontWeight: 700 }}>Warranty on Workmanship</span>
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
-                    <div style={{ background: '#eff6ff', borderRadius: '8px', width: '36px', height: '36px', display: 'flex', alignItems: 'center', justify_content: 'center', flexShrink: 0 }}>
+                    <div style={{ background: '#eff6ff', borderRadius: '8px', width: '36px', height: '36px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                       <Sparkles size={18} color="#2563eb" />
                     </div>
                     <span style={{ fontSize: '0.85rem', color: '#334155', fontWeight: 700 }}>Premium Quality Paints</span>
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
-                    <div style={{ background: '#eff6ff', borderRadius: '8px', width: '36px', height: '36px', display: 'flex', alignItems: 'center', justify_content: 'center', flexShrink: 0 }}>
+                    <div style={{ background: '#eff6ff', borderRadius: '8px', width: '36px', height: '36px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                       <Headphones size={18} color="#2563eb" />
                     </div>
                     <span style={{ fontSize: '0.85rem', color: '#334155', fontWeight: 700 }}>Transparent Pricing</span>
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+                    <div style={{ background: '#eff6ff', borderRadius: '8px', width: '36px', height: '36px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                      <Sparkles size={18} color="#2563eb" />
+                    </div>
+                    <span style={{ fontSize: '0.85rem', color: '#334155', fontWeight: 700 }}>Dust-free masking &amp; cleanup</span>
                   </div>
                 </div>
               </div>
@@ -1080,10 +1105,10 @@ export default function Painting() {
                 <div className="p-goverlay" />
                 <div style={{ position: 'absolute', top: '14px', left: '14px', display: 'flex', gap: '6px', flexWrap: 'wrap', zIndex: 10 }}>
                   {g.tags && g.tags.map(t => (
-                    <span key={t} style={{ background: 'rgba(37,99,235,0.9)', color: '#fff', padding: '3px 8px', borderRadius: '0px', fontSize: '9px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.5px' }}>{t}</span>
+                    <span key={t} style={{ background: 'rgba(37,99,235,0.9)', color: '#fff', padding: '3px 8px', borderRadius: '6px', fontSize: '9px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.5px' }}>{t}</span>
                   ))}
                 </div>
-                <div className="p-g-badge" style={{ borderRadius: '0px' }}>{g.tag}</div>
+                <div className="p-g-badge" style={{ borderRadius: '6px' }}>{g.tag}</div>
                 <div className="p-glabel">
                   <span>{g.title}</span>
                   <p>
@@ -1132,49 +1157,58 @@ export default function Painting() {
           </div>
         </section>
 
-        {/* ── WHY ── */}
+        {/* ── WHY + BRANDS (Combined 2-column) ── */}
         <section className="p-why" id="p-whySec">
-          <div className="p-why-inner">
+          <div className="p-why-brands-row">
+            {/* Left: Why Dhoond */}
             <div className="p-why-text">
               <span className="p-eyebrow">Why Dhoond</span>
-              <h2>Affordable Painting Without Compromising Quality</h2>
-              <div className="p-wlist">
+              <h2 style={{ fontSize: 'clamp(24px, 4vw, 36px)', fontWeight: 900, lineHeight: 1.2, color: '#0f172a', marginBottom: '28px', textAlign: 'left' }}>
+                Affordable Painting Without Compromising Quality
+              </h2>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
                 {[
-                  { icon: <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78L12 21.23l7.78-7.78a5.5 5.5 0 0 0 0-7.78z" />, title: 'Verified Pros', desc: 'Background-checked, trained experts.' },
-                  { icon: <><circle cx="12" cy="12" r="10" /><path d="M12 6v6l4 2" /></>, title: 'On-Time Project Completion', desc: 'Scheduled visits, zero delays.' },
-                  { icon: <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />, title: 'Transparent Pricing', desc: 'Transparent upfront quotes.' },
-                  { icon: <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />, title: 'Post-Job Clean', desc: 'Professional cleanup included.' },
-                ].map(w => (
-                  <div key={w.title} className="p-witem">
-                    <div className="p-wdot"><svg viewBox="0 0 24 24" strokeWidth="1.5">{w.icon}</svg></div>
-                    <div className="p-wtext"><h4>{w.title}</h4><p>{w.desc}</p></div>
+                  { icon: <ShieldCheck size={20} color="#2563eb" />, label: 'Skilled & Verified Painters' },
+                  { icon: <Sparkles size={20} color="#2563eb" />, label: 'High Quality, Branded Paints' },
+                  { icon: <ClipboardList size={20} color="#2563eb" />, label: 'Transparent Pricing' },
+                ].map(item => (
+                  <div key={item.label} style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+                    <div style={{ width: '40px', height: '40px', borderRadius: '12px', background: '#eff6ff', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                      {item.icon}
+                    </div>
+                    <span style={{ fontSize: '0.95rem', fontWeight: 700, color: '#1e293b' }}>{item.label}</span>
                   </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Right: Paint Brands */}
+            <div className="p-brands-compact">
+              <span className="p-eyebrow" style={{ textAlign: 'left' }}>Trusted Partners</span>
+              <h3 style={{ fontSize: 'clamp(22px, 3.5vw, 30px)', fontWeight: 900, color: '#0f172a', marginBottom: '12px', lineHeight: 1.25 }}>
+                Premium Paint Brands<br />We Trust
+              </h3>
+              <p style={{ color: '#64748b', fontSize: '0.88rem', lineHeight: 1.6, marginBottom: '32px', maxWidth: '360px' }}>
+                We use only the best-in-class paints for a long-lasting and beautiful finish.
+              </p>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '32px', flexWrap: 'wrap', marginBottom: '20px' }}>
+                {[
+                  { src: asianPaintsLogo, alt: 'Asian Paints', h: '60px' },
+                  { src: birlaOpusLogo, alt: 'Birla Opus', h: '64px' },
+                  { src: nerolacLogo, alt: 'Nerolac', h: '52px' },
+                ].map(b => (
+                  <img key={b.alt} src={b.src} alt={b.alt} style={{ height: b.h, objectFit: 'contain', mixBlendMode: 'multiply', transition: 'transform 0.3s', cursor: 'pointer' }}
+                    onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.08)'}
+                    onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'}
+                  />
                 ))}
               </div>
             </div>
           </div>
         </section>
 
-        {/* ── BRANDS WE USE ── */}
-        <section className="p-brands" style={{ padding: '60px 5vw', background: '#fff', borderTop: '1px solid #f1f5f9', borderBottom: '1px solid #f1f5f9' }}>
-          <div style={{ maxWidth: '1100px', margin: '0 auto', textAlign: 'center' }}>
-            <span className="p-eyebrow" style={{ marginBottom: '8px' }}>Partners</span>
-            <h2 style={{ fontSize: 'clamp(24px, 4vw, 36px)', fontWeight: 900, color: '#1a1a1a', marginBottom: '32px' }}>Paint Brands We Use</h2>
-            <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', alignItems: 'center', gap: '40px', margin: '0 auto' }}>
-              {['Asian Paints', 'Berger Paints', 'Nerolac'].map(b => (
-                <div key={b} style={{ fontSize: '20px', fontWeight: 900, color: '#94a3b8', transition: 'color 0.3s', cursor: 'default', textTransform: 'uppercase', letterSpacing: '2px', display: 'flex', alignItems: 'center', gap: '8px' }}
-                     onMouseEnter={(e) => e.currentTarget.style.color = '#2563eb'}
-                     onMouseLeave={(e) => e.currentTarget.style.color = '#94a3b8'}>
-                  <Sparkles size={16} style={{ opacity: 0.5 }} />
-                  {b}
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
         {/* ── FAQ SECTION ── */}
-        <section className="p-faq" style={{ padding: '80px 5vw', background: '#f8fafc' }}>
+        <section className="p-faq" style={{ padding: '40px 5vw', background: '#f8fafc' }}>
           <div style={{ maxWidth: '800px', margin: '0 auto' }}>
             <div className="p-section-header">
               <span className="p-eyebrow">Got Questions?</span>
@@ -1193,7 +1227,7 @@ export default function Painting() {
               ].map((faq, idx) => {
                 const isOpen = faqOpen === idx;
                 return (
-                  <div key={idx} style={{ background: '#fff', border: '1px solid #e2e8f0', borderRadius: '0px', overflow: 'hidden', transition: 'all 0.25s' }}>
+                  <div key={idx} style={{ background: '#fff', border: '1px solid #e2e8f0', borderRadius: '8px', overflow: 'hidden', transition: 'all 0.25s' }}>
                     <button
                       onClick={() => setFaqOpen(isOpen ? null : idx)}
                       style={{
