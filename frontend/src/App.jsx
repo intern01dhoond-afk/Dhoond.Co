@@ -477,7 +477,7 @@ const Navbar = () => {
                     alignItems: 'center',
                     background: '#f1f5f9',
                     borderRadius: '99px',
-                    padding: '0.45rem 1.15rem',
+                    padding: '9px 1.15rem',
                     border: '1.5px solid',
                     borderColor: searchFocused ? '#2563eb' : 'transparent',
                     boxShadow: searchFocused ? '0 0 0 3px rgba(37, 99, 235, 0.15)' : 'none',
@@ -821,7 +821,7 @@ const Navbar = () => {
         <div style={{ position: 'fixed', inset: 0, background: '#fff', zIndex: 1300, display: 'flex', flexDirection: 'column' }}>
           <div style={{ padding: '1rem', display: 'flex', alignItems: 'center', gap: '1rem', borderBottom: '1px solid #f1f5f9' }}>
             <button className="icon-btn" onClick={() => setIsSearchOpen(false)}><X size={24} /></button>
-            <div style={{ flex: 1, display: 'flex', alignItems: 'center', background: '#f3f4f6', borderRadius: '99px', padding: '0.55rem 1.25rem', border: '1.5px solid transparent' }}>
+            <div style={{ flex: 1, display: 'flex', alignItems: 'center', background: '#f3f4f6', borderRadius: '99px', padding: '11px 1.25rem', border: '1.5px solid transparent' }}>
               <Search size={17} color="#6b7280" style={{ flexShrink: 0 }} />
               <input
                 autoFocus
