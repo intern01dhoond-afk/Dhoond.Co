@@ -50,6 +50,7 @@ const Navbar = () => {
   const [searchQuery, setSearchQuery] = React.useState('');
   const [showSuggestions, setShowSuggestions] = React.useState(false);
   const [scrolled, setScrolled] = React.useState(false);
+  const [searchFocused, setSearchFocused] = React.useState(false);
 
   const [locating, setLocating] = React.useState(false);
   const [showMap, setShowMap] = React.useState(false);
@@ -470,10 +471,35 @@ const Navbar = () => {
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flex: 1, justifyContent: 'flex-end' }}>
             {isPrivacyPolicy ? null : (
               <>
-                <div className="desktop-only" style={{ position: 'relative', width: '210px', marginRight: '0.75rem' }} ref={searchRef}>
-                  <div style={{ display: 'flex', alignItems: 'center', background: '#f1f5f9', borderRadius: '99px', padding: '0.38rem 1rem' }}>
-                    <Search size={15} color="#64748b" style={{ flexShrink: 0 }} />
-                    <input type="text" placeholder="search services" value={searchQuery} onChange={e => setSearchQuery(e.target.value)} onFocus={() => setShowSuggestions(true)} onKeyDown={e => e.key === 'Enter' && handleSearchSubmit()} style={{ background: 'none', border: 'none', outline: 'none', marginLeft: '6px', fontSize: '13px', color: '#1e293b', width: '100%', padding: 0 }} />
+                <div className="desktop-only" style={{ position: 'relative', width: '280px', marginRight: '0.75rem' }} ref={searchRef}>
+                  <div style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    background: '#f1f5f9',
+                    borderRadius: '99px',
+                    padding: '0.45rem 1.15rem',
+                    border: '1.5px solid',
+                    borderColor: searchFocused ? '#2563eb' : 'transparent',
+                    boxShadow: searchFocused ? '0 0 0 3px rgba(37, 99, 235, 0.15)' : 'none',
+                    transition: 'all 0.2s'
+                  }}>
+                    <Search size={16} color={searchFocused ? '#2563eb' : '#64748b'} style={{ flexShrink: 0 }} />
+                    <input
+                      className="no-input-style"
+                      type="text"
+                      placeholder="search services"
+                      value={searchQuery}
+                      onChange={e => setSearchQuery(e.target.value)}
+                      onFocus={() => { setShowSuggestions(true); setSearchFocused(true); }}
+                      onBlur={() => setSearchFocused(false)}
+                      onKeyDown={e => e.key === 'Enter' && handleSearchSubmit()}
+                      style={{
+                        marginLeft: '8px',
+                        fontSize: '14px',
+                        color: '#1e293b',
+                        background: 'transparent'
+                      }}
+                    />
                   </div>
                   {showSuggestions && filteredSuggestions.length > 0 && (
                     <div style={{ position: 'absolute', top: '110%', left: 0, right: 0, background: '#fff', borderRadius: '16px', boxShadow: '0 10px 30px rgba(0,0,0,0.08)', border: '1px solid #f1f5f9', zIndex: 1000, overflow: 'hidden' }}>
@@ -795,9 +821,23 @@ const Navbar = () => {
         <div style={{ position: 'fixed', inset: 0, background: '#fff', zIndex: 1300, display: 'flex', flexDirection: 'column' }}>
           <div style={{ padding: '1rem', display: 'flex', alignItems: 'center', gap: '1rem', borderBottom: '1px solid #f1f5f9' }}>
             <button className="icon-btn" onClick={() => setIsSearchOpen(false)}><X size={24} /></button>
-            <div style={{ flex: 1, display: 'flex', alignItems: 'center', background: '#f3f4f6', borderRadius: '99px', padding: '0.55rem 1rem' }}>
+            <div style={{ flex: 1, display: 'flex', alignItems: 'center', background: '#f3f4f6', borderRadius: '99px', padding: '0.55rem 1.25rem', border: '1.5px solid transparent' }}>
               <Search size={17} color="#6b7280" style={{ flexShrink: 0 }} />
-              <input autoFocus type="text" placeholder="Search..." value={searchQuery} onChange={e => setSearchQuery(e.target.value)} onKeyDown={e => e.key === 'Enter' && handleSearchSubmit()} style={{ background: 'none', border: 'none', outline: 'none', marginLeft: '8px', fontSize: '15px', color: '#1e293b', width: '100%', padding: 0 }} />
+              <input
+                autoFocus
+                className="no-input-style"
+                type="text"
+                placeholder="Search..."
+                value={searchQuery}
+                onChange={e => setSearchQuery(e.target.value)}
+                onKeyDown={e => e.key === 'Enter' && handleSearchSubmit()}
+                style={{
+                  marginLeft: '8px',
+                  fontSize: '15px',
+                  color: '#1e293b',
+                  background: 'transparent'
+                }}
+              />
             </div>
           </div>
           <div style={{ flex: 1, overflow: 'auto', padding: '1rem' }}>

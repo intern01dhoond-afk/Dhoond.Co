@@ -798,7 +798,7 @@ const Home = () => {
           </div>
         </section>
 
-        <section className="section-pad fade-up parallax-bg" style={{ background: 'linear-gradient(180deg, #f8fafc 0%, #fff 100%)', padding: '2.5rem 5% 3rem' }}>
+        <section className="section-pad fade-up parallax-bg" style={{ background: 'linear-gradient(180deg, #f8fafc 0%, #fff 100%)', padding: '2.5rem 5% 0.5rem' }}>
           <div style={{ maxWidth: '1280px', margin: '0 auto' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '3rem' }} className="mobile-center-row">
               <div className="mobile-center">
@@ -810,7 +810,7 @@ const Home = () => {
               </div>
             </div>
 
-            <div ref={scrollContainerRef} className="service-scroll pop-scroll-mobile" style={{ display: 'flex', gap: '1.25rem', overflowX: 'auto', paddingBottom: '2rem', alignItems: 'stretch' }}>
+            <div ref={scrollContainerRef} className="service-scroll pop-scroll-mobile" style={{ display: 'flex', gap: '1.25rem', overflowX: 'auto', paddingBottom: '1rem', alignItems: 'stretch' }}>
               {featuredServices.map((s, idx) => {
                 const discountPrice = s.discount_price ?? s.discountPrice;
                 const originalPrice = s.original_price ?? s.originalPrice;
@@ -956,7 +956,7 @@ const Home = () => {
         <section className="section-pad fade-up" style={{
           background: '#0f172a',
           position: 'relative', overflow: 'hidden',
-          padding: '3rem 5%',
+          padding: '2rem 5%',
         }}>
           {/* Decorative glow orbs */}
           <div style={{ position: 'absolute', top: '-120px', left: '-80px', width: '500px', height: '500px', borderRadius: '50%', background: 'radial-gradient(circle, rgba(99,102,241,0.2) 0%, transparent 65%)', pointerEvents: 'none' }} />
