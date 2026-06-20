@@ -52,6 +52,7 @@ export default function Painting() {
   const [selectedService, setSelectedService] = useState(null);
   const [faqOpen, setFaqOpen] = useState(null);
   const [showAllServices, setShowAllServices] = useState(false);
+  const [brandRotation, setBrandRotation] = useState(0);
   const { openComingSoon, locationLabel, locationSubtext } = useUI();
   const { addToCart, cartItems, updateQuantity, removeFromCart } = useCart();
 
@@ -245,6 +246,11 @@ export default function Painting() {
 
       cleanupRef.current.push(() => ScrollTrigger.getAll().forEach(t => t.kill()));
     });
+
+    const rotationInterval = setInterval(() => {
+      setBrandRotation(prev => (prev + 1) % 3);
+    }, 1000);
+    cleanupRef.current.push(() => clearInterval(rotationInterval));
 
     return () => {
       cleanupRef.current.forEach(fn => fn());
@@ -1192,16 +1198,20 @@ export default function Painting() {
                 We use only the best-in-class paints for a long-lasting and beautiful finish.
               </p>
               <div style={{ display: 'flex', alignItems: 'center', gap: '32px', flexWrap: 'wrap', marginBottom: '20px' }}>
-                {[
-                  { src: asianPaintsLogo, alt: 'Asian Paints', h: '60px' },
-                  { src: birlaOpusLogo, alt: 'Birla Opus', h: '64px' },
-                  { src: nerolacLogo, alt: 'Nerolac', h: '52px' },
-                ].map(b => (
-                  <img key={b.alt} src={b.src} alt={b.alt} style={{ height: b.h, objectFit: 'contain', mixBlendMode: 'multiply', transition: 'transform 0.3s', cursor: 'pointer' }}
-                    onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.08)'}
-                    onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'}
-                  />
-                ))}
+                {(() => {
+                  const brands = [
+                    { src: asianPaintsLogo, alt: 'Asian Paints', h: '60px' },
+                    { src: birlaOpusLogo, alt: 'Birla Opus', h: '64px' },
+                    { src: nerolacLogo, alt: 'Nerolac', h: '52px' },
+                  ];
+                  const rotatedBrands = [...brands.slice(brandRotation), ...brands.slice(0, brandRotation)];
+                  return rotatedBrands.map(b => (
+                    <img key={b.alt} src={b.src} alt={b.alt} style={{ height: b.h, objectFit: 'contain', mixBlendMode: 'multiply', transition: 'all 0.5s ease', cursor: 'pointer' }}
+                      onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.08)'}
+                      onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'}
+                    />
+                  ));
+                })()}
               </div>
             </div>
           </div>

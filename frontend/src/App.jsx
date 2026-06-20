@@ -477,7 +477,7 @@ const Navbar = () => {
                     alignItems: 'center',
                     background: '#f1f5f9',
                     borderRadius: '99px',
-                    padding: '9px 1.15rem',
+                    padding: '9px 1.15rem 9px 0.75rem',
                     border: '1.5px solid',
                     borderColor: searchFocused ? '#2563eb' : 'transparent',
                     boxShadow: searchFocused ? '0 0 0 3px rgba(37, 99, 235, 0.15)' : 'none',
@@ -512,10 +512,6 @@ const Navbar = () => {
                     </div>
                   )}
                 </div>
-
-                <button className="icon-btn mobile-only" onClick={() => setIsSearchOpen(true)}>
-                  <Search size={24} />
-                </button>
 
                 <div style={{ position: 'relative' }} className="desktop-only">
                   <button className="icon-btn" onClick={() => isAuthenticated ? setIsProfileOpen(!isProfileOpen) : setIsAuthOpen(true)}>
@@ -754,6 +750,7 @@ const Navbar = () => {
             {/* Navigation */}
             <nav style={{ flex: 1, padding: '0.75rem', display: 'flex', flexDirection: 'column', gap: '0.25rem', overflowY: 'auto' }}>
               {[
+                { label: 'Search', action: () => { setIsMenuOpen(false); setIsSearchOpen(true); }, icon: <Search size={20} /> },
                 { label: 'Home', to: '/', icon: <HomeIcon size={20} /> },
                 { label: 'Painting', to: '/painting', icon: <Paintbrush size={20} />, badge: 'New', restricted: !isBengaluru },
                 { label: 'My Bookings', to: '/profile', icon: <Package size={20} /> },
@@ -774,6 +771,9 @@ const Navbar = () => {
                   </div>
                 );
 
+                if (link.action) {
+                  return <div key={link.label} onClick={link.action} style={{ textDecoration: 'none' }}>{content}</div>;
+                }
                 if (link.href) {
                   return <a key={link.label} href={link.href} style={{ textDecoration: 'none' }}>{content}</a>;
                 }
@@ -821,7 +821,7 @@ const Navbar = () => {
         <div style={{ position: 'fixed', inset: 0, background: '#fff', zIndex: 1300, display: 'flex', flexDirection: 'column' }}>
           <div style={{ padding: '1rem', display: 'flex', alignItems: 'center', gap: '1rem', borderBottom: '1px solid #f1f5f9' }}>
             <button className="icon-btn" onClick={() => setIsSearchOpen(false)}><X size={24} /></button>
-            <div style={{ flex: 1, display: 'flex', alignItems: 'center', background: '#f3f4f6', borderRadius: '99px', padding: '11px 1.25rem', border: '1.5px solid transparent' }}>
+            <div style={{ flex: 1, display: 'flex', alignItems: 'center', background: '#f3f4f6', borderRadius: '99px', padding: '11px 1.25rem 11px 0.85rem', border: '1.5px solid transparent' }}>
               <Search size={17} color="#6b7280" style={{ flexShrink: 0 }} />
               <input
                 autoFocus

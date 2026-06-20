@@ -210,13 +210,13 @@ const Cart = () => {
       {/* Main Content Area */}
       <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '2.5rem 5% 0' }}>
         {cartItems.length === 0 ? (
-          <div style={{ textAlign: 'center', padding: '5rem 2rem', background: '#fff', borderRadius: '24px', border: '1px solid #f1f5f9', boxShadow: '0 10px 40px -10px rgba(0,0,0,0.05)', maxWidth: '600px', margin: '0 auto' }}>
-            <div style={{ width: '96px', height: '96px', borderRadius: '50%', background: 'linear-gradient(135deg, #f8fafc, #f1f5f9)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 2rem', border: '4px solid #fff', boxShadow: '0 10px 20px rgba(0,0,0,0.03)' }}>
-              <Package size={40} color="#94a3b8" strokeWidth={1.5} />
+          <div style={{ textAlign: 'center', padding: '2rem 1.5rem', background: '#fff', borderRadius: '24px', border: '1px solid #f1f5f9', boxShadow: '0 10px 40px -10px rgba(0,0,0,0.05)', maxWidth: '600px', margin: '0 auto' }}>
+            <div style={{ width: '64px', height: '64px', borderRadius: '50%', background: 'linear-gradient(135deg, #f8fafc, #f1f5f9)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1rem', border: '4px solid #fff', boxShadow: '0 10px 20px rgba(0,0,0,0.03)' }}>
+              <Package size={28} color="#94a3b8" strokeWidth={1.5} />
             </div>
-            <h2 style={{ fontSize: '1.75rem', fontWeight: 600, color: '#0f172a', marginBottom: '0.75rem' }}>Your cart is empty</h2>
-            <p style={{ color: '#64748b', margin: '0 0 2.5rem', fontSize: '1.05rem', maxWidth: '300px', marginInline: 'auto' }}>Looks like you haven't added any services to your cart yet.</p>
-            <button onClick={() => navigate('/')} style={{ background: 'linear-gradient(135deg, #2563eb, #1d4ed8)', color: '#fff', padding: '1rem 2.5rem', borderRadius: '16px', fontWeight: 600, border: 'none', cursor: 'pointer', boxShadow: '0 8px 25px rgba(37,99,235,0.3)', fontSize: '1.05rem', transition: 'transform 0.2s, box-shadow 0.2s' }} onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 12px 30px rgba(37,99,235,0.4)'; }} onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 8px 25px rgba(37,99,235,0.3)'; }}>Explore Services</button>
+            <h2 style={{ fontSize: '1.35rem', fontWeight: 600, color: '#0f172a', marginBottom: '0.4rem' }}>Your cart is empty</h2>
+            <p style={{ color: '#64748b', margin: '0 0 1.25rem', fontSize: '0.95rem', maxWidth: '300px', marginInline: 'auto' }}>Looks like you haven't added any services to your cart yet.</p>
+            <button onClick={() => navigate('/')} style={{ background: 'linear-gradient(135deg, #2563eb, #1d4ed8)', color: '#fff', padding: '0.75rem 1.75rem', borderRadius: '12px', fontWeight: 600, border: 'none', cursor: 'pointer', boxShadow: '0 8px 25px rgba(37,99,235,0.3)', fontSize: '0.95rem', transition: 'transform 0.2s, box-shadow 0.2s' }} onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 12px 30px rgba(37,99,235,0.4)'; }} onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 8px 25px rgba(37,99,235,0.3)'; }}>Explore Services</button>
           </div>
         ) : (
           <div className="cart-grid">
