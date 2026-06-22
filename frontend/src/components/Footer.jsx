@@ -8,6 +8,9 @@ const Footer = () => {
   const { openComingSoon, locationLabel, locationSubtext, userLat, userLng } = useUI();
   const location = useLocation();
   const isSimplifiedPage = ['/cart', '/shop/cart', '/checkout'].includes(location.pathname);
+  const isPrivacyPolicy = location.pathname === '/privacy-policy';
+  const isTermsOfService = location.pathname === '/terms-of-service';
+  const isSpecialPolicyPage = isPrivacyPolicy || isTermsOfService;
 
   const isBengaluru = (locationLabel || '').toLowerCase().includes('bengaluru') ||
     (locationLabel || '').toLowerCase().includes('bangalore') ||
@@ -109,110 +112,115 @@ const Footer = () => {
       </div>
 
       {/* Main links section */}
-      <div className={`footer-main-links-section ${isSimplifiedPage ? "simplified-footer-hide-mobile" : ""}`} style={{ maxWidth: '1400px', margin: '0 auto', padding: 'var(--footer-main-pad, 4.5rem 5% 3rem)' }}>
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--footer-main-gap, 4rem)', justifyContent: 'flex-start' }}>
+      {!isSpecialPolicyPage && (
+        <div className={`footer-main-links-section ${isSimplifiedPage ? "simplified-footer-hide-mobile" : ""}`} style={{ maxWidth: '1400px', margin: '0 auto', padding: 'var(--footer-main-pad, 4.5rem 5% 3rem)' }}>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--footer-main-gap, 4rem)', justifyContent: 'flex-start' }}>
 
-          {/* Brand Column */}
-          <div style={{ flex: '1 1 300px', maxWidth: '400px' }} className="footer-brand-col">
-            <Link to="/" style={{ display: 'inline-block', marginBottom: '0.75rem' }}>
-              <img src="/images/cart%20nav.png" alt="Dhoond" style={{ height: 'auto', maxHeight: '80px', width: 'auto', objectFit: 'contain', transition: 'transform 0.3s' }}
-                onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.05)'}
-                onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'}
-              />
-            </Link>
-            <p style={{ color: '#94a3b8', fontSize: '0.9rem', lineHeight: 1.7, fontWeight: 500, margin: '0 0 1.5rem 0' }}>
-              India's fastest growing premium Home and Commercial services marketplace. Quality craftsmanship delivered to your spot.
-            </p>
-          </div>
+            {/* Brand Column */}
+            <div style={{ flex: '1 1 300px', maxWidth: '400px' }} className="footer-brand-col">
+              <Link to="/" style={{ display: 'inline-block', marginBottom: '0.75rem' }}>
+                <img src="/images/cart%20nav.png" alt="Dhoond" style={{ height: 'auto', maxHeight: '80px', width: 'auto', objectFit: 'contain', transition: 'transform 0.3s' }}
+                  onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.05)'}
+                  onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'}
+                />
+              </Link>
+              <p style={{ color: '#94a3b8', fontSize: '0.9rem', lineHeight: 1.7, fontWeight: 500, margin: '0 0 1.5rem 0' }}>
+                India's fastest growing premium Home and Commercial services marketplace. Quality craftsmanship delivered to your spot.
+              </p>
+            </div>
 
-          {/* Links Columns - Responsive Grid */}
-          <div style={{
-            flex: '2 1 500px',
-            display: 'grid',
-            gridTemplateColumns: 'repeat(5, 1fr)',
-            gap: 'var(--footer-main-gap, 3.5rem 2.5rem)',
-            justifyContent: 'start'
-          }} className="mobile-text-center footer-links-grid">
-            {[
-              { title: 'Company', links: ['About Us', 'Careers', 'Blog', 'Press'] },
-              { title: 'Services', links: ['Painting', 'AC Service', 'RO Service', 'Electrician', 'Washing Machine Repair', 'Refrigerator Repair'] },
-              { title: 'Partners', links: ['Join as Expert', 'Partner with Us'] },
-              { title: 'Support', links: ['Help Center', 'FAQs', 'Privacy Policy', 'Terms of Service'] },
-              { title: 'Cities', links: ['Bangalore', 'Nagpur'] },
-            ].map(col => (
-              <div key={col.title}>
-                <h4 style={{ fontWeight: 800, fontSize: '0.85rem', color: '#fff', marginBottom: '1rem', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
-                  {col.title}
-                </h4>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.9rem' }}>
-                  {col.links.map(l => {
-                    const isPainting = l.toLowerCase() === 'painting' && col.title === 'Services';
-                    const isOtherService = col.title === 'Services' && !isPainting;
-                    return (
-                      <Link
-                        key={l}
-                        to={(() => {
-                          const lower = l.toLowerCase();
-                          if (lower === 'painting') return "/painting";
-                          if (lower === 'ac service') return "/shop?cat=technician&subcat=ac";
-                          if (lower === 'ro service') return "/shop?cat=technician&subcat=ro";
-                          if (lower === 'electrician') return "/shop?cat=electrician";
-                          if (lower === 'washing machine repair') return "/shop?cat=technician&subcat=washing";
-                          if (lower === 'refrigerator repair') return "/shop?cat=technician&subcat=fridge";
-                          if (lower === 'privacy policy') return "/privacy-policy";
-                          if (lower === 'about us') return "/about";
-                          return "#";
-                        })()}
-                        onClick={(e) => {
-                          const lower = l.toLowerCase();
-                          // Painting only in Bengaluru
-                          if (lower === 'painting' && !isBengaluru) {
-                            e.preventDefault();
-                            openComingSoon();
-                            return;
-                          }
-                          // Other services in Nagpur
-                          const isOtherService = ['ac service', 'ro service', 'electrician', 'washing machine repair', 'refrigerator repair'].includes(lower);
-                          if (isOtherService && !isNagpur) {
-                            e.preventDefault();
-                            openComingSoon();
-                            return;
-                          }
-                          
-                          // Handle coming soon for specific subcategories if needed in Shop.jsx
-                          if (lower === 'refrigerator repair') {
-                             e.preventDefault();
-                             openComingSoon();
-                          }
-                        }}
-                        style={{ color: '#94a3b8', fontSize: '0.9rem', fontWeight: 500, transition: 'all 0.2s', textDecoration: 'none' }}
-                        onMouseEnter={e => {
-                          e.currentTarget.style.color = '#facc15';
-                        }}
-                        onMouseLeave={e => {
-                          e.currentTarget.style.color = '#94a3b8';
-                        }}
-                      >
-                        {l}
-                      </Link>
-                    );
-                  })}
+            {/* Links Columns - Responsive Grid */}
+            <div style={{
+              flex: '2 1 500px',
+              display: 'grid',
+              gridTemplateColumns: 'repeat(5, 1fr)',
+              gap: 'var(--footer-main-gap, 3.5rem 2.5rem)',
+              justifyContent: 'start'
+            }} className="mobile-text-center footer-links-grid">
+              {[
+                { title: 'Company', links: ['About Us', 'Careers', 'Blog', 'Press'] },
+                { title: 'Services', links: ['Painting', 'AC Service', 'RO Service', 'Electrician', 'Washing Machine Repair', 'Refrigerator Repair'] },
+                { title: 'Partners', links: ['Join as Expert', 'Partner with Us'] },
+                { title: 'Support', links: ['Help Center', 'FAQs', 'Privacy Policy', 'Terms of Service'] },
+                { title: 'Cities', links: ['Bangalore', 'Nagpur'] },
+              ].map(col => (
+                <div key={col.title}>
+                  <h4 style={{ fontWeight: 800, fontSize: '0.85rem', color: '#fff', marginBottom: '1rem', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+                    {col.title}
+                  </h4>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.9rem' }}>
+                    {col.links.map(l => {
+                      const isPainting = l.toLowerCase() === 'painting' && col.title === 'Services';
+                      const isOtherService = col.title === 'Services' && !isPainting;
+                      return (
+                        <Link
+                          key={l}
+                          to={(() => {
+                            const lower = l.toLowerCase();
+                            if (lower === 'painting') return "/painting";
+                            if (lower === 'ac service') return "/shop?cat=technician&subcat=ac";
+                            if (lower === 'ro service') return "/shop?cat=technician&subcat=ro";
+                            if (lower === 'electrician') return "/shop?cat=electrician";
+                            if (lower === 'washing machine repair') return "/shop?cat=technician&subcat=washing";
+                            if (lower === 'refrigerator repair') return "/shop?cat=technician&subcat=fridge";
+                            if (lower === 'privacy policy') return "/privacy-policy";
+                            if (lower === 'terms of service') return "/terms-of-service";
+                            if (lower === 'about us') return "/about";
+                            return "#";
+                          })()}
+                          onClick={(e) => {
+                            const lower = l.toLowerCase();
+                            // Painting only in Bengaluru
+                            if (lower === 'painting' && !isBengaluru) {
+                              e.preventDefault();
+                              openComingSoon();
+                              return;
+                            }
+                            // Other services in Nagpur
+                            const isOtherService = ['ac service', 'ro service', 'electrician', 'washing machine repair', 'refrigerator repair'].includes(lower);
+                            if (isOtherService && !isNagpur) {
+                              e.preventDefault();
+                              openComingSoon();
+                              return;
+                            }
+                            
+                            // Handle coming soon for specific subcategories if needed in Shop.jsx
+                            if (lower === 'refrigerator repair') {
+                               e.preventDefault();
+                               openComingSoon();
+                            }
+                          }}
+                          style={{ color: '#94a3b8', fontSize: '0.9rem', fontWeight: 500, transition: 'all 0.2s', textDecoration: 'none' }}
+                          onMouseEnter={e => {
+                            e.currentTarget.style.color = '#facc15';
+                          }}
+                          onMouseLeave={e => {
+                            e.currentTarget.style.color = '#94a3b8';
+                          }}
+                        >
+                          {l}
+                        </Link>
+                      );
+                    })}
+                  </div>
                 </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
 
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Bottom bar */}
-      <div style={{ borderTop: '1px solid #1e293b', padding: '2rem 5%' }}>
-        <div style={{ maxWidth: '1280px', margin: '0 auto', width: '100%', display: 'flex', flexWrap: 'wrap', justifyContent: 'center', alignItems: 'center', gap: '1rem' }} className="mobile-stack mobile-text-center">
-          <span style={{ color: '#64748b', fontSize: '0.9rem', fontWeight: 500, textAlign: 'center', lineHeight: '1.6' }}>
-            © Copyright 2026 AMEC CODEX PRIVATE LIMITED. All rights reserved. | CIN: U62091MH2024PTC425971
-          </span>
+      {!isSpecialPolicyPage && (
+        <div style={{ borderTop: '1px solid #1e293b', padding: '2rem 5%' }}>
+          <div style={{ maxWidth: '1280px', margin: '0 auto', width: '100%', display: 'flex', flexWrap: 'wrap', justifyContent: 'center', alignItems: 'center', gap: '1rem' }} className="mobile-stack mobile-text-center">
+            <span style={{ color: '#64748b', fontSize: '0.9rem', fontWeight: 500, textAlign: 'center', lineHeight: '1.6' }}>
+              © Copyright 2026 AMEC CODEX PRIVATE LIMITED. All rights reserved. | CIN: U62091MH2024PTC425971
+            </span>
+          </div>
         </div>
-      </div>
+      )}
     </footer>
   );
 };

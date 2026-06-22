@@ -316,7 +316,7 @@ const Home = () => {
             .section-pad { padding: 1.5rem 5% 3rem !important; }
             .section-pad * { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important; }
             .section-pad h1, .section-pad h2, .section-pad h3, .section-pad h4, .section-pad h5, .section-pad h6 { font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif !important; }
-            .section-pad h2 { font-size: 1.75rem !important; line-height: 1.2 !important; }
+             .section-pad h2 { font-size: 1.4rem !important; line-height: 1.25 !important; }
             .section-pad p { font-size: 0.85rem !important; }
            .pop-scroll-mobile { padding-left: 5% !important; padding-right: 5% !important; scroll-snap-type: x mandatory; }
            .pop-scroll-mobile > div { flex: 0 0 240px !important; scroll-snap-align: start; }
@@ -427,7 +427,7 @@ const Home = () => {
           <div style={{ maxWidth: '1280px', margin: '0 auto' }}>
             <div className="desktop-flex">
               <div className="hero-text">
-                <h1 style={{ fontSize: 'clamp(2.5rem, 5vw, 4.25rem)', fontWeight: 700, color: '#0f172a', lineHeight: 1.15, marginBottom: '1.5rem', letterSpacing: '-0.02em', maxWidth: '620px' }}>
+                <h1 style={{ fontSize: 'clamp(1.75rem, 5vw, 3.5rem)', fontWeight: 700, color: '#0f172a', lineHeight: 1.15, marginBottom: '1.5rem', letterSpacing: '-0.02em', maxWidth: '620px' }}>
                   Reliable Home &amp;<br />
                   Commercial Services<br />
                   <span style={{ color: '#0a57d0', fontWeight: 700 }}>Right at Your Spot</span>
@@ -803,7 +803,7 @@ const Home = () => {
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '3rem' }} className="mobile-center-row">
               <div className="mobile-center">
                 <span style={{ display: 'inline-block', background: '#eff6ff', color: '#1d4ed8', fontSize: '0.65rem', fontWeight: 700, padding: '4px 14px', borderRadius: '99px', letterSpacing: '0.14em', textTransform: 'uppercase', marginBottom: '1rem', border: '1px solid #dbeafe' }}>Popular Choices</span>
-                <h2 style={{ fontSize: 'clamp(2.25rem, 5vw, 3.5rem)', fontWeight: 700, color: '#0f172a', margin: '0 0 0.75rem', lineHeight: 1.08, letterSpacing: '-0.03em' }}>Top Demanding Services</h2>
+                <h2 style={{ fontSize: 'clamp(1.5rem, 5vw, 2.5rem)', fontWeight: 700, color: '#0f172a', margin: '0 0 0.75rem', lineHeight: 1.08, letterSpacing: '-0.03em' }}>Top Demanding Services</h2>
                 <p style={{ color: '#94a3b8', fontWeight: 400, fontSize: '1.05rem', margin: 0, letterSpacing: '0.01em', lineHeight: 1.65 }}>
                   {isNagpur && !isBengaluru ? 'Reliable home and commercial services at transparent pricing' : isBengaluru && !isNagpur ? 'Book a consultation - our expert visits and gives exact pricing' : 'Explore our top-rated services across India'}
                 </p>
@@ -974,7 +974,7 @@ const Home = () => {
                 <span style={{ display: 'inline-block', background: 'linear-gradient(135deg, rgba(99,102,241,0.15) 0%, rgba(139,92,246,0.15) 100%)', border: '1px solid rgba(139,92,246,0.3)', color: '#c4b5fd', fontSize: '0.72rem', fontWeight: 800, padding: '5px 16px', borderRadius: '99px', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '1.25rem', boxShadow: '0 0 15px rgba(139,92,246,0.1)' }}>
                   Why Dhoond?
                 </span>
-                <h2 style={{ fontSize: 'clamp(2rem, 4vw, 3.25rem)', fontWeight: 900, color: '#fff', margin: '0 0 1rem', lineHeight: 1.1 }}>
+                <h2 style={{ fontSize: 'clamp(1.4rem, 5vw, 2.25rem)', fontWeight: 900, color: '#fff', margin: '0 0 1rem', lineHeight: 1.1 }}>
                   Join{' '}
                   <span style={{ background: 'linear-gradient(90deg, #c084fc 0%, #60a5fa 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', textShadow: '0 0 30px rgba(192,132,252,0.3)' }}>
                     1 Lakh+
@@ -987,9 +987,9 @@ const Home = () => {
                 {/* Features List */}
                 <div className="features-list" style={{ display: 'flex', flexDirection: 'column', gap: '2rem', marginBottom: '2.5rem' }}>
                   {[
-                    { icon: <Clock size={22} />, title: '15-Minute Response Time', desc: 'Experts assigned instantly after booking — no waiting, no delays.', color: '#818cf8' },
+                    { icon: <Clock size={22} />, title: '15-Minute Response Time', desc: 'Experts assigned instantly after booking - no waiting, no delays.', color: '#818cf8' },
                     { icon: <ShieldCheck size={22} />, title: 'Verified & Insured Experts', desc: 'All professionals are background-verified, trained, and insured.', color: '#38bdf8' },
-                    { icon: <Star size={22} />, title: '4.9/5 Customer Rating', desc: 'Quality guaranteed — or we redo the job, free of charge.', color: '#fbbf24' },
+                    { icon: <Star size={22} />, title: '4.9/5 Customer Rating', desc: 'Quality guaranteed - or we redo the job, free of charge.', color: '#fbbf24' },
                   ].map((item, i) => (
                     <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: '1.35rem' }}>
                       <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: `radial-gradient(circle at top left, rgba(${item.color === '#818cf8' ? '99,102,241' : item.color === '#38bdf8' ? '56,189,248' : '251,191,36'},0.25), transparent)`, border: `1px solid rgba(255,255,255,0.08)`, boxShadow: `inset 0 0 12px rgba(255,255,255,0.05), 0 8px 16px rgba(${item.color === '#818cf8' ? '99,102,241' : item.color === '#38bdf8' ? '56,189,248' : '251,191,36'},0.1)`, color: item.color, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: '2px' }}>
@@ -1061,7 +1061,7 @@ const Home = () => {
               <span style={{ display: 'inline-block', background: '#eff6ff', color: '#1d4ed8', fontSize: '0.72rem', fontWeight: 800, padding: '4px 12px', borderRadius: '99px', letterSpacing: '0.06em', textTransform: 'uppercase', marginBottom: '0.5rem', border: '1px solid #dbeafe' }}>
                 Reviews
               </span>
-              <h2 style={{ fontSize: 'clamp(1.75rem, 4vw, 2.5rem)', fontWeight: 900, color: '#0f172a', margin: '0 0 0.5rem 0', letterSpacing: '-0.02em' }}>
+              <h2 style={{ fontSize: 'clamp(1.3rem, 4vw, 2rem)', fontWeight: 900, color: '#0f172a', margin: '0 0 0.5rem 0', letterSpacing: '-0.02em' }}>
                 Loved by Thousands
               </h2>
               <p style={{ color: '#64748b', fontWeight: 500, fontSize: '0.92rem', margin: '0 0 1.25rem 0' }}>

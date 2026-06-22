@@ -10,6 +10,7 @@ import CommercialPainting from './pages/CommercialPainting';
 import Profile from './pages/Profile';
 import Admin from './pages/Admin';
 import PrivacyPolicy from './pages/PrivacyPolicy';
+import TermsOfService from './pages/TermsOfService';
 import About from './pages/About';
 import Footer from './components/Footer';
 import { CartProvider, useCart } from './context/CartContext';
@@ -33,7 +34,7 @@ const SEARCH_SUGGESTIONS = [
 
 const Navbar = () => {
   const location = useLocation();
-  const isPrivacyPolicy = location.pathname === '/privacy-policy';
+  const isPolicyPage = ['/privacy-policy', '/terms-of-service', '/about'].includes(location.pathname);
   const navigate = useNavigate();
   const { cartItems } = useCart();
   const { user, logout, isAuthenticated } = useAuth();
@@ -66,11 +67,15 @@ const Navbar = () => {
   const mapSearchRef = React.useRef(null);
 
   React.useEffect(() => {
+    if (isPolicyPage) {
+      closeLocation();
+      return;
+    }
     const savedLoc = localStorage.getItem('dhoond_location');
     if (!savedLoc || savedLoc === 'Detecting…' || savedLoc === 'Location not found' || savedLoc === 'Fetching location…') {
       openLocation();
     }
-  }, []);
+  }, [isPolicyPage]);
 
   const detectLocation = async () => {
     setLocating(true);
@@ -373,7 +378,7 @@ const Navbar = () => {
           {/* COLUMN 1: LEFT (Back/Menu on mobile, Dhoond Logo + LocationButton + NAV_LINKS on desktop) */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem', flex: 1 }}>
             <div className="mobile-only">
-              {isPrivacyPolicy ? (
+              {isPolicyPage ? (
                 <div style={{ display: 'flex', alignItems: 'center', height: '100%' }}>
                   <div className="dhoond-logo-container" style={{ width: '110px', justifyContent: 'flex-start' }}>
                     <img src="/logo.png" alt="Dhoond" className="dhoond-logo" style={{ width: '100%', objectFit: 'contain' }} />
@@ -390,7 +395,7 @@ const Navbar = () => {
               )}
             </div>
 
-            {isPrivacyPolicy ? (
+            {isPolicyPage ? (
               <div className="desktop-only" style={{ display: 'flex', alignItems: 'center' }}>
                 <div className="dhoond-logo-container" style={{ width: '130px', justifyContent: 'flex-start' }}>
                   <img src="/logo.png" alt="Dhoond" className="dhoond-logo dhoond-logo-desktop" style={{ width: 'auto', objectFit: 'contain' }} />
@@ -404,7 +409,7 @@ const Navbar = () => {
               </Link>
             )}
 
-            {!isPrivacyPolicy && (
+            {!isPolicyPage && (
               <div className="desktop-only" style={{ marginLeft: '0.25rem' }}>
                 <LocationButton onClick={openLocation} />
               </div>
@@ -458,7 +463,7 @@ const Navbar = () => {
 
           {/* COLUMN 2: CENTER (Mobile Logo on mobile, empty on desktop) */}
           <div className="mobile-only" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flex: 1, height: '100%' }}>
-            {!isPrivacyPolicy && (
+            {!isPolicyPage && (
               <Link to="/" style={{ display: 'flex', alignItems: 'center', height: '100%', textDecoration: 'none' }}>
                 <div className="dhoond-logo-container" style={{ width: '110px' }}>
                   <img src="/logo.png" alt="Dhoond" className="dhoond-logo" style={{ width: '100%', objectFit: 'contain' }} />
@@ -469,7 +474,7 @@ const Navbar = () => {
 
           {/* COLUMN 3: RIGHT (Actions on desktop/mobile) */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flex: 1, justifyContent: 'flex-end' }}>
-            {isPrivacyPolicy ? null : (
+            {isPolicyPage ? null : (
               <>
                 <div className="desktop-only" style={{ position: 'relative', width: '280px', marginRight: '0.75rem' }} ref={searchRef}>
                   <div style={{
@@ -552,7 +557,7 @@ const Navbar = () => {
         <AuthModal isOpen={isAuthOpen} onClose={() => setIsAuthOpen(false)} />
 
         {/* MOBILE: Location Bar */}
-        {!isPrivacyPolicy && (
+        {!isPolicyPage && (
           <div className="mobile-only" onClick={openLocation} style={{ padding: '0.5rem 1rem', borderTop: '1px solid #f8fafc', display: 'flex', alignItems: 'center', gap: '0.5rem', background: '#fafbfc', cursor: 'pointer' }}>
             <MapPin size={13} color="#2563eb" style={{ flexShrink: 0 }} />
             <span style={{ fontSize: '12px', fontWeight: 600, color: '#475569', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{locationLabel}</span>
@@ -904,6 +909,7 @@ function App() {
                 <Route path="/commercial-painting" element={<CommercialPainting />} />
                 <Route path="/profile" element={<Profile />} />
                 <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+                <Route path="/terms-of-service" element={<TermsOfService />} />
               </Route>
             </Routes>
           </BrowserRouter>

@@ -204,6 +204,58 @@ const PrivacyPolicy = () => {
             padding: 24px 16px;
           }
         }
+
+        .contact-card-container {
+          background: linear-gradient(135deg, #f8fafc 0%, #f0f9ff 100%);
+          border: 1px solid #e0f2fe;
+          border-radius: 16px;
+          padding: 1.5rem;
+          margin-top: 1rem;
+        }
+
+        .contact-row {
+          display: flex;
+          align-items: flex-start;
+          gap: 12px;
+          margin-bottom: 0.6rem;
+        }
+        .contact-row:last-child {
+          margin-bottom: 0;
+        }
+
+        .contact-label {
+          font-size: 0.85rem;
+          color: #64748b;
+          font-weight: 600;
+          min-width: 140px;
+          flex-shrink: 0;
+        }
+
+        .contact-value {
+          font-weight: 600;
+          color: #334155;
+          font-size: 0.95rem;
+          line-height: 1.4;
+        }
+
+        .contact-value a {
+          color: #2563eb;
+          text-decoration: none;
+          font-weight: 700;
+        }
+        .contact-value a:hover {
+          text-decoration: underline;
+        }
+
+        @media (max-width: 600px) {
+          .contact-row {
+            flex-direction: column;
+            gap: 4px;
+          }
+          .contact-label {
+            min-width: auto;
+          }
+        }
       `}</style>
 
       {/* Full-width Gradient Banner Box */}
@@ -212,7 +264,7 @@ const PrivacyPolicy = () => {
         borderTopLeftRadius: '24px',
         borderTopRightRadius: '24px',
         width: '100%',
-        marginTop: '16px',
+        marginTop: '8px',
       }}>
         <div className="policy-banner-inner">
           {/* Breadcrumbs inside the banner */}
@@ -582,36 +634,36 @@ const PrivacyPolicy = () => {
               If you have any questions, concerns, complaints, or requests regarding this Privacy Policy, please contact us:
             </p>
 
-            <div style={{
-              background: 'linear-gradient(135deg, #f8fafc 0%, #f0f9ff 100%)',
-              border: '1px solid #e0f2fe',
-              borderRadius: '16px',
-              padding: '1.5rem',
-              marginTop: '1rem',
-            }}>
+            <div className="contact-card-container">
               <p style={{ fontWeight: 800, fontSize: '1.05rem', color: '#0f172a', marginBottom: '1rem' }}>
                 AMEC CODEX PRIVATE LIMITED
               </p>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                  <span style={{ fontSize: '0.85rem', color: '#64748b', fontWeight: 600, minWidth: '110px' }}>CIN:</span>
-                  <span style={{ fontWeight: 600, color: '#334155', fontSize: '0.95rem' }}>U62091MH2024PTC425971</span>
+              <div>
+                <div className="contact-row">
+                  <span className="contact-label">CIN:</span>
+                  <span className="contact-value">U62091MH2024PTC425971</span>
                 </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                  <span style={{ fontSize: '0.85rem', color: '#64748b', fontWeight: 600, minWidth: '110px' }}>Email:</span>
-                  <a href="mailto:support@dhoond.co" style={{ fontWeight: 700, color: '#2563eb', fontSize: '0.95rem' }}>support@dhoond.co</a>
+                <div className="contact-row">
+                  <span className="contact-label">Email:</span>
+                  <span className="contact-value">
+                    <a href="mailto:support@dhoond.co">support@dhoond.co</a>
+                  </span>
                 </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                  <span style={{ fontSize: '0.85rem', color: '#64748b', fontWeight: 600, minWidth: '110px' }}>Privacy Officer:</span>
-                  <a href="mailto:privacy@dhoond.co" style={{ fontWeight: 700, color: '#2563eb', fontSize: '0.95rem' }}>privacy@dhoond.co</a>
+                <div className="contact-row">
+                  <span className="contact-label">Privacy Officer:</span>
+                  <span className="contact-value">
+                    <a href="mailto:privacy@dhoond.co">privacy@dhoond.co</a>
+                  </span>
                 </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                  <span style={{ fontSize: '0.85rem', color: '#64748b', fontWeight: 600, minWidth: '110px' }}>Phone:</span>
-                  <a href="tel:+919102740274" style={{ fontWeight: 700, color: '#2563eb', fontSize: '0.95rem' }}>+91 91027 40274</a>
+                <div className="contact-row">
+                  <span className="contact-label">Phone:</span>
+                  <span className="contact-value">
+                    <a href="tel:+919102740274">+91 91027 40274</a>
+                  </span>
                 </div>
-                <div style={{ display: 'flex', alignItems: 'start', gap: '0.75rem' }}>
-                  <span style={{ fontSize: '0.85rem', color: '#64748b', fontWeight: 600, minWidth: '110px', marginTop: '2px' }}>Registered Address:</span>
-                  <span style={{ fontWeight: 600, color: '#334155', fontSize: '0.95rem', lineHeight: '1.4' }}>
+                <div className="contact-row">
+                  <span className="contact-label">Registered Address:</span>
+                  <span className="contact-value">
                     Plot No. 5A, 13 A, MIDC, Hingna MIDC, Nagpur, Maharashtra, India, 440016
                   </span>
                 </div>
