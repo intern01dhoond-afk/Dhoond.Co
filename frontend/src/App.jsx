@@ -2,16 +2,16 @@ import React from 'react';
 import { BrowserRouter, Routes, Route, Link, useLocation, useNavigate, Outlet } from 'react-router-dom';
 import { ShoppingCart, Menu, X, Search, User, ChevronDown, MapPin, Zap, LogOut, Package, LayoutDashboard, ChevronLeft, Home as HomeIcon, Paintbrush, Phone, Store, ArrowUpRight, Info } from 'lucide-react';
 import Home from './pages/Home';
-import Shop from './pages/Shop';
-import Checkout from './pages/Checkout';
-import Cart from './pages/Cart';
-import Painting from './pages/Painting';
-import CommercialPainting from './pages/CommercialPainting';
-import Profile from './pages/Profile';
-import Admin from './pages/Admin';
-import PrivacyPolicy from './pages/PrivacyPolicy';
-import TermsOfService from './pages/TermsOfService';
-import About from './pages/About';
+const Shop = React.lazy(() => import('./pages/Shop'));
+const Checkout = React.lazy(() => import('./pages/Checkout'));
+const Cart = React.lazy(() => import('./pages/Cart'));
+const Painting = React.lazy(() => import('./pages/Painting'));
+const CommercialPainting = React.lazy(() => import('./pages/CommercialPainting'));
+const Profile = React.lazy(() => import('./pages/Profile'));
+const Admin = React.lazy(() => import('./pages/Admin'));
+const PrivacyPolicy = React.lazy(() => import('./pages/PrivacyPolicy'));
+const TermsOfService = React.lazy(() => import('./pages/TermsOfService'));
+const About = React.lazy(() => import('./pages/About'));
 import Footer from './components/Footer';
 import { CartProvider, useCart } from './context/CartContext';
 import { AuthProvider, useAuth } from './context/AuthContext';
@@ -896,22 +896,24 @@ function App() {
         <CartProvider>
           <BrowserRouter>
             <ScrollToTop />
-            <Routes>
-              <Route path="/admin/*" element={<Admin />} />
-              <Route element={<MainLayout />}>
-                <Route path="/" element={<Home />} />
-                <Route path="/about" element={<About />} />
-                <Route path="/shop" element={<Shop />} />
-                <Route path="/shop/cart" element={<Cart />} />
-                <Route path="/cart" element={<Cart />} />
-                <Route path="/checkout" element={<Checkout />} />
-                <Route path="/painting" element={<Painting />} />
-                <Route path="/commercial-painting" element={<CommercialPainting />} />
-                <Route path="/profile" element={<Profile />} />
-                <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-                <Route path="/terms-of-service" element={<TermsOfService />} />
-              </Route>
-            </Routes>
+            <React.Suspense fallback={<div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', width: '100vw' }}><div style={{ color: '#0A57D0', fontWeight: '600', fontFamily: 'sans-serif' }}>Loading...</div></div>}>
+              <Routes>
+                <Route path="/admin/*" element={<Admin />} />
+                <Route element={<MainLayout />}>
+                  <Route path="/" element={<Home />} />
+                  <Route path="/about" element={<About />} />
+                  <Route path="/shop" element={<Shop />} />
+                  <Route path="/shop/cart" element={<Cart />} />
+                  <Route path="/cart" element={<Cart />} />
+                  <Route path="/checkout" element={<Checkout />} />
+                  <Route path="/painting" element={<Painting />} />
+                  <Route path="/commercial-painting" element={<CommercialPainting />} />
+                  <Route path="/profile" element={<Profile />} />
+                  <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+                  <Route path="/terms-of-service" element={<TermsOfService />} />
+                </Route>
+              </Routes>
+            </React.Suspense>
           </BrowserRouter>
         </CartProvider>
       </AuthProvider>

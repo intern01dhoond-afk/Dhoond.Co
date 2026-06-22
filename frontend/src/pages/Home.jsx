@@ -17,10 +17,10 @@ import washingIcon from '../assets/icons/washing_machine.png';
 import hemanthImg from '../assets/Kuruba Hemanth Kishore.png';
 import rahulImg from '../assets/rahul_avatar.png';
 import sunitaImg from '../assets/sunita_avatar.png';
-import painterHero from '../assets/Hero images/painter_hero.png';
-import acHero from '../assets/Hero images/ac_hero.png';
-import plumberHero from '../assets/Hero images/plumber_hero.png';
-import drillHero from '../assets/Hero images/drill_hero.png';
+import painterHero from '../assets/Hero images/painter_hero.webp';
+import acHero from '../assets/Hero images/ac_hero.webp';
+import plumberHero from '../assets/Hero images/plumber_hero.webp';
+import drillHero from '../assets/Hero images/drill_hero.webp';
 
 const HERO_SLIDES = [painterHero, acHero, plumberHero, drillHero];
 
