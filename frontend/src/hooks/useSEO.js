@@ -54,9 +54,23 @@ export const useSEO = ({ title, description, canonicalPath }) => {
       tag.setAttribute('content', content);
     };
 
+    // 5. Update Twitter Tags
+    const updateTwitter = (name, content) => {
+      let tag = document.querySelector(`meta[name='${name}']`);
+      if (!tag) {
+        tag = document.createElement('meta');
+        tag.setAttribute('name', name);
+        document.head.appendChild(tag);
+      }
+      tag.setAttribute('content', content);
+    };
+
     updateOG('og:title', title || 'Dhoond.co');
     updateOG('og:url', canonicalUrl);
     if (description) updateOG('og:description', description);
+
+    updateTwitter('twitter:title', title || 'Dhoond.co');
+    if (description) updateTwitter('twitter:description', description);
 
   }, [title, description, canonicalPath, location.pathname]);
 };

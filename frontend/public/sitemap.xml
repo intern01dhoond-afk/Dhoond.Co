@@ -4,6 +4,7 @@
   <!-- Homepage -->
   <url>
     <loc>https://www.dhoond.co/</loc>
+    <lastmod>2026-06-22</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
@@ -11,13 +12,15 @@
   <!-- Shop / Services -->
   <url>
     <loc>https://www.dhoond.co/shop</loc>
+    <lastmod>2026-06-22</lastmod>
     <changefreq>daily</changefreq>
-    <priority>0.9</priority>  
+    <priority>0.9</priority>
   </url>
 
-  <!-- Painting Services (Bengaluru) -->
+  <!-- Painting Services -->
   <url>
     <loc>https://www.dhoond.co/painting</loc>
+    <lastmod>2026-06-22</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
@@ -25,8 +28,33 @@
   <!-- Commercial Painting -->
   <url>
     <loc>https://www.dhoond.co/commercial-painting</loc>
+    <lastmod>2026-06-22</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
+  </url>
+
+  <!-- About Us -->
+  <url>
+    <loc>https://www.dhoond.co/about</loc>
+    <lastmod>2026-06-22</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <!-- Privacy Policy -->
+  <url>
+    <loc>https://www.dhoond.co/privacy-policy</loc>
+    <lastmod>2026-06-22</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.4</priority>
+  </url>
+
+  <!-- Terms of Service -->
+  <url>
+    <loc>https://www.dhoond.co/terms-of-service</loc>
+    <lastmod>2026-06-22</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.4</priority>
   </url>
 
 </urlset>

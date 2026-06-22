@@ -251,7 +251,7 @@ const Home = () => {
   }, [isNagpur, isBengaluru]);
 
   return (
-    <div style={{ minHeight: '100vh', position: 'relative', overflow: 'hidden', overflowX: 'hidden', maxWidth: '100vw', background: '#f9fafb', fontFamily: 'Inter, sans-serif', color: '#1a1a1a' }}>
+    <main style={{ minHeight: '100vh', position: 'relative', overflow: 'hidden', overflowX: 'hidden', maxWidth: '100vw', background: '#f9fafb', fontFamily: 'Inter, sans-serif', color: '#1a1a1a' }}>
 
       <style>{`
         .card-hover-lift { transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease, margin 0.3s ease; }
@@ -491,7 +491,7 @@ const Home = () => {
                           cursor: 'pointer'
                         }}
                       >
-                        <img src={slide} alt={`Slide ${idx + 1}`} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                        <img src={slide} alt={['Professional painting services', 'AC repair and servicing', 'Plumbing services', 'Home maintenance and drilling services'][idx]} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                       </div>
                     ))}
                     
@@ -664,7 +664,7 @@ const Home = () => {
             <div id="services-section" ref={servicesRef} style={{ marginTop: '2rem' }}>
               <div style={{ marginBottom: '1.25rem' }} className="mobile-center">
                 <span style={{ display: 'inline-block', background: '#eff6ff', color: '#2563eb', fontSize: '0.7rem', fontWeight: 800, padding: '3px 10px', borderRadius: '99px', letterSpacing: '0.07em', textTransform: 'uppercase', marginBottom: '0.5rem' }}>Our Services</span>
-                <h3 style={{ fontSize: 'clamp(1.15rem, 2.5vw, 1.4rem)', fontWeight: 900, color: '#0f172a', margin: 0, letterSpacing: '-0.02em' }}>Trusted Home &amp; Commercial Services</h3>
+                <h2 style={{ fontSize: 'clamp(1.15rem, 2.5vw, 1.4rem)', fontWeight: 900, color: '#0f172a', margin: 0, letterSpacing: '-0.02em' }}>Trusted Home &amp; Commercial Services</h2>
               </div>
               <div className="service-scroll service-grid service-grid-mobile" style={{ display: 'flex', gap: '1.25rem', overflowX: 'auto', paddingBottom: '1rem' }}>
                 {[
@@ -1144,7 +1144,7 @@ const Home = () => {
 
         {/* Global modal handled by MainLayout, but keeping this for legacy routes if any */}
       </div>
-    </div>
+    </main>
   );
 };
 
