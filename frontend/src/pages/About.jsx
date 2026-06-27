@@ -185,7 +185,7 @@ const About = () => {
               Building India's Most Trusted On-Demand Service Ecosystem
             </h1>
             <p className="text-sm md:text-base lg:text-lg text-slate-600 max-w-xl mb-6 md:mb-8 leading-relaxed font-body-lg">
-              Dhoond is a technology-driven platform connecting customers with verified professionals for home, commercial, and business services. Our goal is simple — make quality services accessible, reliable, and available whenever they are needed.
+              Dhoond is a technology-driven platform connecting customers with verified professionals for home, commercial, and business services. Our goal is simple - make quality services accessible, reliable, and available whenever they are needed.
             </p>
             <button 
               onClick={() => {
@@ -248,7 +248,7 @@ const About = () => {
             <div>
               <h2 className="text-3xl md:text-4xl font-bold mb-4 md:mb-6 font-headline-lg">Our Story</h2>
               <p className="text-slate-600 leading-relaxed mb-4 md:mb-6 font-body-md text-sm md:text-base">
-                Dhoond was founded with a vision to solve one of the most common challenges faced by individuals and businesses — finding trustworthy professionals quickly and efficiently.
+                Dhoond was founded with a vision to solve one of the most common challenges faced by individuals and businesses - finding trustworthy professionals quickly and efficiently.
               </p>
               <p className="text-slate-600 leading-relaxed font-body-md text-sm md:text-base">
                 Traditional service discovery often involves uncertainty, delays, inconsistent quality, and limited accountability. Dhoond was built to change that by establishing a standardized, technology-first approach to on-demand services.

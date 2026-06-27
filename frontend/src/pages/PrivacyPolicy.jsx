@@ -4,7 +4,7 @@ import { useUI } from '../context/UIContext';
 
 const PrivacyPolicy = () => {
   useSEO({
-    title: "Privacy Policy — Dhoond.co",
+    title: "Privacy Policy - Dhoond.co",
     description: "Read Dhoond's Privacy Policy to understand how we collect, use, store, and protect your personal information when using our home and commercial services platform.",
     canonicalPath: "/privacy-policy"
   });

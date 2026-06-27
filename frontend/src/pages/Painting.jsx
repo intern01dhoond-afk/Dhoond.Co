@@ -42,7 +42,7 @@ export default function Painting() {
 
   // SEO Integration
   useSEO({
-    title: "Professional Painting Services in Bengaluru — Dhoond.co",
+    title: "Professional Painting Services in Bengaluru - Dhoond.co",
     description: "Expert interior and exterior house painting services in Bengaluru. Get a free consultation and professional finish with premium paints.",
     canonicalPath: "/painting"
   });
@@ -783,7 +783,7 @@ export default function Painting() {
             <div className="p-services-column" style={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
               <div className={`p-services-strip p-services-strip-grid ${showAllServices ? 'show-all' : ''}`} id="p-sstrip" role="list">
                 {[
-                  { img: consultationImg, title: 'Expert Consultation on Site', sub: 'Talk to an expert — ₹49', filter: 'consultation', badge: 'Popular' },
+                  { img: consultationImg, title: 'Expert Consultation on Site', sub: 'Talk to an expert - ₹49', filter: 'consultation', badge: 'Popular' },
                   { img: commercialImg, title: 'Commercial Painting', sub: 'Offices, Schools & warehouses', filter: 'commercial', badge: null },
                   { img: interiorImg, title: 'Interior Painting', sub: 'Walls, ceilings & trims', filter: 'interior', badge: null },
                   { img: exteriorImg, title: 'Exterior Painting', sub: 'Weather-resistant finishes', filter: 'exterior', badge: null },

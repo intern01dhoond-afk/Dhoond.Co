@@ -11,7 +11,12 @@ const createOrderController = async (req, res) => {
       address,
       price,
       platform_fee,
-      items
+      items,
+      service_date,
+      service_slot,
+      arrival_pref,
+      arrival_note,
+      customer_name
     } = req.body;
 
     if (!user_id || !address) {
@@ -23,6 +28,14 @@ const createOrderController = async (req, res) => {
 
     const sanitizedUserId = user_id === 'AMEC01' ? 1 : user_id;
 
+    if (customer_name) {
+      try {
+        await pool.query("UPDATE users SET name = $1 WHERE id = $2", [customer_name, sanitizedUserId]);
+      } catch (err) {
+        console.error("[Backend] Failed to update customer name:", err.message);
+      }
+    }
+
     const order = await orderModel.createOrder(
       sanitizedUserId,
       partner_id,
@@ -30,7 +43,11 @@ const createOrderController = async (req, res) => {
       address,
       price,
       platform_fee,
-      items || []
+      items || [],
+      service_date,
+      service_slot,
+      arrival_pref,
+      arrival_note
     );
 
     res.status(201).json({

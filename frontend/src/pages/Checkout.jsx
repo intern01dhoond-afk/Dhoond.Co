@@ -4,9 +4,24 @@ import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import { MapPin, Clock, CreditCard, Tag, Percent, Phone, SquareCheck, Info, X, Calendar, Edit2, CheckCircle2, ShieldCheck, Lock, Smartphone, Building2, ChevronRight, CheckCircle, ChevronLeft, Sparkles, ArrowRight, ArrowLeft, Search, ShoppingCart, HelpCircle, Mail } from 'lucide-react';
 import { formatOrderId } from '../utils/formatOrderId';
-import { detectCurrentLocation } from '../utils/location';
+import { detectCurrentLocation, waitForGoogleMaps } from '../utils/location';
 import AuthModal from '../components/AuthModal';
 import { useUI } from '../context/UIContext';
+
+const getCity = (address = '') => {
+  if (!address) return '';
+  const addr = address.toLowerCase();
+  const blrKeywords = [
+    'bengaluru', 'bangalore', 'hsr', 'karnataka', 'main rd', 'main road', 
+    'bluru', 'sarjapur', 'bellandur', 'koramangala', 'indiranagar', 
+    'whitefield', 'jayanagar', 'jp nagar', 'electronic city', 'hebbal', 
+    'yelahanka', 'banaswadi', 'btm', 'marathahalli', 'kamataka', '5600'
+  ];
+  if (blrKeywords.some(key => addr.includes(key))) return 'Bengaluru';
+  const ngpKeywords = ['nagpur', 'maharashtra', 'dharampeth', 'itwari', 'sitabuldi', 'sadar', 'manish nagar', '4400'];
+  if (ngpKeywords.some(key => addr.includes(key))) return 'Nagpur';
+  return '';
+};
 
 const Checkout = () => {
   const { cartItems: allCartItems, clearCart, clearCategoryFromCart, updateQuantity } = useCart();
@@ -38,19 +53,29 @@ const Checkout = () => {
     address: locationLabel || localStorage.getItem('dhoond_location') || ''
   });
 
+  const [addressInput, setAddressInput] = useState(locationLabel || localStorage.getItem('dhoond_location') || '');
+  const [detectedAddress, setDetectedAddress] = useState(locationLabel || localStorage.getItem('dhoond_location') || '');
+  const [isServiceUnavailable, setIsServiceUnavailable] = useState(false);
+
   // Keep address in sync when location context updates
   useEffect(() => {
-    if (!formData.address || formData.address === 'Fetching location…' || formData.address === 'Detecting…' || formData.address.includes('78, 25th Main Rd')) {
+    if (!addressInput || addressInput === 'Fetching location…' || addressInput === 'Detecting…' || addressInput.includes('78, 25th Main Rd')) {
       if (locationLabel && locationLabel !== 'Fetching location…' && locationLabel !== 'Detecting…') {
-        setFormData(prev => ({ ...prev, address: locationLabel }));
+        setAddressInput(locationLabel);
+        setDetectedAddress(locationLabel);
       }
     }
   }, [locationLabel]);
 
-  // Keep phone in sync when user changes (e.g. after auth modal)
+  const [customerName, setCustomerName] = useState(user?.name && user.name !== 'Customer' ? user.name : localStorage.getItem('dhoond_customer_name') || '');
+
+  // Keep phone and name in sync when user changes (e.g. after auth modal)
   useEffect(() => {
     if (user?.mobile && !formData.phone) {
       setFormData(prev => ({ ...prev, phone: user.mobile }));
+    }
+    if (user?.name && user.name !== 'Customer') {
+      setCustomerName(user.name);
     }
   }, [user]);
 
@@ -61,8 +86,9 @@ const Checkout = () => {
   const [resendTimer, setResendTimer] = useState(0);
 
   // Edit States
-  const [isEditingPhone, setIsEditingPhone] = useState(false);
-  const [isEditingAddress, setIsEditingAddress] = useState(false);
+  const [isEditingPhone, setIsEditingPhone] = useState(!customerName || customerName.trim().toLowerCase() === 'customer');
+  const [isEditingAddress, setIsEditingAddress] = useState(true);
+  const [isAddressConfirmed, setIsAddressConfirmed] = useState(false);
 
   // Slot States
   const [isSlotModalOpen, setIsSlotModalOpen] = useState(false);
@@ -82,11 +108,80 @@ const Checkout = () => {
   const [locating, setLocating] = useState(false);
   const [startOtp, setStartOtp] = useState('');
 
+  // Google Maps Refs
+  const mapContainerRef = React.useRef(null);
+  const mapInstanceRef = React.useRef(null);
+  const markerInstanceRef = React.useRef(null);
+
+  const initCheckoutMap = (lat = 21.1458, lng = 79.0882) => {
+    waitForGoogleMaps(() => {
+      if (!mapContainerRef.current) return;
+
+      const latLng = { lat, lng };
+
+      if (!mapInstanceRef.current) {
+        const map = new window.google.maps.Map(mapContainerRef.current, {
+          center: latLng,
+          zoom: 15,
+          zoomControl: true,
+          streetViewControl: false,
+          mapTypeControl: false,
+          fullscreenControl: false
+        });
+        mapInstanceRef.current = map;
+
+        const marker = new window.google.maps.Marker({
+          position: latLng,
+          map,
+          draggable: true,
+          animation: window.google.maps.Animation.DROP
+        });
+        markerInstanceRef.current = marker;
+
+        marker.addListener('dragend', () => {
+          const pos = marker.getPosition();
+          const geocoder = new window.google.maps.Geocoder();
+          geocoder.geocode({ location: pos }, (results, status) => {
+            if (status === 'OK' && results && results[0]) {
+              setAddressInput(results[0].formatted_address);
+              setIsServiceUnavailable(false);
+            }
+          });
+        });
+      } else {
+        mapInstanceRef.current.setCenter(latLng);
+        if (markerInstanceRef.current) {
+          markerInstanceRef.current.setPosition(latLng);
+        }
+      }
+    });
+  };
+
+  useEffect(() => {
+    if (isEditingAddress) {
+      const activeCity = getCity(locationLabel || localStorage.getItem('dhoond_location') || 'Nagpur');
+      if (activeCity === 'Bengaluru') {
+        initCheckoutMap(12.9716, 77.5946);
+      } else {
+        initCheckoutMap(21.1458, 79.0882);
+      }
+    } else {
+      // Clean up map references on close
+      mapInstanceRef.current = null;
+      markerInstanceRef.current = null;
+    }
+  }, [isEditingAddress]);
+
   const handleFetchLocation = async () => {
     setLocating(true);
     try {
       const loc = await detectCurrentLocation();
-      setFormData(prev => ({ ...prev, address: loc.label }));
+      setAddressInput(loc.label);
+      setDetectedAddress(loc.label);
+      setIsServiceUnavailable(false);
+      if (loc.lat && loc.lng) {
+        initCheckoutMap(loc.lat, loc.lng);
+      }
     } catch (err) {
       alert("Could not fetch location: " + err.message);
     } finally {
@@ -354,11 +449,16 @@ const Checkout = () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           user_id: user?.id || null,
+          customer_name: customerName,
           address: formData.address,
           price: finalAmountToPay,
           platform_fee: 0,
           category_id: null,
           partner_id: null,
+          service_date: selectedDate,
+          service_slot: selectedTime,
+          arrival_pref: arrivalPref,
+          arrival_note: arrivalNote,
           items: cartItems.map(i => ({
             id: i.id,
             title: i.title,
@@ -451,6 +551,19 @@ const Checkout = () => {
   };
 
   const handleBook = () => {
+    if (!isAddressConfirmed || isEditingAddress) {
+      alert('Please verify and confirm your service address first.');
+      document.querySelector('.checkout-grid')?.scrollIntoView({ behavior: 'smooth' });
+      return;
+    }
+
+    if (isEditingPhone || !customerName || customerName.trim().length < 2 || customerName.trim().toLowerCase() === 'customer') {
+      alert('Please enter and save your full name in the Contact & Personal Details section.');
+      setIsEditingPhone(true);
+      document.querySelector('.checkout-grid')?.scrollIntoView({ behavior: 'smooth' });
+      return;
+    }
+
     if (!selectedDate || !selectedTime) {
       alert('Please select a date and time slot first.');
       return;
@@ -595,22 +708,22 @@ const Checkout = () => {
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', marginBottom: '2rem' }}>
               {cartItems.map((item) => (
-                <div key={item.id} style={{ display: 'flex', alignItems: 'center', gap: '1rem', flexWrap: 'wrap' }}>
-                  {/* Thumbnail Image */}
-                  <div style={{ width: '60px', height: '60px', borderRadius: '12px', overflow: 'hidden', border: '1px solid #e2e8f0', flexShrink: 0, background: '#f8fafc' }}>
-                    <img src={item.image || "/favicon.png"} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                  </div>
-
-                  {/* Title & Description */}
-                  <div style={{ flex: 1, minWidth: '150px' }}>
-                    <div style={{ fontSize: '1.05rem', color: '#0f172a', fontWeight: 500, lineHeight: 1.3, marginBottom: '2px' }}>{item.title}</div>
-                    <div style={{ fontSize: '0.85rem', color: '#64748b', fontWeight: 400 }}>
-                      {item.title?.toLowerCase().includes('consultation') ? 'Specialized assessment & cost estimation' : 'Premium service warranty'}
+                <div key={item.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '1rem', flexWrap: 'wrap', width: '100%', borderBottom: '1px solid #f1f5f9', paddingBottom: '1rem' }}>
+                  {/* Left part: Image + Info */}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flex: '1 1 250px', minWidth: 0 }}>
+                    <div style={{ width: '60px', height: '60px', borderRadius: '12px', overflow: 'hidden', border: '1px solid #e2e8f0', flexShrink: 0, background: '#f8fafc' }}>
+                      <img src={item.image || "/favicon.png"} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                    </div>
+                    <div style={{ minWidth: 0 }}>
+                      <div style={{ fontSize: '1.05rem', color: '#0f172a', fontWeight: 500, lineHeight: 1.3, marginBottom: '2px' }}>{item.title}</div>
+                      <div style={{ fontSize: '0.85rem', color: '#64748b', fontWeight: 400 }}>
+                        {item.title?.toLowerCase().includes('consultation') ? 'Specialized assessment & cost estimation' : 'Premium service warranty'}
+                      </div>
                     </div>
                   </div>
 
-                  {/* Quantity and Price Container */}
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem', justifyContent: 'space-between', minWidth: '180px' }}>
+                  {/* Right part: Qty & Price */}
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '1.5rem', flex: '1 1 180px', minWidth: '180px' }}>
                     {/* Quantity Counter */}
                     <div style={{ display: 'flex', alignItems: 'center', background: '#f1f5f9', borderRadius: '8px', padding: '0.2rem', border: '1px solid #e2e8f0' }}>
                       <button className="checkout-qty-btn" onClick={() => updateQuantity(item.id, -1)} style={{ background: 'transparent' }}>−</button>
@@ -628,7 +741,7 @@ const Checkout = () => {
                     </div>
 
                     {/* Price */}
-                    <div style={{ textAlign: 'right', minWidth: '65px' }}>
+                    <div style={{ textAlign: 'right', minWidth: '70px' }}>
                       <div style={{ fontSize: '1.15rem', fontWeight: 600, color: '#0A57D0' }}>₹{Number(item.discountPrice || 0).toFixed(0)}</div>
                       {item.originalPrice > item.discountPrice && (
                         <div style={{ fontSize: '0.85rem', color: '#94a3b8', textDecoration: 'line-through', fontWeight: 400 }}>₹{Number(item.originalPrice || 0).toFixed(0)}</div>
@@ -698,34 +811,113 @@ const Checkout = () => {
                  <div style={{ width: '48px', height: '48px', borderRadius: '12px', background: '#0A57D0', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', flexShrink: 0 }}>
                    <Calendar size={24} />
                  </div>
-                 <div>
-                   <div style={{ fontWeight: 600, color: '#0f172a', fontSize: '1.05rem', marginBottom: '2px' }}>Service Slot</div>
-                   <div style={{ fontSize: '0.9rem', color: selectedDate ? '#0A57D0' : '#64748b', fontWeight: selectedDate ? 500 : 400 }}>
-                     {selectedDate ? `${selectedDate} at ${selectedTime}` : 'Please select a date & time'}
-                   </div>
-                 </div>
-               </div>
-               <button onClick={() => setIsSlotModalOpen(true)} className="outline-btn-dhoond">
-                 {selectedDate ? 'Change' : 'Select'}
-               </button>
-             </div>
-          </div>
+                  <div>
+                    <div style={{ fontWeight: 600, color: '#0f172a', fontSize: '1.05rem', marginBottom: '2px' }}>Service Slot</div>
+                    <div style={{ fontSize: '0.9rem', color: selectedDate ? '#0A57D0' : '#64748b', fontWeight: selectedDate ? 500 : 400 }}>
+                      {selectedDate ? `${selectedDate} at ${selectedTime}` : 'Please select a date & time'}
+                    </div>
+                  </div>
+                </div>
+                <button onClick={() => setIsSlotModalOpen(true)} className="outline-btn-dhoond">
+                  {selectedDate ? 'Change' : 'Select'}
+                </button>
+              </div>
+           </div>
 
-          {/* Service Address Card */}
-          <div className="checkout-card" style={{ padding: '1.75rem' }}>
+           {/* Service Address Card */}
+           <div className="checkout-card" style={{ padding: '1.75rem' }}>
             {isEditingAddress ? (
               <div style={{ width: '100%', animation: 'fadeIn 0.2s' }}>
-                 <div style={{ display: 'flex', alignItems: 'center', marginBottom: '1.25rem' }}>
-                   <div style={{ width: '48px', height: '48px', borderRadius: '12px', background: '#0A57D0', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', marginRight: '1.25rem', flexShrink: 0 }}><MapPin size={24} /></div>
-                   <div style={{ fontWeight: 600, color: '#0f172a', fontSize: '1.05rem' }}>Service Address</div>
-                 </div>
-                 <div style={{ width: '100%', height: '220px', background: '#f8fafc', borderRadius: '12px', marginBottom: '1.25rem', position: 'relative', overflow: 'hidden', border: '1px solid #e2e8f0' }}>
-                   <div style={{ position: 'absolute', inset: 0, backgroundImage: 'radial-gradient(#cbd5e1 1px, transparent 1px)', backgroundSize: '20px 20px', opacity: 0.5 }}></div>
-                   <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', background: '#fff', padding: '1rem', borderRadius: '50%', boxShadow: '0 10px 25px rgba(37,99,235,0.2)' }}><MapPin size={32} color="#0a57d0" /></div>
-                   <button onClick={handleFetchLocation} style={{ position: 'absolute', bottom: '1rem', left: '50%', transform: 'translateX(-50%)', background: '#111', color: '#fff', padding: '0.6rem 1.25rem', borderRadius: '8px', border: 'none', fontWeight: 500, cursor: 'pointer', boxShadow: '0 4px 15px rgba(0,0,0,0.2)', whiteSpace: 'nowrap', fontSize: '0.85rem' }}>{locating ? 'Locating...' : 'Use Current Location'}</button>
-                 </div>
-                 <textarea value={formData.address} onChange={e => setFormData({ ...formData, address: e.target.value })} rows={3} className="form-input" style={{ resize: 'none' }} placeholder="Enter full address details" />
-                 <button onClick={() => setIsEditingAddress(false)} style={{ width: '100%', background: '#0a57d0', color: '#fff', padding: '0.9rem', borderRadius: '10px', marginTop: '1rem', border: 'none', fontWeight: 600, cursor: 'pointer', boxShadow: '0 4px 15px rgba(10,87,208,0.1)' }}>Confirm Address</button>
+                  <div style={{ display: 'flex', alignItems: 'center', marginBottom: '1.25rem' }}>
+                    <div style={{ width: '48px', height: '48px', borderRadius: '12px', background: '#0A57D0', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', marginRight: '1.25rem', flexShrink: 0 }}><MapPin size={24} /></div>
+                    <div style={{ fontWeight: 600, color: '#0f172a', fontSize: '1.05rem' }}>Service Address</div>
+                  </div>
+                  <div style={{ width: '100%', height: '220px', borderRadius: '12px', marginBottom: '1.25rem', position: 'relative', overflow: 'hidden', border: '1px solid #e2e8f0' }}>
+                    <div ref={mapContainerRef} style={{ width: '100%', height: '100%', background: '#f8fafc' }} />
+                    <button onClick={handleFetchLocation} style={{ position: 'absolute', bottom: '1rem', left: '50%', transform: 'translateX(-50%)', background: '#111', color: '#fff', padding: '0.6rem 1.25rem', borderRadius: '8px', border: 'none', fontWeight: 500, cursor: 'pointer', boxShadow: '0 4px 15px rgba(0,0,0,0.2)', whiteSpace: 'nowrap', fontSize: '0.85rem', zIndex: 10 }}>{locating ? 'Locating...' : 'Use Current Location'}</button>
+                  </div>
+                  
+                  <textarea 
+                    value={addressInput} 
+                    onChange={e => { setAddressInput(e.target.value); setIsServiceUnavailable(false); }} 
+                    rows={3} 
+                    className="form-input" 
+                    style={{ resize: 'none', background: '#fff' }} 
+                    placeholder="Enter your complete address, including flat/house number, building name, street, and 6-digit Pincode" 
+                  />
+                  
+                  {isServiceUnavailable && (
+                    <div style={{
+                      background: '#f0f7ff',
+                      border: '1.5px solid #d0e7ff',
+                      borderRadius: '16px',
+                      padding: '1.25rem',
+                      marginTop: '1rem',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: '0.5rem',
+                      boxShadow: '0 4px 15px rgba(10, 87, 208, 0.05)',
+                      animation: 'fadeIn 0.2s'
+                    }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#0a57d0', fontWeight: 700, fontSize: '0.95rem' }}>
+                        <Info size={18} color="#0a57d0" />
+                        City Selection Mismatch
+                      </div>
+                      <p style={{ margin: 0, color: '#1e3a8a', fontSize: '0.85rem', lineHeight: 1.4, fontWeight: 500 }}>
+                        We noticed your address is in <strong>{getCity(addressInput)}</strong>, but you are browsing services in <strong>{getCity(locationLabel || localStorage.getItem('dhoond_location') || 'Nagpur')}</strong>. To match you with the right local professionals, your booking city and service address need to match.
+                      </p>
+                      <p style={{ margin: 0, color: '#1d4ed8', fontSize: '0.8rem', fontWeight: 600 }}>
+                        Please update your location in the top header dropdown to {getCity(addressInput)}, or enter an address in {getCity(locationLabel || localStorage.getItem('dhoond_location') || 'Nagpur')} to proceed.
+                      </p>
+                    </div>
+                  )}
+
+                  <button 
+                    onClick={() => {
+                      const browsingCity = getCity(locationLabel || localStorage.getItem('dhoond_location') || 'Nagpur');
+                      
+                      const trimmedInput = (addressInput || '').trim();
+                      const trimmedDetected = (detectedAddress || '').trim();
+                      
+                      if (!trimmedInput || trimmedInput.length < 15) {
+                        alert('Please enter a detailed service address (at least 15 characters).');
+                        return;
+                      }
+                      
+                      const pincodeMatch = trimmedInput.match(/\b\d{6}\b/);
+                      if (!pincodeMatch) {
+                        alert('Please include a valid 6-digit Pincode in the address (e.g. 440001).');
+                        return;
+                      }
+                      const pincodeStr = pincodeMatch[0];
+                      if (browsingCity === 'Nagpur') {
+                        if (!pincodeStr.startsWith('44')) {
+                          alert('Please enter a valid Nagpur Pincode starting with 44 (e.g. 440001 - 440037).');
+                          return;
+                        }
+                      } else if (browsingCity === 'Bengaluru') {
+                        if (!pincodeStr.startsWith('56')) {
+                          alert('Please enter a valid Bengaluru Pincode starting with 56 (e.g. 560001 - 560103).');
+                          return;
+                        }
+                      }
+                      
+                      const enteredCity = getCity(trimmedInput);
+                      
+                      if (browsingCity && enteredCity && browsingCity !== enteredCity) {
+                        setIsServiceUnavailable(true);
+                        return;
+                      }
+                      
+                      setIsServiceUnavailable(false);
+                      setFormData(prev => ({ ...prev, address: trimmedInput }));
+                      setIsEditingAddress(false);
+                      setIsAddressConfirmed(true);
+                    }} 
+                    style={{ width: '100%', background: '#0a57d0', color: '#fff', padding: '0.9rem', borderRadius: '10px', marginTop: '1rem', border: 'none', fontWeight: 600, cursor: 'pointer', boxShadow: '0 4px 15px rgba(10,87,208,0.1)' }}
+                  >
+                    Confirm Address
+                  </button>
               </div>
             ) : (
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem' }}>
@@ -740,24 +932,61 @@ const Checkout = () => {
                     </div>
                   </div>
                 </div>
-                <button onClick={() => setIsEditingAddress(true)} className="outline-btn-dhoond">
+                <button 
+                  onClick={() => {
+                    setAddressInput(formData.address);
+                    setDetectedAddress('');
+                    setIsEditingAddress(true);
+                    setIsAddressConfirmed(false);
+                  }} 
+                  className="outline-btn-dhoond"
+                >
                   Edit
                 </button>
               </div>
             )}
           </div>
 
-          {/* Contact Number Card */}
+          {/* Contact Details Card */}
           <div className="checkout-card" style={{ padding: '1.75rem' }}>
             {isEditingPhone ? (
               <div style={{ width: '100%', animation: 'fadeIn 0.2s' }}>
                 <div style={{ display: 'flex', alignItems: 'center', marginBottom: '1.25rem' }}>
                   <div style={{ width: '48px', height: '48px', borderRadius: '12px', background: '#0A57D0', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', marginRight: '1.25rem', flexShrink: 0 }}><Phone size={24} /></div>
-                  <div style={{ fontWeight: 600, color: '#0f172a', fontSize: '1.05rem' }}>Contact Number</div>
+                  <div style={{ fontWeight: 600, color: '#0f172a', fontSize: '1.05rem' }}>Contact & Personal Details</div>
                 </div>
-                <div style={{ display: 'flex', gap: '0.75rem' }}>
-                  <input type="tel" value={formData.phone} onChange={e => setFormData({ ...formData, phone: e.target.value })} className="form-input" autoFocus />
-                  <button onClick={() => setIsEditingPhone(false)} style={{ background: '#0a57d0', color: '#fff', padding: '0 1.5rem', borderRadius: '10px', fontWeight: 500, border: 'none', cursor: 'pointer' }}>Save</button>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                  <input 
+                    type="text" 
+                    value={customerName} 
+                    onChange={e => setCustomerName(e.target.value)} 
+                    placeholder="Enter your full name" 
+                    className="form-input" 
+                  />
+                  <input 
+                    type="tel" 
+                    value={formData.phone} 
+                    onChange={e => setFormData({ ...formData, phone: e.target.value })} 
+                    placeholder="Enter mobile number" 
+                    className="form-input" 
+                  />
+                  <button 
+                    onClick={() => {
+                      if (!customerName || customerName.trim().length < 2) {
+                        alert('Please enter a valid name.');
+                        return;
+                      }
+                      if (!formData.phone || formData.phone.trim().length < 10) {
+                        alert('Please enter a valid 10-digit phone number.');
+                        return;
+                      }
+                      localStorage.setItem('dhoond_customer_name', customerName);
+                      setIsEditingPhone(false);
+                    }} 
+                    style={{ background: '#0a57d0', color: '#fff', padding: '0.75rem', borderRadius: '10px', fontWeight: 600, border: 'none', cursor: 'pointer', marginTop: '0.5rem' }}
+                  >
+                    Save Details
+                  </button>
                 </div>
               </div>
             ) : (
@@ -767,8 +996,9 @@ const Checkout = () => {
                     <Phone size={24} />
                   </div>
                   <div>
-                    <div style={{ fontWeight: 600, color: '#0f172a', fontSize: '1.05rem', marginBottom: '2px' }}>Contact Number</div>
-                    <div style={{ fontSize: '0.95rem', color: '#64748b', fontWeight: 400 }}>
+                    <div style={{ fontWeight: 600, color: '#0f172a', fontSize: '1.05rem', marginBottom: '2px' }}>Contact & Personal Details</div>
+                    <div style={{ fontSize: '0.95rem', color: '#64748b', fontWeight: 400, lineHeight: 1.4 }}>
+                      <strong>{customerName || 'Customer'}</strong><br/>
                       {formData.phone || 'Please verify your phone number'}
                     </div>
                   </div>
@@ -804,12 +1034,12 @@ const Checkout = () => {
               <div style={{ borderTop: '2px dashed #f1f5f9' }} />
 
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span>Price (excl. GST)</span>
+                <span>Price (excl. Taxes)</span>
                 <span style={{ color: '#0f172a', fontWeight: 500 }}>₹{netPrice.toFixed(2)}</span>
               </div>
 
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span>GST <span style={{ fontSize: '0.75rem', background: '#f1f5f9', color: '#64748b', padding: '2px 8px', borderRadius: '8px', fontWeight: 600 }}>18%</span></span>
+                <span>Taxes</span>
                 <span style={{ color: '#0f172a', fontWeight: 500 }}>+ ₹{inclusiveTax.toFixed(2)}</span>
               </div>
 

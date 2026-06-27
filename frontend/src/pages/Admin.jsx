@@ -258,7 +258,7 @@ const Admin = () => {
                          <td style={{ fontWeight: 800, color: '#1e40af', fontSize: '13px', whiteSpace: 'nowrap' }}>{formatOrderId(b.id, b.created_at, b.daily_sequence)}</td>
                          <td>
                            <div style={{ fontWeight: 600, color: '#0f172a', fontSize: '13px', lineHeight: '1.4', minWidth: '150px' }}>
-                             {items?.length > 0 ? items.map(i => i.title).join(', ') : '—'}
+                             {items?.length > 0 ? items.map(i => i.title).join(', ') : '-'}
                            </div>
                          </td>
                          <td>
@@ -267,7 +267,7 @@ const Admin = () => {
                          </td>
                          <td>
                            <div style={{ fontSize: '12px', color: '#64748b', lineHeight: '1.4', minWidth: '180px' }}>
-                             {b.address || '—'}
+                             {b.address || '-'}
                            </div>
                          </td>
                          <td>
@@ -283,12 +283,12 @@ const Admin = () => {
                          <td>
                            {b.payment_method
                              ? <span style={{ fontSize: '12px', fontWeight: 700, color: '#475569', background: '#f1f5f9', padding: '3px 8px', borderRadius: '6px', textTransform: 'capitalize' }}>{b.payment_method}</span>
-                             : <span style={{ color: '#cbd5e1', fontSize: '12px' }}>—</span>
+                             : <span style={{ color: '#cbd5e1', fontSize: '12px' }}>-</span>
                            }
                          </td>
                          <td style={{ fontWeight: 800, color: '#0f172a' }}>₹{Number(b.paid_amount ?? b.total_amount).toLocaleString()}</td>
                          <td style={{ fontSize: '12px', color: '#94a3b8' }}>
-                           {b.created_at ? new Date(b.created_at).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }) : '—'}
+                           {b.created_at ? new Date(b.created_at).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }) : '-'}
                          </td>
                        </tr>
                      );

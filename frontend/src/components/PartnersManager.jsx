@@ -227,12 +227,12 @@ const PartnersManager = () => {
                       {/* Profession */}
                       <td style={{ padding: '14px 16px' }}>
                         {p.profession ? <span style={{ fontSize: '13px', fontWeight: 600, color: '#1e40af', background: '#eff6ff', padding: '3px 10px', borderRadius: '20px', textTransform: 'capitalize' }}>{p.profession}</span>
-                          : <span style={{ color: '#cbd5e1', fontSize: '12px' }}>—</span>}
+                          : <span style={{ color: '#cbd5e1', fontSize: '12px' }}>-</span>}
                       </td>
 
                       {/* Experience */}
                       <td style={{ padding: '14px 16px', fontSize: '13px', color: '#475569', fontWeight: 600 }}>
-                        {p.experience || <span style={{ color: '#cbd5e1' }}>—</span>}
+                        {p.experience || <span style={{ color: '#cbd5e1' }}>-</span>}
                       </td>
 
                       {/* Documents summary */}

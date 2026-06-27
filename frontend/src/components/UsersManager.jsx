@@ -43,7 +43,7 @@ const UsersManager = () => {
   );
 
   const formatDate = (iso) => {
-    if (!iso) return '—';
+    if (!iso) return '-';
     return new Date(iso).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
   };
 
@@ -139,14 +139,14 @@ const UsersManager = () => {
                         }
                       </div>
                       <div>
-                        <div style={{ fontWeight: 700, color: '#0f172a', fontSize: '14px' }}>{u.name || '—'}</div>
+                        <div style={{ fontWeight: 700, color: '#0f172a', fontSize: '14px' }}>{u.name || '-'}</div>
                         <div style={{ fontSize: '12px', color: '#94a3b8' }}>ID #{u.id}</div>
                       </div>
                     </div>
                   </td>
                   {/* Phone */}
                   <td style={{ padding: '16px 20px', fontSize: '14px', color: '#334155', fontWeight: 500 }}>
-                    {u.phone || '—'}
+                    {u.phone || '-'}
                   </td>
                   {/* Email */}
                   <td style={{ padding: '16px 20px', fontSize: '14px', color: '#64748b' }}>

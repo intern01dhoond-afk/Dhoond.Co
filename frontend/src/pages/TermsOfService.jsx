@@ -4,7 +4,7 @@ import { useUI } from '../context/UIContext';
 
 const TermsOfService = () => {
   useSEO({
-    title: "Terms of Service — Dhoond.co",
+    title: "Terms of Service - Dhoond.co",
     description: "Read Dhoond's Terms of Service to understand our rules, marketplace guidelines, cancellation policies, and user agreements for home and commercial services.",
     canonicalPath: "/terms-of-service"
   });

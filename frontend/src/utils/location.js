@@ -115,9 +115,14 @@ export const detectCurrentLocation = () => {
                 const c = comps.find(c => types.some(t => c.types.includes(t)));
                 return c ? c.long_name : null;
               };
+              const pincode = find(['postal_code']);
+              let addressLabel = result.formatted_address || 'My Location';
+              if (pincode && !addressLabel.includes(pincode)) {
+                addressLabel = `${addressLabel.replace(/, India$/, '')}, India - ${pincode}`;
+              }
 
               resolve({
-                label: result.formatted_address || 'My Location',
+                label: addressLabel,
                 city: find(['locality', 'sublocality_level_1', 'administrative_area_level_2']) || '',
                 state: find(['administrative_area_level_1']) || '',
                 sub: [find(['locality']), find(['administrative_area_level_1'])].filter(Boolean).join(', '),

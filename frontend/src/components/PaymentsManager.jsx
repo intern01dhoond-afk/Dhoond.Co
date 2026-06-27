@@ -10,11 +10,11 @@ const PAYMENT_STATUS_STYLES = {
   cancelled: { bg: '#f1f5f9', color: '#64748b', label: 'Cancelled' },
 };
 
-const getPayStyle = (s) => PAYMENT_STATUS_STYLES[s?.toLowerCase()] || { bg: '#f1f5f9', color: '#64748b', label: s || '—' };
+const getPayStyle = (s) => PAYMENT_STATUS_STYLES[s?.toLowerCase()] || { bg: '#f1f5f9', color: '#64748b', label: s || '-' };
 
 const formatDate = (iso) => iso
   ? new Date(iso).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })
-  : '—';
+  : '-';
 
 const PaymentsManager = () => {
   const [payments, setPayments] = useState([]);
@@ -160,14 +160,14 @@ const PaymentsManager = () => {
                     onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
                     <td style={{ padding: '14px 16px', fontWeight: 800, color: '#1e40af', fontSize: '14px' }}>#{p.id}</td>
                     <td style={{ padding: '14px 16px', fontWeight: 700, color: '#0f172a' }}>
-                      {p.order_id ? formatOrderId(p.order_id, p.created_at, p.daily_sequence) : '—'}
+                      {p.order_id ? formatOrderId(p.order_id, p.created_at, p.daily_sequence) : '-'}
                     </td>
                     <td style={{ padding: '14px 16px', fontWeight: 800, fontSize: '15px', color: '#0f172a' }}>
                       ₹{Number(p.amount || 0).toLocaleString()}
                     </td>
                     <td style={{ padding: '14px 16px' }}>
                       <span style={{ padding: '4px 10px', borderRadius: '8px', fontSize: '12px', fontWeight: 700, background: '#f8fafc', color: '#475569', textTransform: 'capitalize', border: '1px solid #e2e8f0' }}>
-                        {p.payment_method || '—'}
+                        {p.payment_method || '-'}
                       </span>
                     </td>
                     <td style={{ padding: '14px 16px' }}>
@@ -176,7 +176,7 @@ const PaymentsManager = () => {
                       </span>
                     </td>
                     <td style={{ padding: '14px 16px', fontSize: '12px', color: '#64748b', maxWidth: '180px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={p.transaction_id}>
-                      {p.transaction_id || '—'}
+                      {p.transaction_id || '-'}
                     </td>
                     <td style={{ padding: '14px 16px', fontSize: '12px', color: '#64748b' }}>
                       {formatDate(p.created_at)}

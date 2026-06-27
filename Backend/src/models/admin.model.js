@@ -26,6 +26,10 @@ const getStats = async () => {
         COALESCE(p.amount::numeric, 0)       AS paid_amount,
         p.transaction_id,
         o.items,
+        o.service_date,
+        o.service_slot,
+        o.arrival_pref,
+        o.arrival_note,
         ROW_NUMBER() OVER (PARTITION BY o.created_at::date ORDER BY o.created_at ASC) as daily_sequence
       FROM orders o
       LEFT JOIN users    u ON u.id = o.user_id
@@ -62,6 +66,10 @@ const getAllBookings = async () => {
         COALESCE(p.amount::numeric, 0)       AS paid_amount,
         p.transaction_id,
         o.items,
+        o.service_date,
+        o.service_slot,
+        o.arrival_pref,
+        o.arrival_note,
         ROW_NUMBER() OVER (PARTITION BY o.created_at::date ORDER BY o.created_at ASC) as daily_sequence
       FROM orders o
       LEFT JOIN users    u ON u.id = o.user_id

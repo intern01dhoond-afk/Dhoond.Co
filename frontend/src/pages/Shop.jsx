@@ -18,9 +18,9 @@ const FEW_ROOMS_SERVICES = [
 ];
 
 const FULL_HOME_SERVICES = {
-  '1bhk': { id: 'fh1', title: '1 BHK Full Home Painting', image: '/services/Interior painter.webp', discountPrice: 6999, originalPrice: 8999, discountTag: '22% OFF', description: 'Complete interior painting of a 1 BHK home — all rooms, ceiling, and walls.', category: 'painter', subcategory: 'full-home' },
-  '2bhk': { id: 'fh2', title: '2 BHK Full Home Painting', image: '/services/House Painter.webp', discountPrice: 10999, originalPrice: 13999, discountTag: '21% OFF', description: 'Complete interior painting of a 2 BHK home — all rooms, ceiling, and walls.', category: 'painter', subcategory: 'full-home' },
-  '3bhk': { id: 'fh3', title: '3 BHK Full Home Painting', image: '/services/House Painter.webp', discountPrice: 15999, originalPrice: 19999, discountTag: '20% OFF', description: 'Complete interior painting of a 3 BHK home — all rooms, ceiling, and walls.', category: 'painter', subcategory: 'full-home' },
+  '1bhk': { id: 'fh1', title: '1 BHK Full Home Painting', image: '/services/Interior painter.webp', discountPrice: 6999, originalPrice: 8999, discountTag: '22% OFF', description: 'Complete interior painting of a 1 BHK home - all rooms, ceiling, and walls.', category: 'painter', subcategory: 'full-home' },
+  '2bhk': { id: 'fh2', title: '2 BHK Full Home Painting', image: '/services/House Painter.webp', discountPrice: 10999, originalPrice: 13999, discountTag: '21% OFF', description: 'Complete interior painting of a 2 BHK home - all rooms, ceiling, and walls.', category: 'painter', subcategory: 'full-home' },
+  '3bhk': { id: 'fh3', title: '3 BHK Full Home Painting', image: '/services/House Painter.webp', discountPrice: 15999, originalPrice: 19999, discountTag: '20% OFF', description: 'Complete interior painting of a 3 BHK home - all rooms, ceiling, and walls.', category: 'painter', subcategory: 'full-home' },
 };
 
 
@@ -92,7 +92,7 @@ const Shop = () => {
   
   // SEO Integration
   useSEO({
-    title: "All Home Services — Dhoond.co Shop",
+    title: "All Home Services - Dhoond.co Shop",
     description: "Browse and book electricians, AC technicians, plumbers, and cleaning services. Instant booking and professional delivery in 15 minutes.",
     canonicalPath: "/shop"
   });
@@ -320,7 +320,7 @@ const Shop = () => {
       <button onClick={() => setPaintingView('choose')} style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.4rem', color: '#2a70b2', fontWeight: 500, fontSize: '0.9rem', marginBottom: '1.5rem', padding: 0 }}>
         <ArrowLeft size={16} /> Back
       </button>
-      <h2 style={{ fontSize: '1.2rem', fontWeight: 600, color: '#111', marginBottom: '1.5rem' }}>🏠 Full Home Painting — Choose your home size</h2>
+      <h2 style={{ fontSize: '1.2rem', fontWeight: 600, color: '#111', marginBottom: '1.5rem' }}>🏠 Full Home Painting - Choose your home size</h2>
       <div style={{ display: 'flex', gap: '1.5rem', flexWrap: 'wrap' }}>
         {['1bhk', '2bhk', '3bhk'].map(bhk => {
           const svc = FULL_HOME_SERVICES[bhk];

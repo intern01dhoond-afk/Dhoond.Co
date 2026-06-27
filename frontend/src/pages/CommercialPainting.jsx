@@ -11,7 +11,7 @@ const CommercialPainting = () => {
 
   // SEO Integration
   useSEO({
-    title: "Commercial Painting Services — Dhoond.co",
+    title: "Commercial Painting Services - Dhoond.co",
     description: "Professional painting solutions for offices, buildings, and industrial spaces. High-quality finishes and project management for commercial properties.",
     canonicalPath: "/commercial-painting"
   });

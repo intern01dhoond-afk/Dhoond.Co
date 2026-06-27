@@ -17,7 +17,7 @@ const DAMAGE_OPTIONS = [
   { id: 'cracks', label: 'Cracks on walls', icon: '🧱' },
   { id: 'peeling', label: 'Paint peeling off', icon: '⚠️' },
   { id: 'dampness', label: 'Dampness / Moisture', icon: '🌧️' },
-  { id: 'none', label: 'No issues — fresh paint only', icon: '✅' },
+  { id: 'none', label: 'No issues - fresh paint only', icon: '✅' },
 ];
 
 const CONSULTATION_FEE = 49; // Standardized across all marketing and lists
@@ -58,7 +58,7 @@ const PaintingBookingModal = ({ service, onClose }) => {
   const handleBook = () => {
     const consultItem = {
       id: service.id,  // Use the real numeric DB ID so the backend can look it up
-      title: `Painting Consultation — ${selectedBrand || service.title}`,
+      title: `Painting Consultation - ${selectedBrand || service.title}`,
       description: `Brand: ${selectedBrand} | Wall Condition: ${selectedDamages.join(', ')}`,
       discountPrice: service.discountPrice ?? CONSULTATION_FEE,
       originalPrice: service.originalPrice ?? 499,

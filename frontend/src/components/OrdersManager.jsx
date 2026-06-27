@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Package, Search, ChevronDown, UserCheck, X, CheckCircle2, MapPin, Clock, CheckCircle } from 'lucide-react';
+import { Package, Search, ChevronDown, UserCheck, X, CheckCircle2, MapPin, Clock, CheckCircle, Calendar } from 'lucide-react';
 import { formatOrderId } from '../utils/formatOrderId';
 
 const STATUS_OPTIONS = ['Pending', 'Confirmed', 'In Progress', 'Completed', 'Cancelled'];
@@ -24,7 +24,7 @@ const getStatusStyle  = (s) => STATUS_STYLES[s]  || { bg: '#f1f5f9', color: '#64
 
 const formatDate = (iso) => iso
   ? new Date(iso).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })
-  : '—';
+  : '-';
 
 const getCity = (address = '') => {
   if (!address) return 'Nagpur';
@@ -201,7 +201,7 @@ const OrdersManager = () => {
           <table style={{ width: '100%', borderCollapse: 'collapse' }}>
             <thead>
               <tr style={{ background: '#f8fafc' }}>
-                {['ID', 'Product', 'Customer', 'Location', 'Amount', 'Status', 'Actions'].map(h => <th key={h} style={{ padding: '12px', textAlign: 'left', fontSize: '12px', color: '#64748b' }}>{h}</th>)}
+                {['ID', 'Product', 'Customer', 'Schedule & Preference', 'Location', 'Amount', 'Status', 'Actions'].map(h => <th key={h} style={{ padding: '12px', textAlign: 'left', fontSize: '12px', color: '#64748b' }}>{h}</th>)}
               </tr>
             </thead>
             <tbody>
@@ -213,6 +213,35 @@ const OrdersManager = () => {
                     <td style={{ padding: '12px', fontWeight: 800, color: '#1e40af' }}>{formatOrderId(b.id, b.created_at, b.daily_sequence)}</td>
                     <td style={{ padding: '12px' }}>{items?.length > 0 ? items.map(i => i.title).join(', ') : 'Service'}</td>
                     <td style={{ padding: '12px' }}>{b.customer_name || 'Guest'}<br/><small>{b.phone}</small></td>
+                    <td style={{ padding: '12px' }}>
+                      {b.service_date ? (
+                        <>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#1e293b', fontWeight: 600, fontSize: '0.85rem' }}>
+                            <Calendar size={14} style={{ color: '#2563eb' }} />
+                            {b.service_date}
+                          </div>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#475569', fontSize: '0.8rem', marginTop: '2px' }}>
+                            <Clock size={14} style={{ color: '#64748b' }} />
+                            {b.service_slot}
+                          </div>
+                        </>
+                      ) : (
+                        <div style={{ color: '#94a3b8', fontSize: '0.8rem' }}>Not scheduled</div>
+                      )}
+                      <div style={{ marginTop: '6px' }}>
+                        {b.arrival_pref === 'direct' ? (
+                          <span style={{ background: '#f0fdf4', color: '#16a34a', padding: '3px 8px', borderRadius: '6px', fontSize: '0.75rem', fontWeight: 700, display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                            Arrive Directly
+                          </span>
+                        ) : b.arrival_pref === 'call' ? (
+                          <span style={{ background: '#eff6ff', color: '#2563eb', padding: '3px 8px', borderRadius: '6px', fontSize: '0.75rem', fontWeight: 700, display: 'inline-flex', alignItems: 'center', gap: '4px' }} title={b.arrival_note}>
+                            Call First {b.arrival_note ? `(${b.arrival_note})` : ''}
+                          </span>
+                        ) : (
+                          <span style={{ color: '#94a3b8', fontSize: '0.75rem' }}>No preference</span>
+                        )}
+                      </div>
+                    </td>
                     <td style={{ padding: '12px' }}><div style={{ background: '#f1f5f9', padding: '4px 8px', borderRadius: '6px', display: 'inline-block' }}>{getCity(b.address)}</div><br/><small>{b.address}</small></td>
                     <td style={{ padding: '12px', fontWeight: 900 }}>₹{Number(b.price || b.total_amount || 0).toLocaleString()}</td>
                     <td style={{ padding: '12px' }}>

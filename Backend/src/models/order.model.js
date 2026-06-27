@@ -1,11 +1,11 @@
 const pool = require('../db/db.js'); 
 
-const createOrder = async (user_id, partner_id, category_id, address, price, platform_fee, items = []) => {
+const createOrder = async (user_id, partner_id, category_id, address, price, platform_fee, items = [], service_date = null, service_slot = null, arrival_pref = null, arrival_note = null) => {
   const insertRes = await pool.query(
-    `INSERT INTO orders (user_id, partner_id, category_id, address, price, platform_fee, items)
-     VALUES ($1, $2, $3, $4, $5, $6, $7)
+    `INSERT INTO orders (user_id, partner_id, category_id, address, price, platform_fee, items, service_date, service_slot, arrival_pref, arrival_note)
+     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
      RETURNING id`,
-    [user_id, partner_id, category_id, address, price, platform_fee, JSON.stringify(items)]
+    [user_id, partner_id, category_id, address, price, platform_fee, JSON.stringify(items), service_date, service_slot, arrival_pref, arrival_note]
   );
 
   const orderId = insertRes.rows[0].id;
