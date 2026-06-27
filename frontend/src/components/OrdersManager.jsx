@@ -245,7 +245,7 @@ const OrdersManager = () => {
                     <td style={{ padding: '12px' }}><div style={{ background: '#f1f5f9', padding: '4px 8px', borderRadius: '6px', display: 'inline-block' }}>{getCity(b.address)}</div><br/><small>{b.address}</small></td>
                     <td style={{ padding: '12px', fontWeight: 900 }}>₹{Number(b.price || b.total_amount || 0).toLocaleString()}</td>
                     <td style={{ padding: '12px' }}>
-                      <select value={b.status} onChange={e => handleStatusChange(b.id, e.target.value)} style={{ background: ss.bg, color: ss.color, border: 'none', padding: '4px 8px', borderRadius: '99px', fontWeight: 700 }}>
+                      <select value={b.status} onChange={e => handleStatusChange(b.id, e.target.value)} style={{ background: ss.bg, color: ss.color, border: 'none', padding: '5px 24px 5px 12px', borderRadius: '99px', fontWeight: 700, minWidth: '120px', cursor: 'pointer', outline: 'none' }}>
                         {STATUS_OPTIONS.map(s => <option key={s} value={s}>{s}</option>)}
                       </select>
                     </td>
