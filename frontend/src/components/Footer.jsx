@@ -119,7 +119,7 @@ const Footer = () => {
             {/* Brand Column */}
             <div style={{ flex: '1 1 300px', maxWidth: '400px' }} className="footer-brand-col">
               <Link to="/" style={{ display: 'inline-block', marginBottom: '0.75rem' }}>
-                <img src="/images/cart%20nav.png" alt="Dhoond" style={{ height: 'auto', maxHeight: '80px', width: 'auto', objectFit: 'contain', transition: 'transform 0.3s' }}
+                <img src="/images/cart%20nav.webp" alt="Dhoond" style={{ height: 'auto', maxHeight: '80px', width: 'auto', objectFit: 'contain', transition: 'transform 0.3s' }}
                   onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.05)'}
                   onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'}
                 />

@@ -22,7 +22,7 @@ async function optimizeImages() {
 
   for (const file of files) {
     const ext = path.extname(file).toLowerCase();
-    if (ext === '.png' || ext === '.jpg' || ext === '.jpeg') {
+    if (ext === '.webp' || ext === '.webp' || ext === '.webp') {
       const inputPath = path.join(SERVICES_DIR, file);
       const outputName = file.replace(ext, '.webp');
       const outputPath = path.join(SERVICES_DIR, outputName);

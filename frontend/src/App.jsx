@@ -381,7 +381,7 @@ const Navbar = () => {
               {isPolicyPage ? (
                 <div style={{ display: 'flex', alignItems: 'center', height: '100%' }}>
                   <div className="dhoond-logo-container" style={{ width: '110px', justifyContent: 'flex-start' }}>
-                    <img src="/logo.png" alt="Dhoond" className="dhoond-logo" style={{ width: '100%', objectFit: 'contain' }} />
+                    <img src="/logo.webp" alt="Dhoond" className="dhoond-logo" style={{ width: '100%', objectFit: 'contain' }} />
                   </div>
                 </div>
               ) : location.pathname !== '/' && !location.pathname.startsWith('/admin') ? (
@@ -398,13 +398,13 @@ const Navbar = () => {
             {isPolicyPage ? (
               <div className="desktop-only" style={{ display: 'flex', alignItems: 'center' }}>
                 <div className="dhoond-logo-container" style={{ width: '130px', justifyContent: 'flex-start' }}>
-                  <img src="/logo.png" alt="Dhoond" className="dhoond-logo dhoond-logo-desktop" style={{ width: 'auto', objectFit: 'contain' }} />
+                  <img src="/logo.webp" alt="Dhoond" className="dhoond-logo dhoond-logo-desktop" style={{ width: 'auto', objectFit: 'contain' }} />
                 </div>
               </div>
             ) : (
               <Link to="/" className="desktop-only" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center' }}>
                 <div className="dhoond-logo-container" style={{ width: '130px', justifyContent: 'flex-start' }}>
-                  <img src="/logo.png" alt="Dhoond" className="dhoond-logo dhoond-logo-desktop" style={{ width: 'auto', objectFit: 'contain' }} />
+                  <img src="/logo.webp" alt="Dhoond" className="dhoond-logo dhoond-logo-desktop" style={{ width: 'auto', objectFit: 'contain' }} />
                 </div>
               </Link>
             )}
@@ -466,7 +466,7 @@ const Navbar = () => {
             {!isPolicyPage && (
               <Link to="/" style={{ display: 'flex', alignItems: 'center', height: '100%', textDecoration: 'none' }}>
                 <div className="dhoond-logo-container" style={{ width: '110px' }}>
-                  <img src="/logo.png" alt="Dhoond" className="dhoond-logo" style={{ width: '100%', objectFit: 'contain' }} />
+                  <img src="/logo.webp" alt="Dhoond" className="dhoond-logo" style={{ width: '100%', objectFit: 'contain' }} />
                 </div>
               </Link>
             )}
@@ -732,7 +732,7 @@ const Navbar = () => {
             <div style={{ padding: '1.25rem 1.25rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #f1f5f9' }}>
               <Link to="/" onClick={() => setIsMenuOpen(false)} style={{ height: '40px', display: 'flex' }}>
                 <div className="dhoond-logo-container" style={{ width: '130px', justifyContent: 'flex-start' }}>
-                  <img src="/logo.png" alt="Dhoond" className="dhoond-logo" />
+                  <img src="/logo.webp" alt="Dhoond" className="dhoond-logo" />
                 </div>
               </Link>
               <button onClick={() => setIsMenuOpen(false)} style={{ background: '#f1f5f9', border: 'none', borderRadius: '10px', width: '36px', height: '36px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', animation: 'rotateIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) 0.1s both' }}><X size={18} color="#475569" /></button>

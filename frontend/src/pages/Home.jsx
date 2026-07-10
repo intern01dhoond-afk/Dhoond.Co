@@ -8,15 +8,15 @@ import { detectCurrentLocation, isInsideGeofence } from '../utils/location';
 import ComingSoonModal from '../components/ComingSoonModal';
 import heroVideo from '../assets/hero_video.mp4';
 import heroPoster from '../assets/main-banner.webp';
-import acIcon from '../assets/icons/ac_technician.png';
-import electricianIcon from '../assets/icons/electrician.png';
-import painterIcon from '../assets/icons/painter.png';
-import refrigeratorIcon from '../assets/icons/refrigerator.png';
-import roIcon from '../assets/icons/ro_technician.png';
-import washingIcon from '../assets/icons/washing_machine.png';
-import hemanthImg from '../assets/Kuruba Hemanth Kishore.png';
-import rahulImg from '../assets/rahul_avatar.png';
-import sunitaImg from '../assets/sunita_avatar.png';
+import acIcon from '../assets/icons/ac_technician.webp';
+import electricianIcon from '../assets/icons/electrician.webp';
+import painterIcon from '../assets/icons/painter.webp';
+import refrigeratorIcon from '../assets/icons/refrigerator.webp';
+import roIcon from '../assets/icons/ro_technician.webp';
+import washingIcon from '../assets/icons/washing_machine.webp';
+import hemanthImg from '../assets/Kuruba Hemanth Kishore.webp';
+import rahulImg from '../assets/rahul_avatar.webp';
+import sunitaImg from '../assets/sunita_avatar.webp';
 import painterHero from '../assets/Hero images/painter_hero.webp';
 import acHero from '../assets/Hero images/ac_hero.webp';
 import plumberHero from '../assets/Hero images/plumber_hero.webp';
@@ -121,22 +121,22 @@ const Home = () => {
       if (t === 'water purifier installation') return '/services/water_purifier.webp';
       if (t === 'electrician visit') return '/services/electrician_visit.webp';
 
-      if (t.includes('consultation') || t.includes('expert')) return '/painting_banner.png';
-      if (t.includes('single')) return '/images/single%20wall.jpg';
+      if (t.includes('consultation') || t.includes('expert')) return '/painting_banner.webp';
+      if (t.includes('single')) return '/images/single%20wall.webp';
       if (t.includes('exterior') || t.includes('weather')) return '/images/exterior_painting.webp';
-      if (t.includes('texture') || t.includes('stencil')) return '/texture.png';
-      if (t.includes('commercial') || t.includes('office') || t.includes('school')) return '/images/office%20space.jpg';
-      if (t.includes('warehouse') || t.includes('industrial')) return '/images/ware%20house.jpg';
-      if (t.includes('kitchen') || t.includes('bathroom')) return '/wall2.jpg';
-      if (t.includes('1bhk') || t.includes('1 bhk')) return '/wall2.jpg';
-      if (t.includes('2bhk') || t.includes('2 bhk')) return '/space.jpg';
-      if (t.includes('3bhk') || t.includes('3 bhk')) return '/interior.jpg';
-      if (t.includes('4bhk') || t.includes('4 bhk') || t.includes('villa')) return '/images/vila.jpg';
-      if (t.includes('primer') || t.includes('priming')) return '/priming_specialist_painter.png';
-      if (t.includes('ceiling')) return '/interior.jpg';
-      if (t.includes('touch') || t.includes('repair')) return '/touch_up_painter.png';
-      if (t.includes('spray')) return '/spray_painter.png';
-      if (t.includes('full') || t.includes('home')) return '/wall1.jpg';
+      if (t.includes('texture') || t.includes('stencil')) return '/texture.webp';
+      if (t.includes('commercial') || t.includes('office') || t.includes('school')) return '/images/office%20space.webp';
+      if (t.includes('warehouse') || t.includes('industrial')) return '/images/ware%20house.webp';
+      if (t.includes('kitchen') || t.includes('bathroom')) return '/wall2.webp';
+      if (t.includes('1bhk') || t.includes('1 bhk')) return '/wall2.webp';
+      if (t.includes('2bhk') || t.includes('2 bhk')) return '/space.webp';
+      if (t.includes('3bhk') || t.includes('3 bhk')) return '/interior.webp';
+      if (t.includes('4bhk') || t.includes('4 bhk') || t.includes('villa')) return '/images/vila.webp';
+      if (t.includes('primer') || t.includes('priming')) return '/priming_specialist_painter.webp';
+      if (t.includes('ceiling')) return '/interior.webp';
+      if (t.includes('touch') || t.includes('repair')) return '/touch_up_painter.webp';
+      if (t.includes('spray')) return '/spray_painter.webp';
+      if (t.includes('full') || t.includes('home')) return '/wall1.webp';
       return '/images/exterior_painting.webp'; // generic fallback — a real painting photo
     };
 
@@ -150,11 +150,11 @@ const Home = () => {
     ];
 
     const paintingFallback = [
-      { id: 'f1', title: '2 BHK Full Painting (Interior)', discountPrice: 11999, originalPrice: 16999, image: '/space.jpg' },
-      { id: 'f2', title: '3 BHK Full Painting (Interior)', discountPrice: 17499, originalPrice: 24999, image: '/interior.jpg' },
-      { id: 'f3', title: '4 BHK / Villa Full Painting', discountPrice: 27999, originalPrice: 39999, image: '/images/vila.jpg' },
-      { id: 'f4', title: 'Office Painting (per 1000 sq ft)', discountPrice: 9999, originalPrice: 12999, image: '/images/office space.jpg' },
-      { id: 'f5', title: 'Exterior Wall Painting (Single)', discountPrice: 4499, originalPrice: 5999, image: '/images/single wall.jpg' },
+      { id: 'f1', title: '2 BHK Full Painting (Interior)', discountPrice: 11999, originalPrice: 16999, image: '/space.webp' },
+      { id: 'f2', title: '3 BHK Full Painting (Interior)', discountPrice: 17499, originalPrice: 24999, image: '/interior.webp' },
+      { id: 'f3', title: '4 BHK / Villa Full Painting', discountPrice: 27999, originalPrice: 39999, image: '/images/vila.webp' },
+      { id: 'f4', title: 'Office Painting (per 1000 sq ft)', discountPrice: 9999, originalPrice: 12999, image: '/images/office space.webp' },
+      { id: 'f5', title: 'Exterior Wall Painting (Single)', discountPrice: 4499, originalPrice: 5999, image: '/images/single wall.webp' },
       { id: 'f6', title: 'Full Exterior Home Painting', discountPrice: 18999, originalPrice: 24999, image: '/images/exterior_painting.webp' },
     ];
 
@@ -1028,7 +1028,7 @@ const Home = () => {
                   {/* Glow behind image */}
                   <div style={{ position: 'absolute', inset: '-60px', background: 'radial-gradient(circle, rgba(99,102,241,0.35) 0%, transparent 70%)', filter: 'blur(30px)', borderRadius: '50%', pointerEvents: 'none' }} />
                   <img
-                    src="/images/hero_tech.png"
+                    src="/images/hero_tech.webp"
                     alt="Dhoond Service Excellence"
                     style={{
                       width: '100%',

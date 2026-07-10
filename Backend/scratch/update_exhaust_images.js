@@ -7,7 +7,7 @@ const pool = new Pool({
 
 async function updateExhaustImages() {
   try {
-    const targetImage = '/services/exhaust_fan_uninstall.png';
+    const targetImage = '/services/exhaust_fan_uninstall.webp';
     const titles = ['Exhaust Fan Installation', 'Exhaust Fan Uninstallation'];
     
     for (const title of titles) {

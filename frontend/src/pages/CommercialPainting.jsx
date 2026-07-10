@@ -22,7 +22,7 @@ const CommercialPainting = () => {
     category: 'Commercial',
     price: 499,
     discountPrice: 49,
-    image: '/commercial_painting.jpg'
+    image: '/commercial_painting.webp'
   };
 
   const isAdded = cartItems.some(item => item.id === consultationItem.id);
@@ -55,7 +55,7 @@ const CommercialPainting = () => {
     {
       title: 'Modern Office Spaces',
       desc: 'Premium finishes for corporate environments, focusing on productivity and brand identity.',
-      image: '/commercial_painting.jpg',
+      image: '/commercial_painting.webp',
       icon: <Building2 size={24} />
     },
     {
@@ -77,7 +77,7 @@ const CommercialPainting = () => {
       {/* Editorial Header */}
       <div style={{ height: '60vh', position: 'relative', overflow: 'hidden', background: '#0f172a' }}>
         <img 
-          src="/commercial_painting.jpg" 
+          src="/commercial_painting.webp" 
           alt="Commercial Painting" 
           style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 0.6 }} 
         />

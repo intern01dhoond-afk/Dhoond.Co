@@ -7,13 +7,13 @@ const ConsultationProcessModal = ({ onClose }) => {
       id: 1,
       title: 'At-home consultation',
       desc: 'Our expert will visit to understand your needs and take digital measurements of your rooms.',
-      img: '/interior.jpg'
+      img: '/interior.webp'
     },
     {
       id: 2,
       title: 'We inspect walls',
       desc: 'The consultant uses a digital dampness meter to check for seepage and inspects the wall for potential structural repairs.',
-      imgs: ['/wall2.jpg', '/paint-progress.png']
+      imgs: ['/wall2.webp', '/paint-progress.webp']
     },
     {
       id: 3,

@@ -7,7 +7,7 @@ const pool = new Pool({
 
 async function updateWMFrontLoadImage() {
   try {
-    const targetImage = '/services/washing_machine_inspection_fully_automatic_front_load_.png';
+    const targetImage = '/services/washing_machine_inspection_fully_automatic_front_load_.webp';
     const targetTitle = "Washing Machine Installation 'Fully-automatic front load'";
     
     const res = await pool.query(

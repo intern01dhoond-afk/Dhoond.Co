@@ -355,7 +355,7 @@ const ServicesManager = () => {
 
                 <div style={{ gridColumn: '1 / -1' }}>
                   <label style={labelStyle}>Image URL</label>
-                  <input className="svc-input" name="image" value={formData.image} onChange={handleChange} placeholder="https://… or /public-path.png" style={inputStyle} />
+                  <input className="svc-input" name="image" value={formData.image} onChange={handleChange} placeholder="https://… or /public-path.webp" style={inputStyle} />
                   {formData.image && (
                     <img src={formData.image} alt="preview" onError={e => e.target.style.display = 'none'} style={{ marginTop: '8px', height: '64px', borderRadius: '8px', objectFit: 'cover', border: '1px solid #e2e8f0' }} />
                   )}
