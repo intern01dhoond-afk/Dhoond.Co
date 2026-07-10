@@ -10,7 +10,8 @@ const Footer = () => {
   const isSimplifiedPage = ['/cart', '/shop/cart', '/checkout'].includes(location.pathname);
   const isPrivacyPolicy = location.pathname === '/privacy-policy';
   const isTermsOfService = location.pathname === '/terms-of-service';
-  const isSpecialPolicyPage = isPrivacyPolicy || isTermsOfService;
+  const isAboutPage = location.pathname === '/about';
+  const isSpecialPolicyPage = isPrivacyPolicy || isTermsOfService || isAboutPage;
 
   const isBengaluru = (locationLabel || '').toLowerCase().includes('bengaluru') ||
     (locationLabel || '').toLowerCase().includes('bangalore') ||
@@ -30,10 +31,16 @@ const Footer = () => {
   return (
     <footer style={{ background: '#0f172a', color: '#f8fafc' }}>
       {/* Top contact bar */}
-      <div style={{ background: '#1e293b', borderBottom: '1px solid #334155', padding: 'var(--footer-contact-pad, 3.5rem 5%)' }}>
+      <div 
+        style={{ 
+          background: '#1e293b', 
+          borderBottom: '1px solid #334155', 
+          padding: 'var(--footer-contact-pad, 1.5rem 5%)' 
+        }}
+      >
         <style>{`
           @media (max-width: 768px) {
-            :root { --footer-contact-pad: 2.5rem 1.5rem; --footer-main-pad: 3rem 1.5rem 2rem; --footer-main-gap: 3.5rem 2rem; }
+            :root { --footer-contact-pad: 1.25rem 1.5rem; --footer-main-pad: 3rem 1.5rem 2rem; --footer-main-gap: 3.5rem 2rem; }
             .mobile-centered-col { align-items: center !important; text-align: center !important; }
             .mobile-bottom-links { flex-direction: column !important; gap: 1rem !important; }
             .simplified-footer-hide-mobile { display: none !important; }
