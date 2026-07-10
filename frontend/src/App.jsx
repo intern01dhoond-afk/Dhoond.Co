@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter, Routes, Route, Link, useLocation, useNavigate, Outlet } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Link, useLocation, useNavigate, Outlet, Navigate } from 'react-router-dom';
 import { ShoppingCart, Menu, X, Search, User, ChevronDown, MapPin, Zap, LogOut, Package, LayoutDashboard, ChevronLeft, Home as HomeIcon, Paintbrush, Phone, Store, ArrowUpRight, Info } from 'lucide-react';
 import Home from './pages/Home';
 const Shop = React.lazy(() => import('./pages/Shop'));
@@ -12,6 +12,7 @@ const Admin = React.lazy(() => import('./pages/Admin'));
 const PrivacyPolicy = React.lazy(() => import('./pages/PrivacyPolicy'));
 const TermsOfService = React.lazy(() => import('./pages/TermsOfService'));
 const About = React.lazy(() => import('./pages/About'));
+const NotFound = React.lazy(() => import('./pages/NotFound'));
 import Footer from './components/Footer';
 import { CartProvider, useCart } from './context/CartContext';
 import { AuthProvider, useAuth } from './context/AuthContext';
@@ -901,6 +902,7 @@ function App() {
                 <Route path="/admin/*" element={<Admin />} />
                 <Route element={<MainLayout />}>
                   <Route path="/" element={<Home />} />
+                  <Route path="/index.html" element={<Navigate to="/" replace />} />
                   <Route path="/about" element={<About />} />
                   <Route path="/shop" element={<Shop />} />
                   <Route path="/shop/cart" element={<Cart />} />
@@ -911,6 +913,7 @@ function App() {
                   <Route path="/profile" element={<Profile />} />
                   <Route path="/privacy-policy" element={<PrivacyPolicy />} />
                   <Route path="/terms-of-service" element={<TermsOfService />} />
+                  <Route path="*" element={<NotFound />} />
                 </Route>
               </Routes>
             </React.Suspense>
