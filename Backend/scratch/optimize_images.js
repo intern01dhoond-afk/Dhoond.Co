@@ -1,88 +1,67 @@
 const sharp = require('sharp');
-const path = require('path');
 const fs = require('fs');
+const path = require('path');
+const { Pool } = require('pg');
+require('dotenv').config({ path: path.join(__dirname, '../.env') });
 
-const rootDir = path.resolve(__dirname, '../..');
+const SERVICES_DIR = path.join(__dirname, '../../frontend/public/services');
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+});
 
-const imagesToOptimize = [
-  { relPath: 'frontend/public/icons/playstore.png', targetWidth: 360, targetHeight: 120, isSquare: false, format: 'png' },
-  { relPath: 'frontend/public/images/cart nav.webp', targetWidth: 360, isSquare: false, format: 'webp' },
-  { relPath: 'frontend/src/assets/Kuruba Hemanth Kishore.webp', targetWidth: 80, targetHeight: 80, isSquare: true, format: 'webp' },
-  { relPath: 'frontend/src/assets/rahul_avatar.webp', targetWidth: 80, targetHeight: 80, isSquare: true, format: 'webp' },
-  { relPath: 'frontend/src/assets/sunita_avatar.webp', targetWidth: 80, targetHeight: 80, isSquare: true, format: 'webp' },
-  { relPath: 'frontend/public/images/hero_tech.webp', targetWidth: 600, isSquare: false, format: 'webp' },
-  { relPath: 'frontend/public/logo.webp', targetWidth: 260, isSquare: false, format: 'webp' },
-  { relPath: 'frontend/public/services/ac_gas_top_up.webp', targetWidth: 520, isSquare: false, format: 'webp' },
-  { relPath: 'frontend/public/services/geyser.webp', targetWidth: 520, isSquare: false, format: 'webp' },
-  { relPath: 'frontend/public/services/electrician_ceiling_fan_install.webp', targetWidth: 520, isSquare: false, format: 'webp' },
-  { relPath: 'frontend/public/interior.webp', targetWidth: 520, isSquare: false, format: 'webp' },
-  { relPath: 'frontend/public/images/vila.webp', targetWidth: 520, isSquare: false, format: 'webp' },
-  { relPath: 'frontend/public/space.webp', targetWidth: 520, isSquare: false, format: 'webp' },
-  { relPath: 'frontend/src/assets/Hero images/ac_hero.webp', targetWidth: 613, isSquare: false, format: 'webp' },
-  { relPath: 'frontend/src/assets/Hero images/drill_hero.webp', targetWidth: 613, isSquare: false, format: 'webp' },
-  { relPath: 'frontend/src/assets/Hero images/painter_hero.webp', targetWidth: 613, isSquare: false, format: 'webp' },
-  { relPath: 'frontend/src/assets/Hero images/plumber_hero.webp', targetWidth: 613, isSquare: false, format: 'webp' }
-];
-
-async function optimizeImage(task) {
-  const fullPath = path.join(rootDir, task.relPath);
+async function optimizeImages() {
+  console.log('--- Starting Image Optimization ---');
   
-  if (!fs.existsSync(fullPath)) {
-    console.warn(`File not found: ${fullPath}`);
+  if (!fs.existsSync(SERVICES_DIR)) {
+    console.error('Services directory not found:', SERVICES_DIR);
     return;
   }
-  
-  console.log(`Processing: ${task.relPath}...`);
-  try {
-    const originalSize = fs.statSync(fullPath).size;
-    
-    // Read the file into a Node.js Buffer
-    const inputBuffer = fs.readFileSync(fullPath);
-    
-    // Instantiate sharp with the buffer rather than the path string
-    const instance = sharp(inputBuffer);
-    const metadata = await instance.metadata();
-    
-    const originalWidth = metadata.width;
-    const originalHeight = metadata.height;
-    
-    // If the image is already smaller than or equal to target, skip or just re-compress
-    if (originalWidth <= task.targetWidth && !task.isSquare) {
-      console.log(`  Skipping resize for ${task.relPath} (current width ${originalWidth} <= target ${task.targetWidth})`);
-      return;
+
+  const files = fs.readdirSync(SERVICES_DIR);
+  console.log(`Found ${files.length} files in ${SERVICES_DIR}`);
+
+  for (const file of files) {
+    const ext = path.extname(file).toLowerCase();
+    if (ext === '.webp' || ext === '.webp' || ext === '.webp') {
+      const inputPath = path.join(SERVICES_DIR, file);
+      const outputName = file.replace(ext, '.webp');
+      const outputPath = path.join(SERVICES_DIR, outputName);
+
+      try {
+        console.log(`Optimizing: ${file} -> ${outputName}`);
+        
+        // Optimize to WebP with 80% quality
+        await sharp(inputPath)
+          .webp({ quality: 80 })
+          .toFile(outputPath);
+
+        // Delete original file if conversion succeeded and name is different
+        if (inputPath !== outputPath) {
+          fs.unlinkSync(inputPath);
+          console.log(`  Deleted original: ${file}`);
+        }
+
+        // Update database
+        const oldUrl = `/services/${file}`;
+        const newUrl = `/services/${outputName}`;
+        
+        const res = await pool.query(
+          "UPDATE services SET image = $1 WHERE image = $2",
+          [newUrl, oldUrl]
+        );
+        
+        if (res.rowCount > 0) {
+          console.log(`  Updated ${res.rowCount} rows in DB for ${file}`);
+        }
+
+      } catch (err) {
+        console.error(`  Error processing ${file}:`, err.message);
+      }
     }
-    
-    let pipeline = instance;
-    if (task.isSquare && task.targetHeight) {
-      pipeline = pipeline.resize(task.targetWidth, task.targetHeight, { fit: 'cover' });
-    } else if (task.targetHeight) {
-      pipeline = pipeline.resize(task.targetWidth, task.targetHeight);
-    } else {
-      pipeline = pipeline.resize(task.targetWidth);
-    }
-    
-    if (task.format === 'png') {
-      pipeline = pipeline.png({ quality: 80, compressionLevel: 9 });
-    } else {
-      pipeline = pipeline.webp({ quality: 75 });
-    }
-    
-    const outputBuffer = await pipeline.toBuffer();
-    fs.writeFileSync(fullPath, outputBuffer);
-    
-    const newSize = fs.statSync(fullPath).size;
-    console.log(`  Done: ${originalWidth}x${originalHeight} -> ${task.targetWidth}x${task.isSquare ? task.targetHeight : Math.round(originalHeight * (task.targetWidth / originalWidth))}. Size: ${Math.round(originalSize / 1024)} KB -> ${Math.round(newSize / 1024)} KB`);
-  } catch (err) {
-    console.error(`  Error processing ${task.relPath}:`, err.message);
   }
+
+  console.log('--- Optimization Complete ---');
+  await pool.end();
 }
 
-async function main() {
-  console.log("Starting image optimization process with Sharp Buffer...");
-  for (const task of imagesToOptimize) {
-    await optimizeImage(task);
-  }
-  console.log("All images processed successfully!");
-}
-
-main();
+optimizeImages();

@@ -520,7 +520,7 @@ const Navbar = () => {
                 </div>
 
                 <div style={{ position: 'relative' }} className="desktop-only">
-                  <button className="icon-btn" onClick={() => isAuthenticated ? setIsProfileOpen(!isProfileOpen) : setIsAuthOpen(true)} aria-label={isAuthenticated ? "Open user profile" : "Log in"}>
+                  <button className="icon-btn" onClick={() => isAuthenticated ? setIsProfileOpen(!isProfileOpen) : setIsAuthOpen(true)}>
                     <User size={24} color={isAuthenticated ? '#2563eb' : 'currentColor'} />
                   </button>
 
@@ -541,7 +541,7 @@ const Navbar = () => {
                   )}
                 </div>
 
-                <button className="icon-btn" onClick={() => navigate('/shop/cart')} style={{ position: 'relative' }} aria-label="View shopping cart">
+                <button className="icon-btn" onClick={() => navigate('/shop/cart')} style={{ position: 'relative' }}>
                   <ShoppingCart size={24} />
                   {totalItems > 0 && (
                     <span style={{ position: 'absolute', top: '2px', right: '2px', background: '#facc15', color: '#1e293b', borderRadius: '50%', width: '16px', height: '16px', fontSize: '9px', fontWeight: 800, display: 'flex', alignItems: 'center', justifyContent: 'center', border: '2px solid #fff' }}>
@@ -586,7 +586,7 @@ const Navbar = () => {
               <>
                 {/* Map header */}
                 <div style={{ padding: '1rem 1.25rem', display: 'flex', alignItems: 'center', gap: '0.75rem', borderBottom: '1px solid #f1f5f9' }}>
-                  <button onClick={() => setShowMap(false)} aria-label="Back" style={{ background: '#f3f4f6', border: 'none', borderRadius: '50%', width: '34px', height: '34px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                  <button onClick={() => setShowMap(false)} style={{ background: '#f3f4f6', border: 'none', borderRadius: '50%', width: '34px', height: '34px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                     <ChevronLeft size={18} color="#374151" />
                   </button>
                   <div>
@@ -652,7 +652,7 @@ const Navbar = () => {
                     <p style={{ margin: 0, fontWeight: 900, fontSize: '1.05rem', color: '#0f172a', letterSpacing: '-0.01em' }}>Set your location</p>
                     <p style={{ margin: '2px 0 0', fontSize: '0.78rem', color: '#94a3b8', fontWeight: 500 }}>Find services near you</p>
                   </div>
-                  <button onClick={closeLocation} aria-label="Close" style={{ background: '#f3f4f6', border: 'none', borderRadius: '50%', width: '34px', height: '34px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <button onClick={closeLocation} style={{ background: '#f3f4f6', border: 'none', borderRadius: '50%', width: '34px', height: '34px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                     <X size={16} color="#374151" />
                   </button>
                 </div>
@@ -733,10 +733,10 @@ const Navbar = () => {
             <div style={{ padding: '1.25rem 1.25rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #f1f5f9' }}>
               <Link to="/" onClick={() => setIsMenuOpen(false)} style={{ height: '40px', display: 'flex' }}>
                 <div className="dhoond-logo-container" style={{ width: '130px', justifyContent: 'flex-start' }}>
-                  <img src="/logo.webp" alt="Dhoond" className="dhoond-logo" style={{ width: '100%', objectFit: 'contain' }} />
+                  <img src="/logo.webp" alt="Dhoond" className="dhoond-logo" />
                 </div>
               </Link>
-              <button onClick={() => setIsMenuOpen(false)} aria-label="Close menu" style={{ background: '#f1f5f9', border: 'none', borderRadius: '10px', width: '36px', height: '36px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', animation: 'rotateIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) 0.1s both' }}><X size={18} color="#475569" /></button>
+              <button onClick={() => setIsMenuOpen(false)} style={{ background: '#f1f5f9', border: 'none', borderRadius: '10px', width: '36px', height: '36px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', animation: 'rotateIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) 0.1s both' }}><X size={18} color="#475569" /></button>
             </div>
 
             {/* Profile */}

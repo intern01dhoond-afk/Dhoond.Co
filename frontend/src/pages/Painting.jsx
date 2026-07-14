@@ -1146,7 +1146,7 @@ export default function Painting() {
                 <div className="p-tauthor">
                   <div className="p-tavatar">
                     {t.avatar ? (
-                      <img src={t.avatar} alt={t.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} loading="lazy" />
+                      <img src={t.avatar} alt={t.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                     ) : (
                       <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#eee', color: '#2563eb', fontWeight: 900 }}>{t.name[0]}</div>
                     )}
@@ -1206,7 +1206,7 @@ export default function Painting() {
                   ];
                   const rotatedBrands = [...brands.slice(brandRotation), ...brands.slice(0, brandRotation)];
                   return rotatedBrands.map(b => (
-                    <img key={b.alt} src={b.src} alt={b.alt} style={{ height: b.h, objectFit: 'contain', mixBlendMode: 'multiply', transition: 'all 0.5s ease', cursor: 'pointer' }} loading="lazy"
+                    <img key={b.alt} src={b.src} alt={b.alt} style={{ height: b.h, objectFit: 'contain', mixBlendMode: 'multiply', transition: 'all 0.5s ease', cursor: 'pointer' }}
                       onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.08)'}
                       onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'}
                     />
