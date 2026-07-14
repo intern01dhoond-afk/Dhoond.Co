@@ -219,6 +219,7 @@ const MetaBrowserPopup = () => {
         
         <button
           onClick={handleClose}
+          aria-label="Close"
           style={{
             position: 'absolute',
             top: '20px',

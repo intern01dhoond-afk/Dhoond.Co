@@ -491,7 +491,13 @@ const Home = () => {
                           cursor: 'pointer'
                         }}
                       >
-                        <img src={slide} alt={['Professional painting services', 'AC repair and servicing', 'Plumbing services', 'Home maintenance and drilling services'][idx]} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                        <img 
+                          src={slide} 
+                          alt={['Professional painting services', 'AC repair and servicing', 'Plumbing services', 'Home maintenance and drilling services'][idx]} 
+                          style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
+                          loading={idx === 0 ? "eager" : "lazy"}
+                          fetchPriority={idx === 0 ? "high" : "low"}
+                        />
                       </div>
                     ))}
                     
