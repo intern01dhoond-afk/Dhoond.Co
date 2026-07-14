@@ -631,7 +631,7 @@ const Navbar = () => {
                     }}
                     style={{
                       width: '100%', padding: '0.85rem',
-                      background: mapSelectedLabel ? 'linear-gradient(135deg, #2563eb, #1d4ed8)' : '#e2e8f0',
+                      background: mapSelectedLabel ? 'linear-gradient(135deg, #1E99FE, #0c82eb)' : '#e2e8f0',
                       color: mapSelectedLabel ? '#fff' : '#94a3b8',
                       border: 'none', borderRadius: '14px',
                       fontWeight: 800, fontSize: '0.9rem',
@@ -799,11 +799,11 @@ const Navbar = () => {
                   setTimeout(() => document.querySelector('#services-section')?.scrollIntoView({ behavior: 'smooth' }), 100);
                 }} style={{
                   width: '100%', padding: '0.9rem',
-                  background: 'linear-gradient(135deg, #2563eb 0%, #1e40af 100%)',
+                  background: 'linear-gradient(135deg, #1E99FE 0%, #0c82eb 100%)',
                   color: '#fff', border: 'none', borderRadius: '14px',
                   fontWeight: 800, fontSize: '0.9rem', cursor: 'pointer',
                   display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
-                  boxShadow: '0 6px 20px rgba(37,99,235,0.3)',
+                  boxShadow: '0 6px 20px rgba(30,153,254,0.3)',
                 }}>
                   Book a Service <ArrowUpRight size={16} strokeWidth={3} />
                 </button>

@@ -430,7 +430,7 @@ const Home = () => {
                 <h1 style={{ fontSize: 'clamp(1.75rem, 5vw, 3.5rem)', fontWeight: 700, color: '#0f172a', lineHeight: 1.15, marginBottom: '1.5rem', letterSpacing: '-0.02em', maxWidth: '620px' }}>
                   Reliable Home &amp;<br />
                   Commercial Services<br />
-                  <span style={{ color: '#0a57d0', fontWeight: 700 }}>Right at Your Spot</span>
+                  <span style={{ color: '#1E99FE', fontWeight: 700 }}>Right at Your Spot</span>
                 </h1>
                 <p style={{ fontSize: '1.05rem', fontWeight: 400, color: '#64748b', marginBottom: '2rem', lineHeight: 1.7, maxWidth: '500px' }}>
                   From routine maintenance to major upgrades - book trusted professionals for all your home and commercial service needs.
@@ -439,7 +439,7 @@ const Home = () => {
                 <div className="hero-cta-row" style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem', marginBottom: '2rem' }}>
                   <button
                     onClick={() => servicesRef.current?.scrollIntoView({ behavior: 'smooth' })}
-                    style={{ background: '#0b3cba', color: '#fff', padding: '1rem 2.25rem', borderRadius: '14px', fontWeight: 800, fontSize: '1rem', border: 'none', cursor: 'pointer', boxShadow: '0 8px 30px rgba(11,60,186,0.3)', display: 'inline-flex', alignItems: 'center', gap: '8px', transition: 'all 0.3s ease' }}
+                    style={{ background: '#1E99FE', color: '#fff', padding: '1rem 2.25rem', borderRadius: '14px', fontWeight: 800, fontSize: '1rem', border: 'none', cursor: 'pointer', boxShadow: '0 8px 30px rgba(30,153,254,0.3)', display: 'inline-flex', alignItems: 'center', gap: '8px', transition: 'all 0.3s ease' }}
                     className="btn-hover"
                   >
                     Book a Service <ArrowUpRight size={18} strokeWidth={3} />
@@ -452,7 +452,7 @@ const Home = () => {
                         openComingSoon();
                       }
                     }}
-                    style={{ background: '#ffffff', color: '#0b3cba', padding: '1rem 2.25rem', borderRadius: '14px', fontWeight: 700, fontSize: '1rem', border: '1.5px solid #0b3cba', cursor: 'pointer', transition: 'all 0.3s ease' }}
+                    style={{ background: '#ffffff', color: '#1E99FE', padding: '1rem 2.25rem', borderRadius: '14px', fontWeight: 700, fontSize: '1rem', border: '1.5px solid #1E99FE', cursor: 'pointer', transition: 'all 0.3s ease' }}
                     className="btn-hover"
                   >
                     Explore Painting
@@ -901,7 +901,7 @@ const Home = () => {
                         className="card-hover-lift svc-card-btn"
                         style={{
                           width: '100%',
-                          background: isConsult ? 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)' : '#0f172a',
+                          background: isConsult ? 'linear-gradient(135deg, #1E99FE 0%, #0c82eb 100%)' : '#1E99FE',
                           color: '#fff', border: 'none',
                           padding: '0.7rem 1rem',
                           borderRadius: '12px', fontWeight: 700, fontSize: '0.875rem', cursor: 'pointer',
@@ -1015,7 +1015,7 @@ const Home = () => {
                 {/* CTA */}
                 <button
                   onClick={() => servicesRef.current?.scrollIntoView({ behavior: 'smooth' })}
-                  style={{ background: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #d946ef 100%)', color: '#fff', border: 'none', padding: '1.15rem 2.75rem', borderRadius: '16px', fontWeight: 800, fontSize: '1.05rem', cursor: 'pointer', boxShadow: '0 10px 30px -10px rgba(139,92,246,0.6)', display: 'inline-flex', alignItems: 'center', gap: '0.6rem', transition: 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)' }}
+                  style={{ background: 'linear-gradient(135deg, #1E99FE 0%, #0c82eb 100%)', color: '#fff', border: 'none', padding: '1.15rem 2.75rem', borderRadius: '16px', fontWeight: 800, fontSize: '1.05rem', cursor: 'pointer', boxShadow: '0 10px 30px -10px rgba(30,153,254,0.6)', display: 'inline-flex', alignItems: 'center', gap: '0.6rem', transition: 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)' }}
                   className="btn-hover"
                 >
                   Book a Service Now <ChevronRight size={18} strokeWidth={2.5} />

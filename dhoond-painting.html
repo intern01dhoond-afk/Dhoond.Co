@@ -9,7 +9,7 @@
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
   --cream:#F5F0E8;--warm-white:#FAF8F4;
-  --clay:#C4825A;--clay-dark:#9B5E3A;
+  --clay:#1E99FE;--clay-dark:#0c82eb;
   --forest:#3A5143;--charcoal:#2B2B2B;
   --dust:#8C8679;--gold:#D4A85A;--sage:#8FA882;
   --border:rgba(60,50,40,0.12);
@@ -33,8 +33,8 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:cen
 .nav-links{display:flex;gap:32px;list-style:none}
 .nav-links a{text-decoration:none;color:var(--dust);font-size:14px;transition:color .2s}
 .nav-links a:hover{color:var(--charcoal)}
-.nav-cta{background:var(--charcoal);color:#fff;padding:10px 22px;border-radius:100px;font-size:13px;font-weight:500;text-decoration:none;transition:background .25s}
-.nav-cta:hover{background:var(--clay)}
+.nav-cta{background:var(--clay);color:#fff;padding:10px 22px;border-radius:100px;font-size:13px;font-weight:500;text-decoration:none;transition:background .25s}
+.nav-cta:hover{background:var(--clay-dark)}
 
 /* HERO */
 .hero{min-height:100vh;padding:120px 5vw 80px;display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center;background:var(--cream);overflow:hidden;position:relative}
@@ -46,8 +46,8 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:cen
 .line-inner{display:block;transform:translateY(110%)}
 .hero-sub{font-size:16px;color:var(--dust);line-height:1.7;max-width:420px;margin-bottom:36px;font-weight:300;opacity:0;transform:translateY(18px)}
 .hero-actions{display:flex;align-items:center;gap:16px;opacity:0;transform:translateY(18px)}
-.btn-primary{background:var(--charcoal);color:#fff;padding:14px 28px;border-radius:100px;font-size:14px;font-weight:500;text-decoration:none;display:inline-flex;align-items:center;gap:8px;position:relative;overflow:hidden}
-.btn-primary .btn-fill{position:absolute;inset:0;background:var(--clay);transform:scaleX(0);transform-origin:left;transition:transform .38s cubic-bezier(.76,0,.24,1);border-radius:inherit}
+.btn-primary{background:var(--clay);color:#fff;padding:14px 28px;border-radius:100px;font-size:14px;font-weight:500;text-decoration:none;display:inline-flex;align-items:center;gap:8px;position:relative;overflow:hidden}
+.btn-primary .btn-fill{position:absolute;inset:0;background:var(--clay-dark);transform:scaleX(0);transform-origin:left;transition:transform .38s cubic-bezier(.76,0,.24,1);border-radius:inherit}
 .btn-primary:hover .btn-fill{transform:scaleX(1)}
 .btn-primary span,.btn-primary svg{position:relative;z-index:1}
 .btn-outline{color:var(--charcoal);padding:14px 24px;border-radius:100px;font-size:14px;text-decoration:none;border:1px solid var(--border);transition:border-color .2s}
