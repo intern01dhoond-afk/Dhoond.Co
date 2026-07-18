@@ -12,6 +12,8 @@ const Admin = React.lazy(() => import('./pages/Admin'));
 const PrivacyPolicy = React.lazy(() => import('./pages/PrivacyPolicy'));
 const TermsOfService = React.lazy(() => import('./pages/TermsOfService'));
 const About = React.lazy(() => import('./pages/About'));
+const Blog = React.lazy(() => import('./pages/Blog'));
+const BlogPost = React.lazy(() => import('./pages/BlogPost'));
 import Footer from './components/Footer';
 import { CartProvider, useCart } from './context/CartContext';
 import { AuthProvider, useAuth } from './context/AuthContext';
@@ -322,8 +324,226 @@ const Navbar = () => {
         .suggest-item:hover { background: #f0f9ff; }
         .loc-use-btn:hover { background: #f0f0ff; }
         
+        /* New Pixel-Perfect Desktop Navbar Classes */
+        .navbar-desktop-only {
+          height: 64px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          width: 100%;
+          background-color: #ffffff;
+        }
+        
+        .navbar-desktop-content {
+          max-width: 1440px;
+          width: 100%;
+          margin: 0 auto;
+          padding: 0 32px;
+          display: flex;
+          align-items: center;
+        }
+
+        .nav-logo-link-desktop {
+          display: flex;
+          align-items: center;
+          text-decoration: none;
+          flex-shrink: 0;
+          margin-right: 20px;
+        }
+
+        .nav-logo-desktop {
+          height: 28px;
+          width: auto;
+          object-fit: contain;
+          display: block;
+        }
+
+        .nav-location-desktop {
+          display: flex;
+          align-items: center;
+          gap: 5px;
+          cursor: pointer;
+          font-family: 'Inter', 'Plus Jakarta Sans', sans-serif;
+          font-size: 13px;
+          font-weight: 500;
+          color: #374151;
+          max-width: 220px;
+          user-select: none;
+          margin-right: 36px;
+          flex-shrink: 0;
+        }
+
+        .nav-location-icon {
+          color: #374151;
+          flex-shrink: 0;
+        }
+
+        .nav-location-text {
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+          color: #374151;
+          font-size: 13px;
+          font-weight: 500;
+        }
+
+        .nav-location-arrow {
+          color: #6B7280;
+          flex-shrink: 0;
+          margin-left: 1px;
+        }
+
+        .nav-links-desktop {
+          display: flex;
+          align-items: center;
+          gap: 28px;
+          margin-right: auto;
+        }
+
+        .nav-link-desktop {
+          position: relative;
+          text-decoration: none;
+          font-family: 'Inter', 'Plus Jakarta Sans', sans-serif;
+          font-size: 14px;
+          font-weight: 500;
+          color: #374151;
+          padding: 4px 0;
+          transition: color 0.2s ease;
+          display: flex;
+          align-items: center;
+          gap: 6px;
+          white-space: nowrap;
+        }
+
+        .nav-link-desktop:hover {
+          color: #2563EB;
+        }
+
+        .nav-link-desktop::after {
+          content: '';
+          position: absolute;
+          bottom: -2px;
+          left: 0;
+          width: 0;
+          height: 2px;
+          background-color: #2563EB;
+          border-radius: 99px;
+          transition: width 0.2s ease;
+        }
+
+        .nav-link-desktop:hover::after {
+          width: 100%;
+        }
+
+        .nav-link-desktop.active {
+          color: #2563EB;
+          font-weight: 600;
+        }
+
+        .nav-link-desktop.active::after {
+          width: 100%;
+        }
+
+        .new-badge-desktop {
+          background-color: #FACC15;
+          color: #000000;
+          font-size: 9px;
+          font-weight: 700;
+          border-radius: 999px;
+          padding: 2px 6px;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          line-height: 1;
+          text-transform: uppercase;
+          letter-spacing: 0.03em;
+        }
+
+        .nav-search-desktop {
+          display: flex;
+          align-items: center;
+          background-color: #F1F5F9;
+          border-radius: 9999px;
+          width: 260px;
+          height: 38px;
+          padding: 0 14px;
+          transition: box-shadow 0.2s ease, background-color 0.2s ease;
+          position: relative;
+          margin-right: 20px;
+          flex-shrink: 0;
+        }
+
+        .nav-search-desktop:focus-within {
+          background-color: #ffffff;
+          box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15), 0 2px 8px rgba(0, 0, 0, 0.06);
+        }
+
+        .nav-search-icon-desktop {
+          color: #9CA3AF;
+          margin-right: 8px;
+          flex-shrink: 0;
+        }
+
+        .nav-search-input-desktop {
+          border: none;
+          outline: none;
+          background: transparent;
+          width: 100%;
+          height: 100%;
+          font-family: 'Inter', 'Plus Jakarta Sans', sans-serif;
+          font-size: 13.5px;
+          font-weight: 400;
+          color: #1F2937;
+        }
+
+        .nav-search-input-desktop::placeholder {
+          color: #9CA3AF;
+          font-size: 13.5px;
+        }
+
+        .nav-actions-desktop {
+          display: flex;
+          align-items: center;
+          gap: 20px;
+        }
+
+        .nav-action-btn-desktop {
+          background: none;
+          border: none;
+          padding: 0;
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: #374151;
+          transition: color 0.2s ease;
+          position: relative;
+        }
+
+        .nav-action-btn-desktop:hover {
+          color: #2563EB;
+        }
+
+        .nav-cart-badge-desktop {
+          position: absolute;
+          top: -5px;
+          right: -5px;
+          background-color: #2563EB;
+          color: #ffffff;
+          border-radius: 50%;
+          width: 15px;
+          height: 15px;
+          font-size: 8px;
+          font-weight: 800;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          border: 2px solid #ffffff;
+        }
+
         @media(max-width: 900px) { 
           .desktop-only { display: none !important; }
+          .navbar-desktop-only { display: none !important; }
           .dhoond-logo { 
             height: 240% !important; 
             width: 100% !important;
@@ -334,6 +554,7 @@ const Navbar = () => {
         }
         @media(min-width: 901px) { 
           .mobile-only { display: none !important; } 
+          .navbar-mobile-only { display: none !important; }
           .dhoond-logo-desktop {
             height: 260% !important;
             width: 100% !important;
@@ -366,63 +587,43 @@ const Navbar = () => {
 
       <div style={{
         position: 'sticky', top: 0, zIndex: 1000, width: '100%',
-        background: scrolled ? 'rgba(255,255,255,0.85)' : '#fff',
-        backdropFilter: scrolled ? 'blur(16px) saturate(180%)' : 'none',
-        WebkitBackdropFilter: scrolled ? 'blur(16px) saturate(180%)' : 'none',
-        borderBottom: scrolled ? '1px solid rgba(241,245,249,0.8)' : '1px solid #f1f5f9',
+        background: '#fff',
+        borderBottom: '1px solid #E5E7EB', // Subtle bottom border #E5E7EB
         boxShadow: scrolled ? '0 4px 20px rgba(0,0,0,0.03)' : 'none',
         transition: 'all 0.35s cubic-bezier(0.4, 0, 0.2, 1)',
       }}>
-        <nav className="mobile-nav-container" style={{ maxWidth: '1400px', margin: '0 auto', padding: '0 5%', height: '64px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-
-          {/* COLUMN 1: LEFT (Back/Menu on mobile, Dhoond Logo + LocationButton + NAV_LINKS on desktop) */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem', flex: 1 }}>
-            <div className="mobile-only">
-              {isPolicyPage ? (
-                <div style={{ display: 'flex', alignItems: 'center', height: '100%' }}>
-                  <div className="dhoond-logo-container" style={{ width: '110px', justifyContent: 'flex-start' }}>
-                    <img src="/logo.png" alt="Dhoond" className="dhoond-logo" style={{ width: '100%', objectFit: 'contain' }} />
-                  </div>
-                </div>
-              ) : location.pathname !== '/' && !location.pathname.startsWith('/admin') ? (
-                <button className="icon-btn" onClick={() => navigate(-1)} aria-label="Go back">
-                  <ChevronLeft size={28} />
-                </button>
-              ) : (
-                <button className="icon-btn" onClick={() => setIsMenuOpen(true)} aria-label="Open menu">
-                  <Menu size={24} />
-                </button>
-              )}
-            </div>
-
+        {/* DESKTOP NAVBAR */}
+        <div className="navbar-desktop-only">
+          <div className="navbar-desktop-content">
+            {/* Logo */}
             {isPolicyPage ? (
-              <div className="desktop-only" style={{ display: 'flex', alignItems: 'center' }}>
-                <div className="dhoond-logo-container" style={{ width: '130px', justifyContent: 'flex-start' }}>
-                  <img src="/logo.png" alt="Dhoond" className="dhoond-logo dhoond-logo-desktop" style={{ width: 'auto', objectFit: 'contain' }} />
-                </div>
+              <div className="nav-logo-link-desktop">
+                <img src="/logo.png" alt="Dhoond" className="nav-logo-desktop" />
               </div>
             ) : (
-              <Link to="/" className="desktop-only" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center' }}>
-                <div className="dhoond-logo-container" style={{ width: '130px', justifyContent: 'flex-start' }}>
-                  <img src="/logo.png" alt="Dhoond" className="dhoond-logo dhoond-logo-desktop" style={{ width: 'auto', objectFit: 'contain' }} />
-                </div>
+              <Link to="/" className="nav-logo-link-desktop">
+                <img src="/logo.png" alt="Dhoond" className="nav-logo-desktop" />
               </Link>
             )}
 
-            {!isPolicyPage && (
-              <div className="desktop-only" style={{ marginLeft: '0.25rem' }}>
-                <LocationButton onClick={openLocation} />
-              </div>
-            )}
+            {/* Location Selector */}
+            <div onClick={openLocation} className="nav-location-desktop">
+              <MapPin size={15} className="nav-location-icon" />
+              <span className="nav-location-text">
+                {locationLabel || 'Bengaluru, Karnataka'}
+              </span>
+              <ChevronDown size={13} className="nav-location-arrow" />
+            </div>
 
-            <div className="desktop-only" style={{ display: 'flex', gap: '1.75rem', alignItems: 'center', marginLeft: '0.75rem' }}>
+            {/* Navigation links */}
+            <div className="nav-links-desktop">
               {NAV_LINKS.map(link => {
                 const isSoon = link.type === 'soon';
                 const isActive = link.to && location.pathname === link.to;
                 
                 if (link.href) {
                   return (
-                    <a key={link.label} href={link.href} className="nav-link" onClick={() => {
+                    <a key={link.label} href={link.href} className="nav-link-desktop" onClick={() => {
                       if (window.fbq) window.fbq('track', 'Contact');
                     }}>
                       {link.label}
@@ -439,19 +640,10 @@ const Navbar = () => {
                         openComingSoon();
                       }
                     }}
-                    className={`nav-link ${link.badge ? 'highlight' : ''} ${isActive ? 'active' : ''}`}>
-                    {link.label}
+                    className={`nav-link-desktop ${isActive ? 'active' : ''}`}>
+                    <span>{link.label}</span>
                     {link.badge && (
-                      <span style={{ 
-                        background: '#facc15', 
-                        color: '#1e293b', 
-                        fontSize: '9px', 
-                        fontWeight: 800, 
-                        padding: '2px 6px', 
-                        borderRadius: '99px', 
-                        marginLeft: '6px',
-                        textTransform: 'uppercase'
-                      }}>
+                      <span className="new-badge-desktop">
                         {link.badge}
                       </span>
                     )}
@@ -459,99 +651,125 @@ const Navbar = () => {
                 );
               })}
             </div>
-          </div>
 
-          {/* COLUMN 2: CENTER (Mobile Logo on mobile, empty on desktop) */}
-          <div className="mobile-only" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flex: 1, height: '100%' }}>
-            {!isPolicyPage && (
-              <Link to="/" style={{ display: 'flex', alignItems: 'center', height: '100%', textDecoration: 'none' }}>
-                <div className="dhoond-logo-container" style={{ width: '110px' }}>
+            {/* Search Box */}
+            <div className="nav-search-desktop" ref={searchRef}>
+              <Search size={18} className="nav-search-icon-desktop" />
+              <input
+                type="text"
+                placeholder="search services"
+                value={searchQuery}
+                onChange={e => setSearchQuery(e.target.value)}
+                onFocus={() => { setShowSuggestions(true); setSearchFocused(true); }}
+                onBlur={() => setSearchFocused(false)}
+                onKeyDown={e => e.key === 'Enter' && handleSearchSubmit()}
+                className="nav-search-input-desktop"
+              />
+              
+              {showSuggestions && filteredSuggestions.length > 0 && (
+                <div style={{ position: 'absolute', top: '110%', left: 0, right: 0, background: '#fff', borderRadius: '16px', boxShadow: '0 10px 30px rgba(0,0,0,0.08)', border: '1px solid #f1f5f9', zIndex: 1000, overflow: 'hidden' }}>
+                  {filteredSuggestions.map(s => (
+                    <div key={s.label} onClick={() => handleSearchSubmit(s)} className="suggest-item" style={{ padding: '0.85rem 1.25rem', fontSize: '14px', color: '#334155', fontWeight: 500, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <Search size={14} color="#2563eb" />
+                      {s.label}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Actions */}
+            <div className="nav-actions-desktop">
+              {/* Profile dropdown container */}
+              <div style={{ position: 'relative' }}>
+                <button className="nav-action-btn-desktop" onClick={() => isAuthenticated ? setIsProfileOpen(!isProfileOpen) : setIsAuthOpen(true)}>
+                  <User size={22} color={isAuthenticated ? '#2563eb' : 'currentColor'} />
+                </button>
+
+                {isAuthenticated && isProfileOpen && (
+                  <>
+                    <div style={{ position: 'fixed', inset: 0, zIndex: 900 }} onClick={() => setIsProfileOpen(false)} />
+                    <div style={{ position: 'absolute', top: 'calc(100% + 12px)', right: 0, width: '240px', background: '#fff', borderRadius: '20px', boxShadow: '0 20px 50px rgba(0,0,0,0.12)', border: '1px solid #f1f5f9', zIndex: 1000, overflow: 'hidden', padding: '0.75rem', animation: 'dropdownFade 0.2s ease-out' }}>
+                      <div style={{ padding: '0.75rem', borderBottom: '1px solid #f1f5f9', marginBottom: '0.5rem' }}>
+                        <div style={{ fontWeight: 600, fontSize: '0.95rem', color: '#111' }}>{userName}</div>
+                        <div style={{ fontSize: '0.8rem', color: '#64748b', fontWeight: 500 }}>+91 {userMobile}</div>
+                      </div>
+                      <Link to="/profile" onClick={() => setIsProfileOpen(false)} style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.75rem', borderRadius: '12px', textDecoration: 'none', color: '#475569', fontWeight: 500, fontSize: '0.9rem' }} className="profile-item"><User size={18} /> My Profile</Link>
+                      <Link to="/profile" onClick={() => setIsProfileOpen(false)} style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.75rem', borderRadius: '12px', textDecoration: 'none', color: '#475569', fontWeight: 500, fontSize: '0.9rem' }} className="profile-item"><Package size={18} /> My Bookings</Link>
+                      <div style={{ height: '1px', background: '#f1f5f9', margin: '0.5rem 0' }} />
+                      <button onClick={() => { logout(); setIsProfileOpen(false); navigate('/'); }} style={{ width: '100%', display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.75rem', borderRadius: '12px', border: 'none', background: 'transparent', color: '#ef4444', fontWeight: 500, fontSize: '0.9rem', cursor: 'pointer' }} className="profile-logout"><LogOut size={18} /> Logout</button>
+                    </div>
+                  </>
+                )}
+              </div>
+
+              {/* Cart */}
+              <button className="nav-action-btn-desktop" onClick={() => navigate('/shop/cart')} style={{ position: 'relative' }}>
+                <ShoppingCart size={22} />
+                {totalItems > 0 && (
+                  <span className="nav-cart-badge-desktop">
+                    {totalItems}
+                  </span>
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* MOBILE NAVBAR */}
+        <div className="navbar-mobile-only">
+          <nav className="mobile-nav-container" style={{ height: '64px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 16px' }}>
+            {/* Left part: Hamburger menu or back button */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              {isPolicyPage ? (
+                <div className="dhoond-logo-container" style={{ width: '110px', justifyContent: 'flex-start' }}>
                   <img src="/logo.png" alt="Dhoond" className="dhoond-logo" style={{ width: '100%', objectFit: 'contain' }} />
                 </div>
-              </Link>
-            )}
-          </div>
-
-          {/* COLUMN 3: RIGHT (Actions on desktop/mobile) */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flex: 1, justifyContent: 'flex-end' }}>
-            {isPolicyPage ? null : (
-              <>
-                <div className="desktop-only" style={{ position: 'relative', width: '280px', marginRight: '0.75rem' }} ref={searchRef}>
-                  <div style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    background: '#f1f5f9',
-                    borderRadius: '99px',
-                    padding: '9px 1.15rem 9px 0.75rem',
-                    border: '1.5px solid',
-                    borderColor: searchFocused ? '#2563eb' : 'transparent',
-                    boxShadow: searchFocused ? '0 0 0 3px rgba(37, 99, 235, 0.15)' : 'none',
-                    transition: 'all 0.2s'
-                  }}>
-                    <Search size={16} color={searchFocused ? '#2563eb' : '#64748b'} style={{ flexShrink: 0 }} />
-                    <input
-                      className="no-input-style"
-                      type="text"
-                      placeholder="search services"
-                      value={searchQuery}
-                      onChange={e => setSearchQuery(e.target.value)}
-                      onFocus={() => { setShowSuggestions(true); setSearchFocused(true); }}
-                      onBlur={() => setSearchFocused(false)}
-                      onKeyDown={e => e.key === 'Enter' && handleSearchSubmit()}
-                      style={{
-                        marginLeft: '8px',
-                        fontSize: '14px',
-                        color: '#1e293b',
-                        background: 'transparent'
-                      }}
-                    />
-                  </div>
-                  {showSuggestions && filteredSuggestions.length > 0 && (
-                    <div style={{ position: 'absolute', top: '110%', left: 0, right: 0, background: '#fff', borderRadius: '16px', boxShadow: '0 10px 30px rgba(0,0,0,0.08)', border: '1px solid #f1f5f9', zIndex: 1000, overflow: 'hidden' }}>
-                      {filteredSuggestions.map(s => (
-                        <div key={s.label} onClick={() => handleSearchSubmit(s)} className="suggest-item" style={{ padding: '0.85rem 1.25rem', fontSize: '14px', color: '#334155', fontWeight: 500, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                          <Search size={14} color="#0a57d0" />
-                          {s.label}
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-
-                <div style={{ position: 'relative' }} className="desktop-only">
-                  <button className="icon-btn" onClick={() => isAuthenticated ? setIsProfileOpen(!isProfileOpen) : setIsAuthOpen(true)}>
-                    <User size={24} color={isAuthenticated ? '#2563eb' : 'currentColor'} />
-                  </button>
-
-                  {isAuthenticated && isProfileOpen && (
-                    <>
-                      <div style={{ position: 'fixed', inset: 0, zIndex: 900 }} onClick={() => setIsProfileOpen(false)} />
-                      <div style={{ position: 'absolute', top: 'calc(100% + 12px)', right: 0, width: '240px', background: '#fff', borderRadius: '20px', boxShadow: '0 20px 50px rgba(0,0,0,0.12)', border: '1px solid #f1f5f9', zIndex: 1000, overflow: 'hidden', padding: '0.75rem', animation: 'dropdownFade 0.2s ease-out' }}>
-                        <div style={{ padding: '0.75rem', borderBottom: '1px solid #f1f5f9', marginBottom: '0.5rem' }}>
-                          <div style={{ fontWeight: 600, fontSize: '0.95rem', color: '#111' }}>{userName}</div>
-                          <div style={{ fontSize: '0.8rem', color: '#64748b', fontWeight: 500 }}>+91 {userMobile}</div>
-                        </div>
-                        <Link to="/profile" onClick={() => setIsProfileOpen(false)} style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.75rem', borderRadius: '12px', textDecoration: 'none', color: '#475569', fontWeight: 500, fontSize: '0.9rem' }} className="profile-item"><User size={18} /> My Profile</Link>
-                        <Link to="/profile" onClick={() => setIsProfileOpen(false)} style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.75rem', borderRadius: '12px', textDecoration: 'none', color: '#475569', fontWeight: 500, fontSize: '0.9rem' }} className="profile-item"><Package size={18} /> My Bookings</Link>
-                        <div style={{ height: '1px', background: '#f1f5f9', margin: '0.5rem 0' }} />
-                        <button onClick={() => { logout(); setIsProfileOpen(false); navigate('/'); }} style={{ width: '100%', display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.75rem', borderRadius: '12px', border: 'none', background: 'transparent', color: '#ef4444', fontWeight: 500, fontSize: '0.9rem', cursor: 'pointer' }} className="profile-logout"><LogOut size={18} /> Logout</button>
-                      </div>
-                    </>
-                  )}
-                </div>
-
-                <button className="icon-btn" onClick={() => navigate('/shop/cart')} style={{ position: 'relative' }}>
-                  <ShoppingCart size={24} />
-                  {totalItems > 0 && (
-                    <span style={{ position: 'absolute', top: '2px', right: '2px', background: '#facc15', color: '#1e293b', borderRadius: '50%', width: '16px', height: '16px', fontSize: '9px', fontWeight: 800, display: 'flex', alignItems: 'center', justifyContent: 'center', border: '2px solid #fff' }}>
-                      {totalItems}
-                    </span>
-                  )}
+              ) : location.pathname !== '/' && !location.pathname.startsWith('/admin') ? (
+                <button className="icon-btn" onClick={() => navigate(-1)} aria-label="Go back">
+                  <ChevronLeft size={28} />
                 </button>
-              </>
-            )}
-          </div>
-        </nav>
+              ) : (
+                <button className="icon-btn" onClick={() => setIsMenuOpen(true)} aria-label="Open menu">
+                  <Menu size={24} />
+                </button>
+              )}
+            </div>
+
+            {/* Center part: Logo */}
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              {!isPolicyPage && (
+                <Link to="/" style={{ display: 'flex', alignItems: 'center', textDecoration: 'none' }}>
+                  <div className="dhoond-logo-container" style={{ width: '110px' }}>
+                    <img src="/logo.png" alt="Dhoond" className="dhoond-logo" style={{ width: '100%', objectFit: 'contain' }} />
+                  </div>
+                </Link>
+              )}
+            </div>
+
+            {/* Right part: Actions */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', justifyContent: 'flex-end' }}>
+              {!isPolicyPage && (
+                <>
+                  <button className="icon-btn" onClick={() => setIsSearchOpen(true)} aria-label="Search">
+                    <Search size={22} />
+                  </button>
+                  <button className="icon-btn" onClick={() => isAuthenticated ? navigate('/profile') : setIsAuthOpen(true)} aria-label="Profile">
+                    <User size={22} color={isAuthenticated ? '#2563eb' : 'currentColor'} />
+                  </button>
+                  <button className="icon-btn" onClick={() => navigate('/shop/cart')} style={{ position: 'relative' }} aria-label="Cart">
+                    <ShoppingCart size={22} />
+                    {totalItems > 0 && (
+                      <span style={{ position: 'absolute', top: '2px', right: '2px', background: '#2563eb', color: '#fff', borderRadius: '50%', width: '16px', height: '16px', fontSize: '9px', fontWeight: 800, display: 'flex', alignItems: 'center', justifyContent: 'center', border: '2px solid #fff' }}>
+                        {totalItems}
+                      </span>
+                    )}
+                  </button>
+                </>
+              )}
+            </div>
+          </nav>
+        </div>
 
         {/* Auth Modal */}
         <AuthModal isOpen={isAuthOpen} onClose={() => setIsAuthOpen(false)} />
@@ -902,6 +1120,8 @@ function App() {
                 <Route element={<MainLayout />}>
                   <Route path="/" element={<Home />} />
                   <Route path="/about" element={<About />} />
+                  <Route path="/blog" element={<Blog />} />
+                  <Route path="/blog/:slug" element={<BlogPost />} />
                   <Route path="/shop" element={<Shop />} />
                   <Route path="/shop/cart" element={<Cart />} />
                   <Route path="/cart" element={<Cart />} />
