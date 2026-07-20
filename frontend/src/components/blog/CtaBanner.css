@@ -1,0 +1,213 @@
+/* ============================================================
+   CTA Banner — design tokens (scoped, not global, to avoid
+   leaking into the rest of the app's cascade)
+   ============================================================ */
+.cta-banner-shell,
+.cta-banner {
+  --cta-blue-600: #1d4ed8;
+  --cta-blue-800: #1e40af;
+  --cta-blue-100: #dbeafe;
+  --cta-white: #ffffff;
+
+  --cta-radius-lg: 24px;
+  --cta-radius-pill: 9999px;
+
+  /* 8pt spacing scale */
+  --cta-space-2: 8px;
+  --cta-space-3: 16px;
+  --cta-space-4: 24px;
+  --cta-space-6: 32px;
+  --cta-space-8: 48px;
+}
+
+.cta-banner-shell {
+  max-width: 1100px; /* decreased from 1280px to make it more compact and elegant */
+  margin: 0 auto 48px;
+  padding: 0 5%;
+}
+
+/* ============================================================
+   Layout
+   ============================================================ */
+.cta-banner {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1.65fr 1fr;
+  align-items: stretch;
+  overflow: hidden;
+  border-radius: var(--cta-radius-lg);
+  background: linear-gradient(135deg, var(--cta-blue-600) 0%, var(--cta-blue-800) 100%);
+  height: auto;
+}
+
+.cta-banner__content {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 28px clamp(24px, 4vw, 40px);
+}
+
+.cta-banner__title {
+  margin: 0 0 var(--cta-space-2);
+  font-size: clamp(1.5rem, 3vw + 0.8rem, 2rem);
+  font-weight: 900;
+  line-height: 1.25;
+  letter-spacing: -0.02em;
+  color: var(--cta-white);
+}
+
+.cta-banner__description {
+  max-width: 480px;
+  margin: 0 0 20px;
+  font-size: clamp(0.875rem, 1.8vw, 0.95rem);
+  font-weight: 500;
+  line-height: 1.5;
+  color: var(--cta-blue-100);
+}
+
+.cta-banner__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.cta-banner__media {
+  position: relative;
+  overflow: hidden;
+  height: 100%;
+  width: 100%;
+}
+
+.cta-banner__media-inner {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-end;
+  height: 100%;
+  width: 100%;
+}
+
+.cta-banner__image {
+  display: block;
+  height: calc(100% + 12px);
+  width: auto;
+  max-width: 100%;
+  object-fit: contain;
+  align-self: end;
+  margin-bottom: -12px;
+  margin-right: -16px;
+}
+
+/* ============================================================
+   Buttons — one shared component system, not two ad-hoc styles
+   ============================================================ */
+.cta-btn {
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--cta-space-2);
+  min-height: 42px;
+  padding: 8px 24px;
+  border-radius: var(--cta-radius-pill);
+  font-family: inherit;
+  font-size: 13.5px;
+  font-weight: 800;
+  text-decoration: none;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+  white-space: nowrap;
+}
+
+.cta-btn:hover {
+  transform: translateY(-2px);
+}
+
+.cta-btn:focus-visible {
+  outline: 2px solid var(--cta-white);
+  outline-offset: 3px;
+}
+
+.cta-btn-primary {
+  border: 1px solid transparent;
+  background: var(--cta-white);
+  color: var(--cta-blue-800);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.cta-btn-secondary {
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.12);
+  color: var(--cta-white);
+}
+
+/* ============================================================
+   Responsive — desktop / tablet / mobile / small mobile
+   ============================================================ */
+
+/* Landscape tablets: keep two columns but tighten the padding
+   and column ratio so the illustration doesn't get squeezed. */
+@media (max-width: 1024px) {
+  .cta-banner {
+    grid-template-columns: 1.4fr 1fr;
+  }
+}
+
+/* Portrait tablet and below: stack. */
+@media (max-width: 768px) {
+  .cta-banner {
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+    gap: 0;
+  }
+  .cta-banner__content {
+    padding: var(--cta-space-4) var(--cta-space-4) var(--cta-space-6);
+  }
+  .cta-banner__media {
+    order: -1; /* Place image at the top */
+    margin-top: 0;
+    width: 100%;
+    height: auto;
+    border-radius: var(--cta-radius-lg) var(--cta-radius-lg) 0 0;
+    overflow: hidden;
+  }
+  .cta-banner__media-inner {
+    position: relative;
+    display: block;
+    width: 100%;
+    height: auto;
+    inset: auto;
+  }
+  .cta-banner__image {
+    width: 100%;
+    height: auto;
+    max-width: 100%;
+    object-fit: cover;
+    margin: 0;
+  }
+  .cta-banner__actions {
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+    margin-top: 8px;
+  }
+  .cta-btn {
+    width: 100%;
+  }
+}
+
+/* ============================================================
+   Motion preference
+   ============================================================ */
+@media (prefers-reduced-motion: reduce) {
+  .cta-btn {
+    transition: none !important;
+  }
+  .cta-banner,
+  .cta-banner__media-inner,
+  .cta-banner__image {
+    animation: none !important;
+  }
+}

@@ -211,6 +211,7 @@ const Footer = () => {
                             if (lower === 'privacy policy') return "/privacy-policy";
                             if (lower === 'terms of service') return "/terms-of-service";
                             if (lower === 'about us') return "/about";
+                            if (lower === 'blog') return "/blog";
                             return "#";
                           })()}
                           onClick={(e) => {
