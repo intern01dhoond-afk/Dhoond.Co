@@ -8,15 +8,15 @@ import { detectCurrentLocation, isInsideGeofence } from '../utils/location';
 import ComingSoonModal from '../components/ComingSoonModal';
 import heroVideo from '../assets/hero_video.mp4';
 import heroPoster from '../assets/main-banner.webp';
-import acIcon from '../assets/icons/ac_technician.png';
-import electricianIcon from '../assets/icons/electrician.png';
-import painterIcon from '../assets/icons/painter.png';
-import refrigeratorIcon from '../assets/icons/refrigerator.png';
-import roIcon from '../assets/icons/ro_technician.png';
-import washingIcon from '../assets/icons/washing_machine.png';
-import hemanthImg from '../assets/Kuruba Hemanth Kishore.png';
-import rahulImg from '../assets/rahul_avatar.png';
-import sunitaImg from '../assets/sunita_avatar.png';
+import acIcon from '../assets/icons/ac_technician.webp';
+import electricianIcon from '../assets/icons/electrician.webp';
+import painterIcon from '../assets/icons/painter.webp';
+import refrigeratorIcon from '../assets/icons/refrigerator.webp';
+import roIcon from '../assets/icons/ro_technician.webp';
+import washingIcon from '../assets/icons/washing_machine.webp';
+import hemanthImg from '../assets/Kuruba Hemanth Kishore.webp';
+import rahulImg from '../assets/rahul_avatar.webp';
+import sunitaImg from '../assets/sunita_avatar.webp';
 import painterHero from '../assets/Hero images/painter_hero.webp';
 import acHero from '../assets/Hero images/ac_hero.webp';
 import plumberHero from '../assets/Hero images/plumber_hero.webp';
@@ -121,22 +121,22 @@ const Home = () => {
       if (t === 'water purifier installation') return '/services/water_purifier.webp';
       if (t === 'electrician visit') return '/services/electrician_visit.webp';
 
-      if (t.includes('consultation') || t.includes('expert')) return '/painting_banner.png';
-      if (t.includes('single')) return '/images/single%20wall.jpg';
+      if (t.includes('consultation') || t.includes('expert')) return '/painting_banner.webp';
+      if (t.includes('single')) return '/images/single%20wall.webp';
       if (t.includes('exterior') || t.includes('weather')) return '/images/exterior_painting.webp';
-      if (t.includes('texture') || t.includes('stencil')) return '/texture.png';
-      if (t.includes('commercial') || t.includes('office') || t.includes('school')) return '/images/office%20space.jpg';
-      if (t.includes('warehouse') || t.includes('industrial')) return '/images/ware%20house.jpg';
-      if (t.includes('kitchen') || t.includes('bathroom')) return '/wall2.jpg';
-      if (t.includes('1bhk') || t.includes('1 bhk')) return '/wall2.jpg';
-      if (t.includes('2bhk') || t.includes('2 bhk')) return '/space.jpg';
-      if (t.includes('3bhk') || t.includes('3 bhk')) return '/interior.jpg';
-      if (t.includes('4bhk') || t.includes('4 bhk') || t.includes('villa')) return '/images/vila.jpg';
-      if (t.includes('primer') || t.includes('priming')) return '/priming_specialist_painter.png';
-      if (t.includes('ceiling')) return '/interior.jpg';
-      if (t.includes('touch') || t.includes('repair')) return '/touch_up_painter.png';
-      if (t.includes('spray')) return '/spray_painter.png';
-      if (t.includes('full') || t.includes('home')) return '/wall1.jpg';
+      if (t.includes('texture') || t.includes('stencil')) return '/texture.webp';
+      if (t.includes('commercial') || t.includes('office') || t.includes('school')) return '/images/office%20space.webp';
+      if (t.includes('warehouse') || t.includes('industrial')) return '/images/ware%20house.webp';
+      if (t.includes('kitchen') || t.includes('bathroom')) return '/wall2.webp';
+      if (t.includes('1bhk') || t.includes('1 bhk')) return '/wall2.webp';
+      if (t.includes('2bhk') || t.includes('2 bhk')) return '/space.webp';
+      if (t.includes('3bhk') || t.includes('3 bhk')) return '/interior.webp';
+      if (t.includes('4bhk') || t.includes('4 bhk') || t.includes('villa')) return '/images/vila.webp';
+      if (t.includes('primer') || t.includes('priming')) return '/priming_specialist_painter.webp';
+      if (t.includes('ceiling')) return '/interior.webp';
+      if (t.includes('touch') || t.includes('repair')) return '/touch_up_painter.webp';
+      if (t.includes('spray')) return '/spray_painter.webp';
+      if (t.includes('full') || t.includes('home')) return '/wall1.webp';
       return '/images/exterior_painting.webp'; // generic fallback — a real painting photo
     };
 
@@ -150,11 +150,11 @@ const Home = () => {
     ];
 
     const paintingFallback = [
-      { id: 'f1', title: '2 BHK Full Painting (Interior)', discountPrice: 11999, originalPrice: 16999, image: '/space.jpg' },
-      { id: 'f2', title: '3 BHK Full Painting (Interior)', discountPrice: 17499, originalPrice: 24999, image: '/interior.jpg' },
-      { id: 'f3', title: '4 BHK / Villa Full Painting', discountPrice: 27999, originalPrice: 39999, image: '/images/vila.jpg' },
-      { id: 'f4', title: 'Office Painting (per 1000 sq ft)', discountPrice: 9999, originalPrice: 12999, image: '/images/office space.jpg' },
-      { id: 'f5', title: 'Exterior Wall Painting (Single)', discountPrice: 4499, originalPrice: 5999, image: '/images/single wall.jpg' },
+      { id: 'f1', title: '2 BHK Full Painting (Interior)', discountPrice: 11999, originalPrice: 16999, image: '/space.webp' },
+      { id: 'f2', title: '3 BHK Full Painting (Interior)', discountPrice: 17499, originalPrice: 24999, image: '/interior.webp' },
+      { id: 'f3', title: '4 BHK / Villa Full Painting', discountPrice: 27999, originalPrice: 39999, image: '/images/vila.webp' },
+      { id: 'f4', title: 'Office Painting (per 1000 sq ft)', discountPrice: 9999, originalPrice: 12999, image: '/images/office space.webp' },
+      { id: 'f5', title: 'Exterior Wall Painting (Single)', discountPrice: 4499, originalPrice: 5999, image: '/images/single wall.webp' },
       { id: 'f6', title: 'Full Exterior Home Painting', discountPrice: 18999, originalPrice: 24999, image: '/images/exterior_painting.webp' },
     ];
 
@@ -430,7 +430,7 @@ const Home = () => {
                 <h1 style={{ fontSize: 'clamp(1.75rem, 5vw, 3.5rem)', fontWeight: 700, color: '#0f172a', lineHeight: 1.15, marginBottom: '1.5rem', letterSpacing: '-0.02em', maxWidth: '620px' }}>
                   Reliable Home &amp;<br />
                   Commercial Services<br />
-                  <span style={{ color: '#0a57d0', fontWeight: 700 }}>Right at Your Spot</span>
+                  <span style={{ color: '#1E99FE', fontWeight: 700 }}>Right at Your Spot</span>
                 </h1>
                 <p style={{ fontSize: '1.05rem', fontWeight: 400, color: '#64748b', marginBottom: '2rem', lineHeight: 1.7, maxWidth: '500px' }}>
                   From routine maintenance to major upgrades - book trusted professionals for all your home and commercial service needs.
@@ -439,7 +439,7 @@ const Home = () => {
                 <div className="hero-cta-row" style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem', marginBottom: '2rem' }}>
                   <button
                     onClick={() => servicesRef.current?.scrollIntoView({ behavior: 'smooth' })}
-                    style={{ background: '#0b3cba', color: '#fff', padding: '1rem 2.25rem', borderRadius: '14px', fontWeight: 800, fontSize: '1rem', border: 'none', cursor: 'pointer', boxShadow: '0 8px 30px rgba(11,60,186,0.3)', display: 'inline-flex', alignItems: 'center', gap: '8px', transition: 'all 0.3s ease' }}
+                    style={{ background: '#1E99FE', color: '#fff', padding: '1rem 2.25rem', borderRadius: '14px', fontWeight: 800, fontSize: '1rem', border: 'none', cursor: 'pointer', boxShadow: '0 8px 30px rgba(30,153,254,0.3)', display: 'inline-flex', alignItems: 'center', gap: '8px', transition: 'all 0.3s ease' }}
                     className="btn-hover"
                   >
                     Book a Service <ArrowUpRight size={18} strokeWidth={3} />
@@ -452,7 +452,7 @@ const Home = () => {
                         openComingSoon();
                       }
                     }}
-                    style={{ background: '#ffffff', color: '#0b3cba', padding: '1rem 2.25rem', borderRadius: '14px', fontWeight: 700, fontSize: '1rem', border: '1.5px solid #0b3cba', cursor: 'pointer', transition: 'all 0.3s ease' }}
+                    style={{ background: '#ffffff', color: '#1E99FE', padding: '1rem 2.25rem', borderRadius: '14px', fontWeight: 700, fontSize: '1rem', border: '1.5px solid #1E99FE', cursor: 'pointer', transition: 'all 0.3s ease' }}
                     className="btn-hover"
                   >
                     Explore Painting
@@ -901,7 +901,7 @@ const Home = () => {
                         className="card-hover-lift svc-card-btn"
                         style={{
                           width: '100%',
-                          background: isConsult ? 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)' : '#0f172a',
+                          background: isConsult ? 'linear-gradient(135deg, #1E99FE 0%, #0c82eb 100%)' : '#1E99FE',
                           color: '#fff', border: 'none',
                           padding: '0.7rem 1rem',
                           borderRadius: '12px', fontWeight: 700, fontSize: '0.875rem', cursor: 'pointer',
@@ -1015,7 +1015,7 @@ const Home = () => {
                 {/* CTA */}
                 <button
                   onClick={() => servicesRef.current?.scrollIntoView({ behavior: 'smooth' })}
-                  style={{ background: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #d946ef 100%)', color: '#fff', border: 'none', padding: '1.15rem 2.75rem', borderRadius: '16px', fontWeight: 800, fontSize: '1.05rem', cursor: 'pointer', boxShadow: '0 10px 30px -10px rgba(139,92,246,0.6)', display: 'inline-flex', alignItems: 'center', gap: '0.6rem', transition: 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)' }}
+                  style={{ background: 'linear-gradient(135deg, #1E99FE 0%, #0c82eb 100%)', color: '#fff', border: 'none', padding: '1.15rem 2.75rem', borderRadius: '16px', fontWeight: 800, fontSize: '1.05rem', cursor: 'pointer', boxShadow: '0 10px 30px -10px rgba(30,153,254,0.6)', display: 'inline-flex', alignItems: 'center', gap: '0.6rem', transition: 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)' }}
                   className="btn-hover"
                 >
                   Book a Service Now <ChevronRight size={18} strokeWidth={2.5} />
@@ -1028,7 +1028,7 @@ const Home = () => {
                   {/* Glow behind image */}
                   <div style={{ position: 'absolute', inset: '-60px', background: 'radial-gradient(circle, rgba(99,102,241,0.35) 0%, transparent 70%)', filter: 'blur(30px)', borderRadius: '50%', pointerEvents: 'none' }} />
                   <img
-                    src="/images/hero_tech.png"
+                    src="/images/hero_tech.webp"
                     alt="Dhoond Service Excellence"
                     style={{
                       width: '100%',

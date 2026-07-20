@@ -11,6 +11,7 @@
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
     "firebase-admin": "^13.8.0",
+    "jimp": "^1.6.1",
     "nodeman": "^1.1.2",
     "nodemon": "^3.1.14",
     "pg": "^8.20.0",

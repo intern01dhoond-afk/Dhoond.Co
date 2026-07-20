@@ -8,11 +8,11 @@ const pool = new Pool({
 
 async function fix() {
   try {
-    const r1 = await pool.query("UPDATE services SET image = REPLACE(image, '.png', '.webp') WHERE image LIKE '%.png'");
+    const r1 = await pool.query("UPDATE services SET image = REPLACE(image, '.webp', '.webp') WHERE image LIKE '%.webp'");
     console.log('Fixed PNGs:', r1.rowCount);
-    const r2 = await pool.query("UPDATE services SET image = REPLACE(image, '.jpg', '.webp') WHERE image LIKE '%.jpg'");
+    const r2 = await pool.query("UPDATE services SET image = REPLACE(image, '.webp', '.webp') WHERE image LIKE '%.webp'");
     console.log('Fixed JPGs:', r2.rowCount);
-    const r3 = await pool.query("UPDATE services SET image = REPLACE(image, '.jpeg', '.webp') WHERE image LIKE '%.jpeg'");
+    const r3 = await pool.query("UPDATE services SET image = REPLACE(image, '.webp', '.webp') WHERE image LIKE '%.webp'");
     console.log('Fixed JPEGs:', r3.rowCount);
   } catch (err) {
     console.error(err);

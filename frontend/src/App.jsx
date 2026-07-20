@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter, Routes, Route, Link, useLocation, useNavigate, Outlet } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Link, useLocation, useNavigate, Outlet, Navigate } from 'react-router-dom';
 import { ShoppingCart, Menu, X, Search, User, ChevronDown, MapPin, Zap, LogOut, Package, LayoutDashboard, ChevronLeft, Home as HomeIcon, Paintbrush, Phone, Store, ArrowUpRight, Info } from 'lucide-react';
 import Home from './pages/Home';
 const Shop = React.lazy(() => import('./pages/Shop'));
@@ -12,8 +12,11 @@ const Admin = React.lazy(() => import('./pages/Admin'));
 const PrivacyPolicy = React.lazy(() => import('./pages/PrivacyPolicy'));
 const TermsOfService = React.lazy(() => import('./pages/TermsOfService'));
 const About = React.lazy(() => import('./pages/About'));
+<<<<<<< HEAD
 const Blog = React.lazy(() => import('./pages/Blog'));
 const BlogPost = React.lazy(() => import('./pages/BlogPost'));
+=======
+>>>>>>> origin/main
 const NotFound = React.lazy(() => import('./pages/NotFound'));
 import Footer from './components/Footer';
 import { CartProvider, useCart } from './context/CartContext';
@@ -385,7 +388,7 @@ const Navbar = () => {
               {isPolicyPage ? (
                 <div style={{ display: 'flex', alignItems: 'center', height: '100%' }}>
                   <div className="dhoond-logo-container" style={{ width: '110px', justifyContent: 'flex-start' }}>
-                    <img src="/logo.png" alt="Dhoond" className="dhoond-logo" style={{ width: '100%', objectFit: 'contain' }} />
+                    <img src="/logo.webp" alt="Dhoond" className="dhoond-logo" style={{ width: '100%', objectFit: 'contain' }} />
                   </div>
                 </div>
               ) : location.pathname !== '/' && !location.pathname.startsWith('/admin') ? (
@@ -402,13 +405,13 @@ const Navbar = () => {
             {isPolicyPage ? (
               <div className="desktop-only" style={{ display: 'flex', alignItems: 'center' }}>
                 <div className="dhoond-logo-container" style={{ width: '130px', justifyContent: 'flex-start' }}>
-                  <img src="/logo.png" alt="Dhoond" className="dhoond-logo dhoond-logo-desktop" style={{ width: 'auto', objectFit: 'contain' }} />
+                  <img src="/logo.webp" alt="Dhoond" className="dhoond-logo dhoond-logo-desktop" style={{ width: 'auto', objectFit: 'contain' }} />
                 </div>
               </div>
             ) : (
               <Link to="/" className="desktop-only" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center' }}>
                 <div className="dhoond-logo-container" style={{ width: '130px', justifyContent: 'flex-start' }}>
-                  <img src="/logo.png" alt="Dhoond" className="dhoond-logo dhoond-logo-desktop" style={{ width: 'auto', objectFit: 'contain' }} />
+                  <img src="/logo.webp" alt="Dhoond" className="dhoond-logo dhoond-logo-desktop" style={{ width: 'auto', objectFit: 'contain' }} />
                 </div>
               </Link>
             )}
@@ -470,7 +473,7 @@ const Navbar = () => {
             {!isPolicyPage && (
               <Link to="/" style={{ display: 'flex', alignItems: 'center', height: '100%', textDecoration: 'none' }}>
                 <div className="dhoond-logo-container" style={{ width: '110px' }}>
-                  <img src="/logo.png" alt="Dhoond" className="dhoond-logo" style={{ width: '100%', objectFit: 'contain' }} />
+                  <img src="/logo.webp" alt="Dhoond" className="dhoond-logo" style={{ width: '100%', objectFit: 'contain' }} />
                 </div>
               </Link>
             )}
@@ -634,7 +637,7 @@ const Navbar = () => {
                     }}
                     style={{
                       width: '100%', padding: '0.85rem',
-                      background: mapSelectedLabel ? 'linear-gradient(135deg, #2563eb, #1d4ed8)' : '#e2e8f0',
+                      background: mapSelectedLabel ? 'linear-gradient(135deg, #1E99FE, #0c82eb)' : '#e2e8f0',
                       color: mapSelectedLabel ? '#fff' : '#94a3b8',
                       border: 'none', borderRadius: '14px',
                       fontWeight: 800, fontSize: '0.9rem',
@@ -736,7 +739,7 @@ const Navbar = () => {
             <div style={{ padding: '1.25rem 1.25rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #f1f5f9' }}>
               <Link to="/" onClick={() => setIsMenuOpen(false)} style={{ height: '40px', display: 'flex' }}>
                 <div className="dhoond-logo-container" style={{ width: '130px', justifyContent: 'flex-start' }}>
-                  <img src="/logo.png" alt="Dhoond" className="dhoond-logo" />
+                  <img src="/logo.webp" alt="Dhoond" className="dhoond-logo" />
                 </div>
               </Link>
               <button onClick={() => setIsMenuOpen(false)} style={{ background: '#f1f5f9', border: 'none', borderRadius: '10px', width: '36px', height: '36px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', animation: 'rotateIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) 0.1s both' }}><X size={18} color="#475569" /></button>
@@ -802,11 +805,11 @@ const Navbar = () => {
                   setTimeout(() => document.querySelector('#services-section')?.scrollIntoView({ behavior: 'smooth' }), 100);
                 }} style={{
                   width: '100%', padding: '0.9rem',
-                  background: 'linear-gradient(135deg, #2563eb 0%, #1e40af 100%)',
+                  background: 'linear-gradient(135deg, #1E99FE 0%, #0c82eb 100%)',
                   color: '#fff', border: 'none', borderRadius: '14px',
                   fontWeight: 800, fontSize: '0.9rem', cursor: 'pointer',
                   display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
-                  boxShadow: '0 6px 20px rgba(37,99,235,0.3)',
+                  boxShadow: '0 6px 20px rgba(30,153,254,0.3)',
                 }}>
                   Book a Service <ArrowUpRight size={16} strokeWidth={3} />
                 </button>
@@ -905,6 +908,7 @@ function App() {
                 <Route path="/admin/*" element={<Admin />} />
                 <Route element={<MainLayout />}>
                   <Route path="/" element={<Home />} />
+                  <Route path="/index.html" element={<Navigate to="/" replace />} />
                   <Route path="/about" element={<About />} />
                   <Route path="/shop" element={<Shop />} />
                   <Route path="/shop/cart" element={<Cart />} />
@@ -915,9 +919,12 @@ function App() {
                   <Route path="/profile" element={<Profile />} />
                   <Route path="/privacy-policy" element={<PrivacyPolicy />} />
                   <Route path="/terms-of-service" element={<TermsOfService />} />
+<<<<<<< HEAD
                   <Route path="/blog" element={<Blog />} />
                   <Route path="/blog/:slug" element={<BlogPost />} />
                   <Route path="/blog/article/:slug" element={<BlogPost />} />
+=======
+>>>>>>> origin/main
                   <Route path="*" element={<NotFound />} />
                 </Route>
               </Routes>

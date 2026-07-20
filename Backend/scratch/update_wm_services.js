@@ -10,31 +10,31 @@ const wmServices = [
     title: 'Washing Machine Inspection (All Types)', 
     category: 'technician', op: 500, dp: 349, tag: '30.20% OFF', 
     desc: 'Comprehensive check-up of semi-automatic and fully-automatic (top/front load) machines.', 
-    img: '/services/washing_machine_inspection_semi_automatic_.png' 
+    img: '/services/washing_machine_inspection_semi_automatic_.webp' 
   },
   { 
     title: "Washing Machine Installation 'Semi-automatic'", 
     category: 'technician', op: 750, dp: 449, tag: '40.13% OFF', 
     desc: 'Professional setup and connection for semi-automatic washing machines.', 
-    img: '/services/semi_automatic_washing_machine_install_uninstall.png' 
+    img: '/services/semi_automatic_washing_machine_install_uninstall.webp' 
   },
   { 
     title: "Washing Machine Installation 'Fully-automatic top load'", 
     category: 'technician', op: 850, dp: 499, tag: '41.29% OFF', 
     desc: 'Expert installation of fully-automatic top loading washing machines.', 
-    img: '/services/washing_machine_install_uninstall_fully_automatic.png' 
+    img: '/services/washing_machine_install_uninstall_fully_automatic.webp' 
   },
   { 
     title: "Washing Machine Installation 'Fully-automatic front load'", 
     category: 'technician', op: 950, dp: 549, tag: '42.21% OFF', 
     desc: 'Expert installation of fully-automatic front loading washing machines.', 
-    img: '/services/washing_machine_install_uninstall_fully_automatic.png' 
+    img: '/services/washing_machine_install_uninstall_fully_automatic.webp' 
   },
   { 
     title: 'Washing Machine Uninstallation', 
     category: 'technician', op: 600, dp: 349, tag: '41.83% OFF', 
     desc: 'Safe uninstallation for semi-automatic, top load, and front load machines.', 
-    img: '/services/washing_machine_uninstall_semi_automatic_front_.png' 
+    img: '/services/washing_machine_uninstall_semi_automatic_front_.webp' 
   },
 ];
 

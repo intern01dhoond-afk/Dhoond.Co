@@ -31,7 +31,7 @@ const ELECTRICIAN_SUBCATS = [
   { id: 'wiring', label: 'Wiring', emoji: <img src="/services/external_wiring.webp" style={{ width: '100%', height: '100%', objectFit: 'cover' }} alt="Wiring" /> },
   { id: 'doorbell', label: 'Doorbell', emoji: <img src="/services/doorbell.webp" style={{ width: '100%', height: '100%', objectFit: 'cover' }} alt="Doorbell" /> },
   { id: 'other', label: 'Other', emoji: <img src="/services/submeter.webp" style={{ width: '100%', height: '100%', objectFit: 'cover' }} alt="Other" /> },
-  { id: 'painting', label: 'Painting', emoji: <img src="/icons/painter.png" style={{ width: '100%', height: '100%', objectFit: 'cover' }} alt="Painting" /> },
+  { id: 'painting', label: 'Painting', emoji: <img src="/icons/painter.webp" style={{ width: '100%', height: '100%', objectFit: 'cover' }} alt="Painting" /> },
 ];
 
 const getElectricianSubcategory = (title) => {
@@ -52,7 +52,7 @@ const TECHNICIAN_SUBCATS = [
   { id: 'washing', label: 'Washing Machine', emoji: <img src="/services/washing_machine.webp" style={{ width: '100%', height: '100%', objectFit: 'cover' }} alt="Washing Machine" /> },
   { id: 'fridge', label: 'Refrigerator', emoji: <img src="/services/refrigarator.webp" style={{ width: '100%', height: '100%', objectFit: 'cover' }} alt="Refrigerator" /> },
   { id: 'microwave', label: 'Microwave', emoji: <img src="/services/microwave_oven.webp" style={{ width: '100%', height: '100%', objectFit: 'cover' }} alt="Microwave" /> },
-  { id: 'painting', label: 'Painting', emoji: <img src="/icons/painter.png" style={{ width: '100%', height: '100%', objectFit: 'cover' }} alt="Painting" /> },
+  { id: 'painting', label: 'Painting', emoji: <img src="/icons/painter.webp" style={{ width: '100%', height: '100%', objectFit: 'cover' }} alt="Painting" /> },
 ];
 
 const getTechnicianSubcategory = (title) => {

@@ -19,41 +19,8 @@ RUN npm run build
 # Step 2: Serve the static files with Nginx
 FROM nginx:stable-alpine
 COPY --from=build /app/dist /usr/share/nginx/html
-# Add custom Nginx config to handle React Router (Single Page App)
-RUN echo 'server { \
-    listen 80; \
-    include /etc/nginx/mime.types; \
-    types { \
-        video/mp4 mp4; \
-    } \
-    \
-    # Gzip compression \
-    gzip on; \
-    gzip_vary on; \
-    gzip_proxied any; \
-    gzip_comp_level 6; \
-    gzip_min_length 256; \
-    gzip_types text/plain text/css application/json application/javascript text/xml application/xml application/xml+rss text/javascript image/svg+xml; \
-    \
-    # Security headers \
-    add_header X-Frame-Options "SAMEORIGIN" always; \
-    add_header X-Content-Type-Options "nosniff" always; \
-    add_header Referrer-Policy "strict-origin-when-cross-origin" always; \
-    \
-    # Cache static assets (JS, CSS, images, fonts) \
-    location ~* \\.(js|css|png|jpg|jpeg|gif|ico|svg|webp|woff|woff2|ttf|eot|mp4)$ { \
-        root /usr/share/nginx/html; \
-        expires 1y; \
-        add_header Cache-Control "public, immutable"; \
-        access_log off; \
-    } \
-    \
-    location / { \
-        root /usr/share/nginx/html; \
-        index index.html; \
-        try_files $uri $uri/ /index.html; \
-    } \
-}' > /etc/nginx/conf.d/default.conf
+# Add custom Nginx config to handle React Router and redirects
+COPY default.conf /etc/nginx/conf.d/default.conf
 
 EXPOSE 80
 CMD ["nginx", "-g", "daemon off;"]

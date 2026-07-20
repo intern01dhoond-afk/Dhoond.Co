@@ -20,20 +20,20 @@ const getImage = (category, subCategory, sku) => {
   const sub = (subCategory || '').toLowerCase();
   const title = (sku || '').toLowerCase();
 
-  if (cat.includes('ac') || title.includes('ac') || title.includes('air cond')) return '/services/AC Technician.png';
-  if (cat.includes('ro') || title.includes('water purif') || title.includes('ro')) return '/services/RO Technician.png';
-  if (cat.includes('washing') || title.includes('washing')) return '/services/Washing Machine Technician.png';
-  if (cat.includes('refrigerator') || title.includes('refrigerator') || title.includes('fridge')) return '/services/Appliance Technician.png';
-  if (cat.includes('microwave') || title.includes('microwave')) return '/services/Appliance Technician.png';
-  if (cat.includes('chimney') || title.includes('chimney')) return '/services/Appliance Technician.png';
-  if (cat.includes('painting') || cat.includes('paint')) return '/services/House Painter.png';
+  if (cat.includes('ac') || title.includes('ac') || title.includes('air cond')) return '/services/AC Technician.webp';
+  if (cat.includes('ro') || title.includes('water purif') || title.includes('ro')) return '/services/RO Technician.webp';
+  if (cat.includes('washing') || title.includes('washing')) return '/services/Washing Machine Technician.webp';
+  if (cat.includes('refrigerator') || title.includes('refrigerator') || title.includes('fridge')) return '/services/Appliance Technician.webp';
+  if (cat.includes('microwave') || title.includes('microwave')) return '/services/Appliance Technician.webp';
+  if (cat.includes('chimney') || title.includes('chimney')) return '/services/Appliance Technician.webp';
+  if (cat.includes('painting') || cat.includes('paint')) return '/services/House Painter.webp';
 
   // Electrician subcategories
-  if (sub.includes('fan') || title.includes('fan')) return '/services/Electrician.png';
-  if (sub.includes('geyser') || title.includes('geyser')) return '/services/Electrician.png';
-  if (sub.includes('switch') || sub.includes('switchbox')) return '/services/Control Panel Electrician.png';
-  if (sub.includes('light') || title.includes('light') || title.includes('bulb')) return '/services/Electrician.png';
-  return '/services/Electrician.png';
+  if (sub.includes('fan') || title.includes('fan')) return '/services/Electrician.webp';
+  if (sub.includes('geyser') || title.includes('geyser')) return '/services/Electrician.webp';
+  if (sub.includes('switch') || sub.includes('switchbox')) return '/services/Control Panel Electrician.webp';
+  if (sub.includes('light') || title.includes('light') || title.includes('bulb')) return '/services/Electrician.webp';
+  return '/services/Electrician.webp';
 };
 
 // ─── Build description from Include/Exclude text ─────────────────────────────

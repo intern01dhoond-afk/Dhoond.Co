@@ -513,7 +513,7 @@ const Checkout = () => {
         currency: "INR",
         name: "Dhoond.co",
         description: "Service Payment",
-        image: "https://www.dhoond.co/favicon.png",
+        image: "https://www.dhoond.co/favicon.webp",
         order_id: orderData.order_id,
         handler: function (response) {
           processFinalBooking(dhoondOrderId, response.razorpay_payment_id);
@@ -712,7 +712,7 @@ const Checkout = () => {
                   {/* Left part: Image + Info */}
                   <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flex: '1 1 250px', minWidth: 0 }}>
                     <div style={{ width: '60px', height: '60px', borderRadius: '12px', overflow: 'hidden', border: '1px solid #e2e8f0', flexShrink: 0, background: '#f8fafc' }}>
-                      <img src={item.image || "/favicon.png"} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                      <img src={item.image || "/favicon.webp"} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                     </div>
                     <div style={{ minWidth: 0 }}>
                       <div style={{ fontSize: '1.05rem', color: '#0f172a', fontWeight: 500, lineHeight: 1.3, marginBottom: '2px' }}>{item.title}</div>

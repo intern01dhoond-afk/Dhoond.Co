@@ -50,7 +50,7 @@ async function insertServices() {
       const fullDesc = `[${s.sub}] ${s.desc}`;
       await pool.query(
         'INSERT INTO services (title, category, original_price, discount_price, discount_tag, description, image) VALUES ($1, $2, $3, $4, $5, $6, $7)',
-        [s.title, s.category, s.op, s.dp, s.tag, fullDesc, `/services/electrician_${s.sub.toLowerCase()}.png`]
+        [s.title, s.category, s.op, s.dp, s.tag, fullDesc, `/services/electrician_${s.sub.toLowerCase()}.webp`]
       );
       console.log(`Inserted: ${s.title}`);
     }

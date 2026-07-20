@@ -13,7 +13,7 @@ const DECORATIVE_SERVICES = [
       'Curated color consultation & shade curation matching your interior'
     ],
     description: 'This service fee of ₹49 is 100% refundable upon booking any of our painting packages. Our experts will conduct a detailed wall analysis, check for dampness, and provide a digital quotation.',
-    image: '/Service Images Dhoond/free consultation.png'
+    image: '/Service Images Dhoond/free consultation.webp'
   },
   {
     category: 'unfurnished-section',

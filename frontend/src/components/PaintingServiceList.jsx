@@ -8,7 +8,7 @@ import {
   Paintbrush, Home, Building2, Sparkles, ChevronUp, Minus,
   ShoppingCart, Phone, XCircle, CheckCheck, ClipboardList, Headphones, BadgePercent, Percent
 } from 'lucide-react';
-import consultationImg from '../assets/consultation.png';
+import consultationImg from '../assets/consultation.webp';
 
 const API_URL = import.meta.env.VITE_API_URL || '';
 
@@ -104,23 +104,23 @@ const pickImage = (title = '') => {
   const t = title.toLowerCase();
   if (t.includes('on call')) return '/services/free_consultation.webp';
   if (t.includes('consultation') || t.includes('expert')) return consultationImg;
-  if (t.includes('single')) return '/images/single%20wall.jpg';
+  if (t.includes('single')) return '/images/single%20wall.webp';
   if (t.includes('exterior') || t.includes('weather')) return '/images/exterior_painting.webp';
-  if (t.includes('waterproofing') || t.includes('damp')) return '/images/waterproofing.png';
-  if (t.includes('texture') || t.includes('stencil') || t.includes('wallpaper') || t.includes('designer')) return '/images/texture_painting.png';
-  if (t.includes('wood') || t.includes('varnish') || t.includes('gate') || t.includes('grill') || t.includes('coatings')) return '/images/wood_metal.png';
-  if (t.includes('commercial') || t.includes('office') || t.includes('school')) return '/images/office%20space.jpg';
-  if (t.includes('warehouse') || t.includes('industrial')) return '/images/ware%20house.jpg';
-  if (t.includes('kitchen') || t.includes('bathroom')) return '/wall2.jpg';
-  if (t.includes('1bhk') || t.includes('1 bhk')) return '/bedroom.jpg';
-  if (t.includes('2bhk') || t.includes('2 bhk')) return '/space.jpg';
-  if (t.includes('3bhk') || t.includes('3 bhk')) return '/interior.jpg';
-  if (t.includes('4bhk') || t.includes('4 bhk') || t.includes('villa')) return '/images/vila.jpg';
-  if (t.includes('primer') || t.includes('priming')) return '/priming_specialist_painter.png';
-  if (t.includes('ceiling')) return '/interior.jpg';
-  if (t.includes('touch') || t.includes('repair')) return '/touch_up_painter.png';
-  if (t.includes('spray')) return '/spray_painter.png';
-  if (t.includes('full') || t.includes('home')) return '/wall1.jpg';
+  if (t.includes('waterproofing') || t.includes('damp')) return '/images/waterproofing.webp';
+  if (t.includes('texture') || t.includes('stencil') || t.includes('wallpaper') || t.includes('designer')) return '/images/texture_painting.webp';
+  if (t.includes('wood') || t.includes('varnish') || t.includes('gate') || t.includes('grill') || t.includes('coatings')) return '/images/wood_metal.webp';
+  if (t.includes('commercial') || t.includes('office') || t.includes('school')) return '/images/office%20space.webp';
+  if (t.includes('warehouse') || t.includes('industrial')) return '/images/ware%20house.webp';
+  if (t.includes('kitchen') || t.includes('bathroom')) return '/wall2.webp';
+  if (t.includes('1bhk') || t.includes('1 bhk')) return '/bedroom.webp';
+  if (t.includes('2bhk') || t.includes('2 bhk')) return '/space.webp';
+  if (t.includes('3bhk') || t.includes('3 bhk')) return '/interior.webp';
+  if (t.includes('4bhk') || t.includes('4 bhk') || t.includes('villa')) return '/images/vila.webp';
+  if (t.includes('primer') || t.includes('priming')) return '/priming_specialist_painter.webp';
+  if (t.includes('ceiling')) return '/interior.webp';
+  if (t.includes('touch') || t.includes('repair')) return '/touch_up_painter.webp';
+  if (t.includes('spray')) return '/spray_painter.webp';
+  if (t.includes('full') || t.includes('home')) return '/wall1.webp';
   return '/images/exterior_painting.webp'; // generic fallback — a real painting photo
 };
 
@@ -344,7 +344,7 @@ const PaintingServiceList = ({ service, onClose }) => {
           }
         `}</style>
         {/* Decorative image — visible on right */}
-        <img src="/images/cart nav.png" alt="" aria-hidden="true" className="psl-hero-img" />
+        <img src="/images/cart nav.webp" alt="" aria-hidden="true" className="psl-hero-img" />
         <div style={{ position: 'relative', zIndex: 1, maxWidth: '80%' }}>
           <div
             style={{
@@ -457,7 +457,7 @@ const PaintingServiceList = ({ service, onClose }) => {
                         {/* Image */}
                         <div style={{ width: '72px', height: '72px', borderRadius: '16px', overflow: 'hidden', flexShrink: 0, background: '#f1f5f9' }}>
                           <img src={svc.image} alt={svc.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                            onError={e => { e.target.src = '/interior.jpg'; }} />
+                            onError={e => { e.target.src = '/interior.webp'; }} />
                         </div>
 
                         {/* Info Header */}

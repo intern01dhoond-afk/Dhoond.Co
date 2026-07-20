@@ -5,21 +5,21 @@ import PaintingServiceList from '../components/PaintingServiceList';
 import { useUI } from '../context/UIContext';
 import { useSEO } from '../hooks/useSEO';
 import { useCart } from '../context/CartContext';
-import paintingBanner from '../assets/painting_banner.png';
-import consultationImg from '../assets/consultation.png';
-import commercialImg from '../assets/commercial_painting.jpg';
-import interiorImg from '../assets/interior.jpg';
+import paintingBanner from '../assets/painting_banner.webp';
+import consultationImg from '../assets/consultation.webp';
+import commercialImg from '../assets/commercial_painting.webp';
+import interiorImg from '../assets/interior.webp';
 import exteriorImg from '../assets/exterior_painting.webp';
-import specialtyImg from '../assets/grill_gate.png';
-import waterproofingImg from '../assets/waterproofing.png';
-import textureImg from '../assets/texture_painting.png';
-import asianPaintsLogo from '../assets/AP logo.png';
-import birlaOpusLogo from '../assets/BO Logo.png';
-import nerolacLogo from '../assets/Ner.png';
-import hemanthImg from '../assets/Kuruba Hemanth Kishore.png';
-import rahulImg from '../assets/rahul_avatar.png';
-import sunitaImg from '../assets/sunita_avatar.png';
-import woodMetalImg from '../assets/ChatGPT Image Jun 20, 2026, 03_54_58 PM.png';
+import specialtyImg from '../assets/grill_gate.webp';
+import waterproofingImg from '../assets/waterproofing.webp';
+import textureImg from '../assets/texture_painting.webp';
+import asianPaintsLogo from '../assets/AP logo.webp';
+import birlaOpusLogo from '../assets/BO Logo.webp';
+import nerolacLogo from '../assets/Ner.webp';
+import hemanthImg from '../assets/Kuruba Hemanth Kishore.webp';
+import rahulImg from '../assets/rahul_avatar.webp';
+import sunitaImg from '../assets/sunita_avatar.webp';
+import woodMetalImg from '../assets/ChatGPT Image Jun 20, 2026, 03_54_58 PM.webp';
 
 
 function loadScript(src) {
@@ -74,7 +74,7 @@ export default function Painting() {
           title: consult.title,
           discountPrice: consult.title.toLowerCase().includes('on call') ? 0 : 49,
           originalPrice: Number(consult.original_price),
-          image: '/consultation.png',
+          image: '/consultation.webp',
           category: 'painter',
           quantity: 1,
         });
@@ -1005,10 +1005,10 @@ export default function Painting() {
           <div className="p-intro-inner">
             <div className="p-intro-imgs">
               <div className="p-intro-img" id="p-iimg1">
-                <div className="p-intro-img-inner" style={{ background: 'url(/wall2.jpg) center/cover no-repeat' }} />
+                <div className="p-intro-img-inner" style={{ background: 'url(/wall2.webp) center/cover no-repeat' }} />
               </div>
               <div className="p-intro-img" id="p-iimg2">
-                <div className="p-intro-img-inner" style={{ background: 'url(/wall3.jpg) center/cover no-repeat' }} />
+                <div className="p-intro-img-inner" style={{ background: 'url(/wall3.webp) center/cover no-repeat' }} />
               </div>
             </div>
             <div className="p-intro-text" id="p-introText" style={{ opacity: 0, transform: 'translateX(28px)' }}>
@@ -1087,22 +1087,22 @@ export default function Painting() {
             {[
               { 
                 title: 'Living Room Makeover', loc: 'Nagpur', tag: galleryActive === 'before' ? 'Before' : 'After', price: '₹18,000',
-                bg: galleryActive === 'before' ? 'url(/images/before/Gemini_Generated_Image_nixczynixczynixc.png)' : 'url(/Gemini_Generated_Image_nixczynixczynixc.png)',
+                bg: galleryActive === 'before' ? 'url(/images/before/Gemini_Generated_Image_nixczynixczynixc.webp)' : 'url(/Gemini_Generated_Image_nixczynixczynixc.webp)',
                 tags: ['Interior', 'Apartment']
               },
               { 
                 title: 'Bedroom Retreat', loc: 'Bengaluru, HSR Layout Sector 1', tag: galleryActive === 'before' ? 'Before' : 'After', price: '₹12,000',
-                bg: galleryActive === 'before' ? 'url(/images/before/interior.png)' : 'url(/images/interior.jpg)',
+                bg: galleryActive === 'before' ? 'url(/images/before/interior.webp)' : 'url(/images/interior.webp)',
                 tags: ['Interior', 'Apartment']
               },
               { 
                 title: 'Full Home Painting', loc: 'Bengaluru, Koramangala', tag: galleryActive === 'before' ? 'Before' : 'After', price: '₹45,000',
-                bg: galleryActive === 'before' ? 'url(/images/before/space.png)' : 'url(/space.jpg)',
+                bg: galleryActive === 'before' ? 'url(/images/before/space.webp)' : 'url(/space.webp)',
                 tags: ['Interior', 'Villa']
               },
               { 
                 title: 'Exterior Excellence', loc: 'Nagpur, Ramdaspeth', tag: galleryActive === 'before' ? 'Before' : 'After', price: '₹32,000',
-                bg: galleryActive === 'before' ? 'url(/images/before/exterior_excellence.png)' : 'url(/exterior_excellence.png)',
+                bg: galleryActive === 'before' ? 'url(/images/before/exterior_excellence.webp)' : 'url(/exterior_excellence.webp)',
                 tags: ['Exterior', 'Villa']
               },
             ].map(g => (

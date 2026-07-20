@@ -10,7 +10,8 @@ const Footer = () => {
   const isSimplifiedPage = ['/cart', '/shop/cart', '/checkout'].includes(location.pathname);
   const isPrivacyPolicy = location.pathname === '/privacy-policy';
   const isTermsOfService = location.pathname === '/terms-of-service';
-  const isSpecialPolicyPage = isPrivacyPolicy || isTermsOfService;
+  const isAboutPage = location.pathname === '/about';
+  const isSpecialPolicyPage = isPrivacyPolicy || isTermsOfService || isAboutPage;
 
   const isBengaluru = (locationLabel || '').toLowerCase().includes('bengaluru') ||
     (locationLabel || '').toLowerCase().includes('bangalore') ||
@@ -30,10 +31,16 @@ const Footer = () => {
   return (
     <footer style={{ background: '#0f172a', color: '#f8fafc' }}>
       {/* Top contact bar */}
-      <div style={{ background: '#1e293b', borderBottom: '1px solid #334155', padding: 'var(--footer-contact-pad, 3.5rem 5%)' }}>
+      <div 
+        style={{ 
+          background: '#1e293b', 
+          borderBottom: '1px solid #334155', 
+          padding: 'var(--footer-contact-pad, 1.5rem 5%)' 
+        }}
+      >
         <style>{`
           @media (max-width: 768px) {
-            :root { --footer-contact-pad: 2.5rem 1.5rem; --footer-main-pad: 3rem 1.5rem 2rem; --footer-main-gap: 3.5rem 2rem; }
+            :root { --footer-contact-pad: 1.25rem 1.5rem; --footer-main-pad: 3rem 1.5rem 2rem; --footer-main-gap: 3.5rem 2rem; }
             .mobile-centered-col { align-items: center !important; text-align: center !important; }
             .mobile-bottom-links { flex-direction: column !important; gap: 1rem !important; }
             .simplified-footer-hide-mobile { display: none !important; }
@@ -119,7 +126,7 @@ const Footer = () => {
             {/* Brand Column */}
             <div style={{ flex: '1 1 300px', maxWidth: '400px' }} className="footer-brand-col">
               <Link to="/" style={{ display: 'inline-block', marginBottom: '0.75rem' }}>
-                <img src="/images/cart%20nav.png" alt="Dhoond" style={{ height: 'auto', maxHeight: '80px', width: 'auto', objectFit: 'contain', transition: 'transform 0.3s' }}
+                <img src="/images/cart%20nav.webp" alt="Dhoond" style={{ height: 'auto', maxHeight: '80px', width: 'auto', objectFit: 'contain', transition: 'transform 0.3s' }}
                   onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.05)'}
                   onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'}
                 />
@@ -127,6 +134,22 @@ const Footer = () => {
               <p style={{ color: '#94a3b8', fontSize: '0.9rem', lineHeight: 1.7, fontWeight: 500, margin: '0 0 1.5rem 0' }}>
                 India's fastest growing premium Home and Commercial services marketplace. Quality craftsmanship delivered to your spot.
               </p>
+              <div style={{ display: 'flex', gap: '10px', marginTop: '1.25rem', marginBottom: '1.5rem' }}>
+                <a 
+                  href="https://play.google.com/store/apps/details?id=com.ameccodex.dhoond.co&pcampaignid=web_share" 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  style={{ display: 'inline-block', textDecoration: 'none' }}
+                >
+                  <img 
+                    src="/icons/playstore.png" 
+                    alt="Get it on Google Play" 
+                    style={{ height: '40px', width: 'auto', borderRadius: '6px', transition: 'transform 0.2s ease' }}
+                    onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.05)'}
+                    onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'}
+                  />
+                </a>
+              </div>
             </div>
 
             {/* Links Columns - Responsive Grid */}
@@ -138,7 +161,7 @@ const Footer = () => {
               justifyContent: 'start'
             }} className="mobile-text-center footer-links-grid">
               {[
-                { title: 'Company', links: ['About Us', 'Careers', 'Blog', 'Press'] },
+                { title: 'Company', links: ['About Us', 'Careers', 'Blog'] },
                 { title: 'Services', links: ['Painting', 'AC Service', 'RO Service', 'Electrician', 'Washing Machine Repair', 'Refrigerator Repair'] },
                 { title: 'Partners', links: ['Join as Expert', 'Partner with Us'] },
                 { title: 'Support', links: ['Help Center', 'FAQs', 'Privacy Policy', 'Terms of Service'] },
@@ -150,13 +173,35 @@ const Footer = () => {
                   </h4>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '0.9rem' }}>
                     {col.links.map(l => {
-                      const isPainting = l.toLowerCase() === 'painting' && col.title === 'Services';
+                      const lower = l.toLowerCase();
+                      const isPainting = lower === 'painting' && col.title === 'Services';
                       const isOtherService = col.title === 'Services' && !isPainting;
+                      
+                      // Render external Google Play Link for 'Join as Expert'
+                      if (lower === 'join as expert') {
+                        return (
+                          <a
+                            key={l}
+                            href="https://play.google.com/store/apps/details?id=com.dhoond.partner&pcampaignid=web_share"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            style={{ color: '#94a3b8', fontSize: '0.9rem', fontWeight: 500, transition: 'all 0.2s', textDecoration: 'none' }}
+                            onMouseEnter={e => {
+                              e.currentTarget.style.color = '#facc15';
+                            }}
+                            onMouseLeave={e => {
+                              e.currentTarget.style.color = '#94a3b8';
+                            }}
+                          >
+                            {l}
+                          </a>
+                        );
+                      }
+
                       return (
                         <Link
                           key={l}
                           to={(() => {
-                            const lower = l.toLowerCase();
                             if (lower === 'painting') return "/painting";
                             if (lower === 'ac service') return "/shop?cat=technician&subcat=ac";
                             if (lower === 'ro service') return "/shop?cat=technician&subcat=ro";
@@ -170,7 +215,6 @@ const Footer = () => {
                             return "#";
                           })()}
                           onClick={(e) => {
-                            const lower = l.toLowerCase();
                             // Painting only in Bengaluru
                             if (lower === 'painting' && !isBengaluru) {
                               e.preventDefault();

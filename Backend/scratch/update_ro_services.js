@@ -6,9 +6,9 @@ const pool = new Pool({
 });
 
 const roServices = [
-  { title: 'Water Purifier Inspection', category: 'technician', op: 299, dp: 149, tag: '50% OFF', desc: 'Expert inspection of your water purifier and filter health check.', img: '/services/ro_inspection.png' },
-  { title: 'Water Purifier Installation', category: 'technician', op: 799, dp: 549, tag: '31% OFF', desc: 'Professional installation and setup of new water purifier.', img: '/services/water_purifier.png' },
-  { title: 'Water Purifier Uninstallation', category: 'technician', op: 399, dp: 249, tag: '37% OFF', desc: 'Safe uninstallation and packing of your water purifier.', img: '/services/ro_uninstallation.png' },
+  { title: 'Water Purifier Inspection', category: 'technician', op: 299, dp: 149, tag: '50% OFF', desc: 'Expert inspection of your water purifier and filter health check.', img: '/services/ro_inspection.webp' },
+  { title: 'Water Purifier Installation', category: 'technician', op: 799, dp: 549, tag: '31% OFF', desc: 'Professional installation and setup of new water purifier.', img: '/services/water_purifier.webp' },
+  { title: 'Water Purifier Uninstallation', category: 'technician', op: 399, dp: 249, tag: '37% OFF', desc: 'Safe uninstallation and packing of your water purifier.', img: '/services/ro_uninstallation.webp' },
 ];
 
 async function updateROServices() {

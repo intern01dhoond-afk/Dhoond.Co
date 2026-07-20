@@ -6,18 +6,18 @@ const pool = new Pool({
 });
 
 const acImageUpdates = [
-  { title: 'AC Inspection (Visit)', img: '/services/ac_inspection.png' },
-  { title: 'Normal AC Service + Cleaning', img: '/services/ac_repair.png' },
-  { title: 'AC Service (Jet + Water)', img: '/services/ac_tachnician_jet_water.png' },
-  { title: 'AC Service (Jet + Foam)', img: '/services/ac_tachnician_foam_jet_water.png' },
-  { title: 'AC Gas Top-up', img: '/services/ac_gas_top_up.png' },
-  { title: 'AC Gas Refill', img: '/services/ac_gas_repair.png' },
-  { title: 'Split AC Installation', img: '/services/ac_installation_uninstallation.png' },
-  { title: 'Window AC Installation', img: '/services/ac_nstall_uninstall_window_.png' },
-  { title: 'Split AC Uninstallation', img: '/services/ac_uninstallation_split.png' },
-  { title: 'Window AC Uninstallation', img: '/services/ac_uninstallation_window_.png' },
-  { title: 'AC Re-installation', img: '/services/ac_reinstallation.png' },
-  { title: 'AC Outdoor Unit Re-Installation', img: '/services/ac_nstall_uninstall_outdoor_.png' },
+  { title: 'AC Inspection (Visit)', img: '/services/ac_inspection.webp' },
+  { title: 'Normal AC Service + Cleaning', img: '/services/ac_repair.webp' },
+  { title: 'AC Service (Jet + Water)', img: '/services/ac_tachnician_jet_water.webp' },
+  { title: 'AC Service (Jet + Foam)', img: '/services/ac_tachnician_foam_jet_water.webp' },
+  { title: 'AC Gas Top-up', img: '/services/ac_gas_top_up.webp' },
+  { title: 'AC Gas Refill', img: '/services/ac_gas_repair.webp' },
+  { title: 'Split AC Installation', img: '/services/ac_installation_uninstallation.webp' },
+  { title: 'Window AC Installation', img: '/services/ac_nstall_uninstall_window_.webp' },
+  { title: 'Split AC Uninstallation', img: '/services/ac_uninstallation_split.webp' },
+  { title: 'Window AC Uninstallation', img: '/services/ac_uninstallation_window_.webp' },
+  { title: 'AC Re-installation', img: '/services/ac_reinstallation.webp' },
+  { title: 'AC Outdoor Unit Re-Installation', img: '/services/ac_nstall_uninstall_outdoor_.webp' },
 ];
 
 async function updateExactACImages() {

@@ -35,7 +35,7 @@ async function updateACServices() {
       if (res.rowCount === 0) {
         // Insert new
         const description = `${s.title} — Expert AC service for your comfort.`;
-        const image = '/services/AC Technician.png';
+        const image = '/services/AC Technician.webp';
         await pool.query(
           "INSERT INTO services (title, category, original_price, discount_price, discount_tag, description, image) VALUES ($1, $2, $3, $4, $5, $6, $7)",
           [s.title, 'technician', s.op, s.dp, discountTag, description, image]

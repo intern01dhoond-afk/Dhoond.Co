@@ -9,10 +9,10 @@
   --bg-card: #ffffff;
   --bg-card-2: #f4f8ff;
   --border: #e8effd;
-  --primary: #1c6bbb;
-  --primary-dark: #124b8a;
-  --primary-light: #5294e2;
-  --primary-grad: linear-gradient(135deg, #1c6bbb 0%, #3b82f6 100%);
+  --primary: #1E99FE;
+  --primary-dark: #0f7cd4;
+  --primary-light: #5fb2ff;
+  --primary-grad: linear-gradient(135deg, #1E99FE 0%, #0c82eb 100%);
   --secondary: #0f172a;
   --text-main: #0f172a;
   --text-muted: #475569;
