@@ -267,7 +267,7 @@ const Blog = () => {
                     placeholder="Your premium email"
                     value={emailInput}
                     onChange={(e) => setEmailInput(e.target.value)}
-                    className="newsletter-input"
+                    className="newsletter-input no-input-style"
                   />
                 </div>
                 <button type="submit" className="newsletter-submit-btn">

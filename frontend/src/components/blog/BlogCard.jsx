@@ -22,6 +22,16 @@ export default function BlogCard({ post, animationDelay = 0, readText, onOpen })
   else if (post.category === 'AC Service') catClass = 'cat-ac';
   else if (post.category === 'Refrigerator Repair') catClass = 'cat-refrigerator';
 
+  // Get initials for author avatar circle
+  const getInitials = (name) => {
+    if (!name) return 'DT';
+    return name
+      .split(' ')
+      .map((word) => word[0])
+      .join('')
+      .toUpperCase();
+  };
+
   return (
     <motion.article
       role="button"
@@ -43,21 +53,22 @@ export default function BlogCard({ post, animationDelay = 0, readText, onOpen })
           loading="lazy"
           decoding="async"
         />
-      </div>
-      <div className="card-body-new">
-        <div className="card-badge-container-new">
+        <div className="card-badge-overlay-new">
           <span className={`card-badge-new ${catClass}`}>
             {getCategoryIcon(post.category, 12)}
             <span>{getCategoryTitle(post.category)}</span>
           </span>
         </div>
+      </div>
+      <div className="card-body-new">
         <h3 className="card-title-new">{post.title}</h3>
         <p className="card-desc-new">{post.description}</p>
         
         <div className="card-footer-new">
           <div className="card-metadata-row-new">
             <div className="card-author-new">
-              By {post.author}
+              <div className="card-avatar-initials">{getInitials(post.author)}</div>
+              <span className="card-author-name">{post.author}</span>
             </div>
             <div className="card-read-time-new">
               <Clock size={13} className="card-clock-icon-new" aria-hidden="true" />
@@ -68,8 +79,8 @@ export default function BlogCard({ post, animationDelay = 0, readText, onOpen })
           <hr className="card-divider-new" />
           
           <div className="read-link-new">
-            <span className="read-link-text-new">{readText || 'READ BLOG'}</span>
-            <ArrowRight size={15} className="card-arrow-icon-new" aria-hidden="true" />
+            <span className="read-link-text-new">{readText || 'Read Guide'}</span>
+            <ArrowRight size={14} className="card-arrow-icon-new" aria-hidden="true" />
           </div>
         </div>
       </div>

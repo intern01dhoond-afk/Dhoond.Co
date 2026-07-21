@@ -145,16 +145,65 @@ const BlogPost = () => {
           background-color: #1D4ED8 !important;
         }
 
+        .sticky-cta-bar {
+          position: fixed;
+          bottom: 20px;
+          left: 50%;
+          transform: translateX(-50%);
+          width: min(92%, 580px);
+          background: #FFFFFF;
+          border: 1px solid #E2E8F0;
+          border-radius: 20px;
+          padding: 10px 14px;
+          box-shadow: 0 16px 36px rgba(15, 23, 42, 0.14);
+          z-index: 999;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 10px;
+          box-sizing: border-box;
+        }
+
         @media (max-width: 640px) {
           .post-meta-stats {
             margin-left: 0 !important;
             width: 100%;
             margin-top: 8px;
           }
+          .post-breadcrumb-trail {
+            flex-wrap: wrap !important;
+            gap: 6px !important;
+            font-size: 12px !important;
+          }
+          .post-meta-row {
+            flex-wrap: wrap !important;
+            gap: 10px !important;
+          }
+          .sticky-cta-bar {
+            bottom: 12px;
+            padding: 8px 12px;
+            border-radius: 16px;
+            width: min(94%, 580px);
+            gap: 8px;
+          }
+          .sticky-cta-subtext {
+            display: none !important;
+          }
+          .sticky-cta-title {
+            font-size: 12px !important;
+          }
+          .sticky-cta-btn {
+            padding: 7px 14px !important;
+            font-size: 11.5px !important;
+          }
         }
         @media (max-width: 480px) {
-          .post-breadcrumb-trail {
-            display: none !important;
+          .post-container {
+            padding: 0 1rem !important;
+          }
+          .post-meta-row {
+            flex-wrap: wrap !important;
+            gap: 10px !important;
           }
         }
 
@@ -235,7 +284,7 @@ const BlogPost = () => {
             </h3>
           </div>
           <CtaBanner
-            title={`Need Help with ${categoryLabel}?`}
+            title={`Need Help with ${getCategoryTitle(post.category)}?`}
             description="Book one of our verified experts today. Professional tools, transparent pricing, and quality guarantee."
             showShell={false}
           />
@@ -249,13 +298,15 @@ const BlogPost = () => {
             </h2>
           </div>
 
-          <div className="blog-cards-grid">
-            {relatedPosts.map((relPost, index) => (
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '24px' }}>
+            {relatedPosts.map((relPost) => (
               <BlogCard
                 key={relPost.id}
                 post={relPost}
-                animationDelay={index * 0.05}
-                onOpen={(p) => navigate(`/blog/${p.slug}`)}
+                onOpen={(p) => {
+                  window.scrollTo(0, 0);
+                  navigate(`/blog/${p.slug}`);
+                }}
               />
             ))}
           </div>
@@ -270,48 +321,31 @@ const BlogPost = () => {
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: 100, opacity: 0 }}
             transition={{ duration: 0.35, ease: 'easeOut' }}
-            style={{
-              position: 'fixed',
-              bottom: '24px',
-              left: '50%',
-              transform: 'translateX(-50%)',
-              width: '90%',
-              maxWidth: '580px',
-              background: '#FFFFFF',
-              border: '1px solid #E2E8F0',
-              borderRadius: '20px',
-              padding: '12px 20px',
-              boxShadow: '0 20px 40px rgba(15, 23, 42, 0.12)',
-              zIndex: 999,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              gap: '16px'
-            }}
+            className="sticky-cta-bar"
           >
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', overflow: 'hidden' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', overflow: 'hidden', flex: 1, minWidth: 0 }}>
               <div style={{
                 background: 'rgba(37, 99, 235, 0.08)',
                 borderRadius: '50%',
-                width: '36px',
-                height: '36px',
+                width: '34px',
+                height: '34px',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
                 flexShrink: 0
               }}>
-                <Sparkles size={16} color="#2563EB" />
+                <Sparkles size={15} color="#2563EB" />
               </div>
-              <div style={{ overflow: 'hidden' }}>
-                <div style={{ fontSize: '13px', fontWeight: 800, color: '#0F172A', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                  Need {categoryLabel}?
+              <div style={{ overflow: 'hidden', flex: 1, minWidth: 0 }}>
+                <div className="sticky-cta-title" style={{ fontSize: '13px', fontWeight: 800, color: '#0F172A', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                  Need {getCategoryTitle(post.category)}?
                 </div>
-                <div style={{ fontSize: '11px', color: '#64748B', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                <div className="sticky-cta-subtext" style={{ fontSize: '11px', color: '#64748B', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                   Book a verified expert and get quality service.
                 </div>
               </div>
             </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexShrink: 0 }}>
               <button
                 onClick={() => navigate('/')}
                 style={{
@@ -319,15 +353,15 @@ const BlogPost = () => {
                   color: '#FFFFFF',
                   border: 'none',
                   borderRadius: '99px',
-                  padding: '8px 18px',
-                  fontSize: '12.5px',
+                  padding: '8px 16px',
+                  fontSize: '12px',
                   fontWeight: 700,
                   cursor: 'pointer',
                   whiteSpace: 'nowrap',
                   boxShadow: '0 4px 12px rgba(37, 99, 235, 0.2)',
                   transition: 'background-color 0.2s',
                 }}
-                className="sticky-btn-hover"
+                className="sticky-btn-hover sticky-cta-btn"
               >
                 Book Now
               </button>

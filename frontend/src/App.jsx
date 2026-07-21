@@ -276,7 +276,6 @@ const Navbar = () => {
   const NAV_LINKS = [
     { label: 'Home', to: '/' },
     { label: 'Painting', to: '/painting', badge: 'New' },
-    { label: 'Blog', to: '/blog' },
     { label: 'Contact', href: `tel:${PHONE_NUMBER}` },
   ];
 

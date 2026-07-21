@@ -71,6 +71,10 @@ const Footer = () => {
               margin-right: auto !important;
             }
           }
+          @media (max-width: 480px) {
+            .footer-links-grid { grid-template-columns: repeat(2, 1fr) !important; gap: 1.75rem 1rem !important; }
+            .footer-brand-col img { max-height: 64px !important; }
+          }
         `}</style>
         <div className="mobile-stack" style={{ maxWidth: '1280px', margin: '0 auto', display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', gap: '2rem' }}>
           <div className="mobile-text-center">
