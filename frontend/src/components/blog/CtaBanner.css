@@ -21,9 +21,9 @@
 }
 
 .cta-banner-shell {
-  max-width: 1100px; /* decreased from 1280px to make it more compact and elegant */
-  margin: 0 auto 48px;
-  padding: 0 5%;
+  max-width: 820px; /* Compact, balanced layout centered on page */
+  margin: 0 auto 32px;
+  padding: 0 1.5rem;
 }
 
 /* ============================================================
@@ -31,72 +31,58 @@
    ============================================================ */
 .cta-banner {
   position: relative;
-  display: grid;
-  grid-template-columns: 1.65fr 1fr;
-  align-items: stretch;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
   overflow: hidden;
   border-radius: var(--cta-radius-lg);
   background: linear-gradient(135deg, var(--cta-blue-600) 0%, var(--cta-blue-800) 100%);
   height: auto;
+  min-height: 195px;
+  padding: 36px clamp(20px, 4vw, 48px);
+  box-sizing: border-box;
 }
 
 .cta-banner__content {
   display: flex;
   flex-direction: column;
+  align-items: center;
   justify-content: center;
-  padding: 28px clamp(24px, 4vw, 40px);
+  text-align: center;
+  width: 100%;
+  max-width: 620px;
+  margin: 0 auto;
 }
 
 .cta-banner__title {
-  margin: 0 0 var(--cta-space-2);
-  font-size: clamp(1.5rem, 3vw + 0.8rem, 2rem);
-  font-weight: 900;
+  margin: 0 0 10px;
+  font-size: clamp(1.25rem, 2.2vw + 0.5rem, 1.6rem);
+  font-weight: 800;
   line-height: 1.25;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.01em;
   color: var(--cta-white);
+  text-align: center;
 }
 
 .cta-banner__description {
-  max-width: 480px;
-  margin: 0 0 20px;
-  font-size: clamp(0.875rem, 1.8vw, 0.95rem);
+  max-width: 540px;
+  margin: 0 auto 20px;
+  font-size: clamp(0.82rem, 1.5vw, 0.88rem);
   font-weight: 500;
   line-height: 1.5;
   color: var(--cta-blue-100);
+  text-align: center;
 }
 
 .cta-banner__actions {
   display: flex;
   flex-wrap: wrap;
-  gap: 12px;
-}
-
-.cta-banner__media {
-  position: relative;
-  overflow: hidden;
-  height: 100%;
+  justify-content: center;
+  align-items: center;
+  gap: 14px;
   width: 100%;
-}
-
-.cta-banner__media-inner {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: flex-end;
-  justify-content: flex-end;
-  height: 100%;
-  width: 100%;
-}
-
-.cta-banner__image {
-  display: block;
-  height: calc(100% + 12px);
-  width: auto;
-  max-width: 100%;
-  object-fit: contain;
-  align-self: end;
-  margin-bottom: -12px;
-  margin-right: -16px;
 }
 
 /* ============================================================
@@ -146,46 +132,13 @@
    Responsive — desktop / tablet / mobile / small mobile
    ============================================================ */
 
-/* Landscape tablets: keep two columns but tighten the padding
-   and column ratio so the illustration doesn't get squeezed. */
-@media (max-width: 1024px) {
-  .cta-banner {
-    grid-template-columns: 1.4fr 1fr;
-  }
-}
-
-/* Portrait tablet and below: stack. */
+/* Portrait tablet and below: stack & center */
 @media (max-width: 768px) {
   .cta-banner {
-    display: flex;
-    flex-direction: column;
-    padding: 0;
-    gap: 0;
+    padding: 28px 20px;
   }
   .cta-banner__content {
-    padding: var(--cta-space-4) var(--cta-space-4) var(--cta-space-6);
-  }
-  .cta-banner__media {
-    order: -1; /* Place image at the top */
-    margin-top: 0;
-    width: 100%;
-    height: auto;
-    border-radius: var(--cta-radius-lg) var(--cta-radius-lg) 0 0;
-    overflow: hidden;
-  }
-  .cta-banner__media-inner {
-    position: relative;
-    display: block;
-    width: 100%;
-    height: auto;
-    inset: auto;
-  }
-  .cta-banner__image {
-    width: 100%;
-    height: auto;
-    max-width: 100%;
-    object-fit: cover;
-    margin: 0;
+    padding: 0;
   }
   .cta-banner__actions {
     flex-direction: column;
