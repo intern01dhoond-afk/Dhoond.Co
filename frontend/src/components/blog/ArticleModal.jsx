@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react';
 import { Calendar, ChevronLeft, Clock, X } from 'lucide-react';
 import AuthorMeta from './AuthorMeta';
 import CategoryBadge from './CategoryBadge';
+import ImageSlider from './ImageSlider';
 import { sanitizeBlogHtml } from '../../utils/blogUtils';
 
 export default function ArticleModal({ article, onClose }) {
@@ -47,10 +48,10 @@ export default function ArticleModal({ article, onClose }) {
         className="modal-panel blog-container"
       >
         <div className="modal-header-img">
-          <img
-            src={article.image}
-            alt=""
-            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+          <ImageSlider
+            images={article.images}
+            singleImage={article.image}
+            title={article.title}
           />
           <div
             style={{

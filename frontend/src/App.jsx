@@ -12,11 +12,8 @@ const Admin = React.lazy(() => import('./pages/Admin'));
 const PrivacyPolicy = React.lazy(() => import('./pages/PrivacyPolicy'));
 const TermsOfService = React.lazy(() => import('./pages/TermsOfService'));
 const About = React.lazy(() => import('./pages/About'));
-<<<<<<< HEAD
 const Blog = React.lazy(() => import('./pages/Blog'));
 const BlogPost = React.lazy(() => import('./pages/BlogPost'));
-=======
->>>>>>> origin/main
 const NotFound = React.lazy(() => import('./pages/NotFound'));
 import Footer from './components/Footer';
 import { CartProvider, useCart } from './context/CartContext';
@@ -279,7 +276,6 @@ const Navbar = () => {
   const NAV_LINKS = [
     { label: 'Home', to: '/' },
     { label: 'Painting', to: '/painting', badge: 'New' },
-    { label: 'Blog', to: '/blog' },
     { label: 'Contact', href: `tel:${PHONE_NUMBER}` },
   ];
 
@@ -919,12 +915,9 @@ function App() {
                   <Route path="/profile" element={<Profile />} />
                   <Route path="/privacy-policy" element={<PrivacyPolicy />} />
                   <Route path="/terms-of-service" element={<TermsOfService />} />
-<<<<<<< HEAD
                   <Route path="/blog" element={<Blog />} />
                   <Route path="/blog/:slug" element={<BlogPost />} />
                   <Route path="/blog/article/:slug" element={<BlogPost />} />
-=======
->>>>>>> origin/main
                   <Route path="*" element={<NotFound />} />
                 </Route>
               </Routes>
