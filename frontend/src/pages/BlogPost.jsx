@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import {
-  ArrowLeft, Clock, Calendar, ArrowRight, Phone, ArrowUpRight, ChevronRight, Sparkles, X
+  ArrowLeft, Clock, Calendar, ArrowRight, Phone, ArrowUpRight, ChevronRight, Sparkles
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { BLOG_POSTS } from '../data/blogPosts';
@@ -17,7 +17,6 @@ const BlogPost = () => {
   const navigate = useNavigate();
 
   const post = BLOG_POSTS.find((p) => p.slug === slugParam || String(p.id) === String(slugParam));
-  const [showStickyCta, setShowStickyCta] = useState(false);
   const [headings, setHeadings] = useState([]);
   const [activeIndex, setActiveIndex] = useState(0);
   const [isMobileTocOpen, setIsMobileTocOpen] = useState(false);
@@ -26,7 +25,7 @@ const BlogPost = () => {
     const timer = setTimeout(() => {
       const contentEl = document.querySelector('.blog-content-body');
       if (contentEl) {
-        const headingElements = Array.from(contentEl.querySelectorAll('h2, h3'));
+        const headingElements = Array.from(contentEl.querySelectorAll('h2'));
         const headingData = headingElements.map((el, index) => {
           if (!el.id) {
             const rawText = el.innerText || el.textContent || '';
@@ -37,7 +36,7 @@ const BlogPost = () => {
           return {
             index,
             id: el.id,
-            text: el.innerText || el.textContent,
+            text: (el.innerText || el.textContent || '').replace(/^\d+\.\s*/, ''),
             level: el.tagName.toLowerCase(),
           };
         });
@@ -54,7 +53,7 @@ const BlogPost = () => {
     const handleScroll = () => {
       const contentEl = document.querySelector('.blog-content-body');
       if (!contentEl) return;
-      const headingElements = Array.from(contentEl.querySelectorAll('h2, h3'));
+      const headingElements = Array.from(contentEl.querySelectorAll('h2'));
       if (headingElements.length === 0) return;
 
       const scrollPosition = window.scrollY + 120;
@@ -77,20 +76,25 @@ const BlogPost = () => {
   }, [headings]);
 
   const scrollToHeading = (index) => {
+    const tocContentEl = document.querySelector('.mobile-toc-content');
+    const tocHeight = (isMobileTocOpen && tocContentEl) ? tocContentEl.offsetHeight : 0;
+
+    setIsMobileTocOpen(false);
+    setActiveIndex(index);
+
     const contentEl = document.querySelector('.blog-content-body');
     if (contentEl) {
-      const headingElements = Array.from(contentEl.querySelectorAll('h2, h3'));
+      const headingElements = Array.from(contentEl.querySelectorAll('h2'));
       const element = headingElements[index];
       if (element) {
         const offset = 100;
         const elementTop = element.getBoundingClientRect().top + window.scrollY;
-        const offsetPosition = elementTop - offset;
+        const offsetPosition = elementTop - tocHeight - offset;
 
         window.scrollTo({
-          top: offsetPosition,
+          top: Math.max(0, offsetPosition),
           behavior: 'smooth'
         });
-        setActiveIndex(index);
       }
     }
   };
@@ -116,17 +120,7 @@ const BlogPost = () => {
     }
   }, [post]);
 
-  useEffect(() => {
-    const handleScroll = () => {
-      if (window.scrollY > 450) {
-        setShowStickyCta(true);
-      } else {
-        setShowStickyCta(false);
-      }
-    };
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+
 
   if (!post) {
     return (
@@ -441,7 +435,6 @@ const BlogPost = () => {
                               onClick={(e) => {
                                 e.preventDefault();
                                 scrollToHeading(heading.index);
-                                setIsMobileTocOpen(false);
                               }}
                               className={`mobile-toc-link toc-${heading.level} ${activeIndex === heading.index ? 'active' : ''}`}
                             >
@@ -529,77 +522,7 @@ const BlogPost = () => {
         </section>
       </div>
 
-      {/* Sticky Scrolling Booking CTA */}
-      <AnimatePresence>
-        {showStickyCta && (
-          <motion.div
-            initial={{ y: 100, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            exit={{ y: 100, opacity: 0 }}
-            transition={{ duration: 0.35, ease: 'easeOut' }}
-            className="sticky-cta-bar"
-          >
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', overflow: 'hidden', flex: 1, minWidth: 0 }}>
-              <div style={{
-                background: 'rgba(37, 99, 235, 0.08)',
-                borderRadius: '50%',
-                width: '34px',
-                height: '34px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                flexShrink: 0
-              }}>
-                <Sparkles size={15} color="#2563EB" />
-              </div>
-              <div style={{ overflow: 'hidden', flex: 1, minWidth: 0 }}>
-                <div className="sticky-cta-title" style={{ fontSize: '13px', fontWeight: 800, color: '#0F172A', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                  Need {getCategoryTitle(post.category)}?
-                </div>
-                <div className="sticky-cta-subtext" style={{ fontSize: '11px', color: '#64748B', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                  Book a verified expert and get quality service.
-                </div>
-              </div>
-            </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexShrink: 0 }}>
-              <button
-                onClick={() => navigate('/')}
-                style={{
-                  background: '#2563EB',
-                  color: '#FFFFFF',
-                  border: 'none',
-                  borderRadius: '99px',
-                  padding: '8px 16px',
-                  fontSize: '12px',
-                  fontWeight: 700,
-                  cursor: 'pointer',
-                  whiteSpace: 'nowrap',
-                  boxShadow: '0 4px 12px rgba(37, 99, 235, 0.2)',
-                  transition: 'background-color 0.2s',
-                }}
-                className="sticky-btn-hover sticky-cta-btn"
-              >
-                Book Now
-              </button>
-              <button
-                onClick={() => setShowStickyCta(false)}
-                style={{
-                  background: 'none',
-                  border: 'none',
-                  color: '#94A3B8',
-                  cursor: 'pointer',
-                  padding: '4px',
-                  display: 'flex',
-                  alignItems: 'center'
-                }}
-                aria-label="Dismiss booking prompt"
-              >
-                <X size={15} />
-              </button>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+
     </div>
   );
 };
