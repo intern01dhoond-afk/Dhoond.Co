@@ -114,22 +114,6 @@ export default function CtaBanner({
           </a>
         </div>
       </div>
-
-      <div className="cta-banner__media">
-        <div ref={mediaRef} className="cta-banner__media-inner">
-          <img
-            ref={imageRef}
-            src={imageSrc}
-            alt=""
-            aria-hidden="true"
-            loading="lazy"
-            decoding="async"
-            width={420}
-            height={420}
-            className="cta-banner__image"
-          />
-        </div>
-      </div>
     </div>
   );
 

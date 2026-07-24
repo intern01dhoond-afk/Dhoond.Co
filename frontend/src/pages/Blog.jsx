@@ -8,6 +8,7 @@ import CtaBanner from '../components/blog/CtaBanner';
 import CategoryFilterBar from '../components/blog/CategoryFilterBar';
 import BlogCard from '../components/blog/BlogCard';
 import FeaturedBlogCard from '../components/blog/FeaturedBlogCard';
+import ToolkitCard from '../components/blog/ToolkitCard';
 import '../styles/blog.css';
 
 const SERVICE_COLLECTIONS = [
@@ -42,6 +43,32 @@ const Blog = () => {
   const [isNewsletterSubscribed, setIsNewsletterSubscribed] = useState(false);
   const [emailInput, setEmailInput] = useState('');
 
+  const carouselRef = useRef(null);
+  const [activeSlideIndex, setActiveSlideIndex] = useState(0);
+
+  const handleCarouselScroll = useCallback(() => {
+    if (!carouselRef.current) return;
+    const container = carouselRef.current;
+    const children = Array.from(container.children);
+    if (children.length === 0) return;
+
+    const containerCenter = container.scrollLeft + container.clientWidth / 2;
+    let closestIndex = 0;
+    let minDistance = Infinity;
+
+    children.forEach((child, idx) => {
+      const childCenter = child.offsetLeft + child.offsetWidth / 2;
+      const distance = Math.abs(containerCenter - childCenter);
+      if (distance < minDistance) {
+        minDistance = distance;
+        closestIndex = idx;
+      }
+    });
+
+    setActiveSlideIndex((prev) => (prev !== closestIndex ? closestIndex : prev));
+  }, []);
+
+
   useEffect(() => {
     window.scrollTo(0, 0);
 
@@ -73,6 +100,7 @@ const Blog = () => {
   }, []);
 
   const featuredPost = useMemo(() => BLOG_POSTS.find((post) => post.featured), []);
+  const toolkitPost = useMemo(() => BLOG_POSTS.find((post) => post.slug === 'inside-professional-technician-toolkit'), []);
 
   const filteredPosts = useMemo(() => {
     return BLOG_POSTS.filter((post) => {
@@ -81,8 +109,8 @@ const Blog = () => {
   }, [selectedCategory]);
 
   const gridPosts = useMemo(() => {
-    return filteredPosts.filter((post) => !post.featured || selectedCategory !== 'All');
-  }, [filteredPosts, selectedCategory]);
+    return filteredPosts.filter((post) => !post.featured && post.slug !== 'inside-professional-technician-toolkit');
+  }, [filteredPosts]);
 
   const openPost = useCallback((post) => navigate(`/blog/${post.slug}`), [navigate]);
   const scrollToArticles = useCallback(
@@ -112,25 +140,16 @@ const Blog = () => {
           <div className="blog-hero-content">
             <h1 className="hero-title on-dark">
               <span className="hero-title-line">
-                {['Reliable', 'Home &'].map((word, i) => (
-                  <span key={word + i} className="hero-title-word">
-                    {word}
-                  </span>
-                ))}
-              </span>
+                <span className="hero-title-word">Reliable</span>{' '}
+                <span className="hero-title-word">Home &</span>
+              </span>{' '}
               <span className="hero-title-line">
-                {['Commercial', 'Services'].map((word, i) => (
-                  <span key={word + i + 2} className="hero-title-word">
-                    {word}
-                  </span>
-                ))}
-              </span>
+                <span className="hero-title-word">Commercial</span>{' '}
+                <span className="hero-title-word">Services</span>
+              </span>{' '}
               <span className="hero-title-line">
-                {['Right at', 'Your Spot'].map((word, i) => (
-                  <span key={word + i + 4} className="hero-title-word">
-                    {word}
-                  </span>
-                ))}
+                <span className="hero-title-word hero-accent-text">Right at</span>{' '}
+                <span className="hero-title-word hero-accent-text">Your Spot</span>
               </span>
             </h1>
 
@@ -150,17 +169,28 @@ const Blog = () => {
         </div>
       </div>
 
-      {/* ─── FEATURED ARTICLE ─── */}
-      {selectedCategory === 'All' && featuredPost && (
-        <div className="blog-section" style={{ marginTop: 'clamp(-50px, -6vw, -30px)', marginBottom: 'clamp(20px, 4vw, 40px)', display: 'flex', justifyContent: 'center', zIndex: 10, position: 'relative' }}>
-          <div className="featured-card-wrapper">
-            <FeaturedBlogCard post={featuredPost} onOpen={openPost} />
+      {/* ─── FEATURED ARTICLE + TOOLKIT ─── */}
+      {featuredPost && (
+        <div className="blog-section featured-carousel-section" style={{ marginTop: 'clamp(-30px, -3vw, -16px)', marginBottom: 'clamp(20px, 4vw, 40px)', zIndex: 10, position: 'relative' }}>
+          <div
+            className="featured-toolkit-row"
+            ref={carouselRef}
+            onScroll={handleCarouselScroll}
+          >
+            <div className={`featured-carousel-item ${activeSlideIndex === 0 ? 'is-active' : ''}`}>
+              <div className="featured-card-wrapper">
+                <FeaturedBlogCard post={featuredPost} onOpen={openPost} />
+              </div>
+            </div>
+            <div className={`featured-carousel-item ${activeSlideIndex === 1 ? 'is-active' : ''}`}>
+              <ToolkitCard onOpen={() => toolkitPost && openPost(toolkitPost)} />
+            </div>
           </div>
         </div>
       )}
 
       {/* ─── ARTICLES LIST & SEARCH ─── */}
-      <div id="articles-section" className="blog-section" style={{ paddingBottom: 'clamp(48px, 10vw, 100px)', paddingTop: selectedCategory === 'All' && featuredPost ? '0' : 'clamp(24px, 5vw, 48px)' }}>
+      <div id="articles-section" className="blog-section" style={{ paddingBottom: 'clamp(48px, 10vw, 100px)', paddingTop: featuredPost ? '0' : 'clamp(24px, 5vw, 48px)' }}>
         <CategoryFilterBar
           categories={CATEGORIES}
           selectedCategory={selectedCategory}
@@ -187,10 +217,7 @@ const Blog = () => {
         )}
       </div>
 
-      {/* ─── CTA BANNER ─── */}
-      <CtaBanner />
-
-      {/* ─── SERVICE COLLECTIONS ─── */}
+      {/* ─── SERVICE COLLECTIONS & CTA BANNER ─── */}
       <div className="blog-section" style={{ marginTop: 0, marginBottom: 'clamp(48px, 10vw, 100px)', marginLeft: 'auto', marginRight: 'auto' }}>
         <div style={{ textAlign: 'center', marginBottom: 'clamp(24px, 5vw, 48px)' }}>
           <div
@@ -231,6 +258,11 @@ const Blog = () => {
               </div>
             </button>
           ))}
+        </div>
+
+        {/* ─── CTA BANNER BELOW CARDS ─── */}
+        <div style={{ marginTop: 'clamp(36px, 5vw, 48px)', maxWidth: '820px', marginLeft: 'auto', marginRight: 'auto' }}>
+          <CtaBanner showShell={false} />
         </div>
       </div>
 

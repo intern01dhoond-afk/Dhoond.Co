@@ -8,6 +8,7 @@ import { BLOG_POSTS } from '../data/blogPosts';
 import { getCategoryIcon, getAuthorInitials } from '../utils/blogUtils';
 import CtaBanner, { getCategoryTitle } from '../components/blog/CtaBanner';
 import BlogCard from '../components/blog/BlogCard';
+import ImageSlider from '../components/blog/ImageSlider';
 import '../styles/blog.css';
 
 const BlogPost = () => {
@@ -17,6 +18,96 @@ const BlogPost = () => {
 
   const post = BLOG_POSTS.find((p) => p.slug === slugParam || String(p.id) === String(slugParam));
   const [showStickyCta, setShowStickyCta] = useState(false);
+  const [headings, setHeadings] = useState([]);
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [isMobileTocOpen, setIsMobileTocOpen] = useState(false);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      const contentEl = document.querySelector('.blog-content-body');
+      if (contentEl) {
+        const headingElements = Array.from(contentEl.querySelectorAll('h2, h3'));
+        const headingData = headingElements.map((el, index) => {
+          if (!el.id) {
+            const rawText = el.innerText || el.textContent || '';
+            const cleanText = rawText.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+            // DOM IDs are regenerated each time post changes since content re-renders via dangerouslySetInnerHTML
+            el.id = cleanText || `sec-${index}`;
+          }
+          return {
+            index,
+            id: el.id,
+            text: el.innerText || el.textContent,
+            level: el.tagName.toLowerCase(),
+          };
+        });
+        setHeadings(headingData);
+      }
+    }, 100);
+
+    return () => clearTimeout(timer);
+  }, [post]);
+
+  useEffect(() => {
+    if (headings.length === 0) return undefined;
+
+    const handleScroll = () => {
+      const contentEl = document.querySelector('.blog-content-body');
+      if (!contentEl) return;
+      const headingElements = Array.from(contentEl.querySelectorAll('h2, h3'));
+      if (headingElements.length === 0) return;
+
+      const scrollPosition = window.scrollY + 120;
+      let currentActiveIndex = 0;
+      for (let i = 0; i < headingElements.length; i++) {
+        const elementTop = headingElements[i].getBoundingClientRect().top + window.scrollY;
+        if (elementTop <= scrollPosition) {
+          currentActiveIndex = i;
+        } else {
+          break;
+        }
+      }
+      setActiveIndex(currentActiveIndex);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    handleScroll();
+
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [headings]);
+
+  const scrollToHeading = (index) => {
+    const contentEl = document.querySelector('.blog-content-body');
+    if (contentEl) {
+      const headingElements = Array.from(contentEl.querySelectorAll('h2, h3'));
+      const element = headingElements[index];
+      if (element) {
+        const offset = 100;
+        const elementTop = element.getBoundingClientRect().top + window.scrollY;
+        const offsetPosition = elementTop - offset;
+
+        window.scrollTo({
+          top: offsetPosition,
+          behavior: 'smooth'
+        });
+        setActiveIndex(index);
+      }
+    }
+  };
+
+  const [scrollProgress, setScrollProgress] = useState(0);
+
+  useEffect(() => {
+    const handleProgressScroll = () => {
+      const totalHeight = document.documentElement.scrollHeight - window.innerHeight;
+      if (totalHeight > 0) {
+        const progress = (window.scrollY / totalHeight) * 100;
+        setScrollProgress(progress);
+      }
+    };
+    window.addEventListener('scroll', handleProgressScroll);
+    return () => window.removeEventListener('scroll', handleProgressScroll);
+  }, []);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -66,6 +157,20 @@ const BlogPost = () => {
 
   return (
     <div className="blog-post-page" style={styles.page}>
+      {/* Subtle Scroll Progress Bar at the top of the viewport */}
+      <div
+        style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          width: `${scrollProgress}%`,
+          height: '3px',
+          backgroundColor: '#2563EB',
+          zIndex: 99999,
+          transition: 'width 0.1s ease-out'
+        }}
+        aria-hidden="true"
+      />
       <style>{`
         .blog-post-page, .blog-post-page * { font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif !important; }
         .blog-content-body h2 { color: #0F172A; font-weight: 800; font-size: clamp(20px, 4vw, 24px); margin: clamp(24px, 5vw, 36px) 0 16px; border-bottom: 1px solid #E2E8F0; padding-bottom: 8px; }
@@ -257,37 +362,148 @@ const BlogPost = () => {
           </div>
         </header>
 
-        {/* Elevated Hero Image */}
+        {/* Elevated Hero Image Slider */}
         <div className="post-hero-img" style={styles.heroImgWrap}>
-          <img
-            src={post.image}
-            alt={post.title}
-            style={styles.heroImg}
-            loading="eager"
-            fetchPriority="high"
-            decoding="async"
+          <ImageSlider
+            images={post.images}
+            singleImage={post.image}
+            title={post.title}
           />
         </div>
 
-        <article
-          className="blog-content-body"
-          style={styles.articleBody}
-          dangerouslySetInnerHTML={{ __html: post.content }}
-        />
+        {/* Layout container */}
+        <div className="blog-post-content-layout">
+          {/* Desktop Sidebar Navigation */}
+          {headings.length > 0 && (
+            <aside className="blog-toc-sidebar">
+              <h2 className="blog-toc-title">On This Page</h2>
+              <ul className="blog-toc-list">
+                {headings.map((heading) => (
+                  <li key={heading.index} className="blog-toc-item">
+                    <a
+                      href={`#sec-${heading.index}`}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        scrollToHeading(heading.index);
+                      }}
+                      className={`blog-toc-link toc-${heading.level} ${activeIndex === heading.index ? 'active' : ''}`}
+                    >
+                      {heading.text}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </aside>
+          )}
 
-        {/* Book Service CTA Banner */}
-        <div style={{ margin: 'clamp(28px, 6vw, 44px) 0' }}>
-          <div style={{ marginBottom: '14px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#2563EB' }} aria-hidden="true" />
-            <h3 style={{ fontSize: '12px', fontWeight: 800, color: '#2563EB', textTransform: 'uppercase', letterSpacing: '0.08em', margin: 0 }}>
-              Having the Same Issue?
-            </h3>
+          <div className="blog-post-main-column">
+            {/* Mobile compact/collapsible accordion */}
+            {headings.length > 0 && (
+              <div className="mobile-toc-container">
+                <button
+                  type="button"
+                  className="mobile-toc-toggle"
+                  onClick={() => setIsMobileTocOpen(!isMobileTocOpen)}
+                >
+                  <span style={{ 
+                    whiteSpace: 'nowrap', 
+                    overflow: 'hidden', 
+                    textOverflow: 'ellipsis', 
+                    paddingRight: '12px',
+                    flex: 1
+                  }}>
+                    On This Page
+                    {headings[activeIndex]?.text ? ` • ${headings[activeIndex].text}` : ''}
+                  </span>
+                  <ChevronRight
+                    size={16}
+                    style={{
+                      transform: isMobileTocOpen ? 'rotate(90deg)' : 'none',
+                      transition: 'transform 0.2s ease',
+                      color: '#64748B'
+                    }}
+                  />
+                </button>
+                <AnimatePresence>
+                  {isMobileTocOpen && (
+                    <motion.div
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: 'auto', opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      transition={{ duration: 0.2 }}
+                      className="mobile-toc-content"
+                    >
+                      <ul className="mobile-toc-list">
+                        {headings.map((heading) => (
+                          <li key={heading.index} className="mobile-toc-item">
+                            <a
+                              href={`#sec-${heading.index}`}
+                              onClick={(e) => {
+                                e.preventDefault();
+                                scrollToHeading(heading.index);
+                                setIsMobileTocOpen(false);
+                              }}
+                              className={`mobile-toc-link toc-${heading.level} ${activeIndex === heading.index ? 'active' : ''}`}
+                            >
+                              {heading.text}
+                            </a>
+                          </li>
+                        ))}
+                      </ul>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+            )}
+
+            <article
+              className="blog-content-body"
+              style={styles.articleBody}
+              dangerouslySetInnerHTML={{ __html: post.content }}
+            />
+
+            {/* Book Service CTA Banner */}
+            <div style={{ margin: 'clamp(28px, 6vw, 44px) 0' }}>
+              <div
+                style={{
+                  marginBottom: '14px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px'
+                }}
+              >
+                <span
+                  style={{
+                    width: '6px',
+                    height: '6px',
+                    borderRadius: '50%',
+                    background: '#2563EB'
+                  }}
+                  aria-hidden="true"
+                />
+
+                <h3
+                  style={{
+                    fontSize: '12px',
+                    fontWeight: 800,
+                    color: '#2563EB',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.08em',
+                    margin: 0
+                  }}
+                >
+                  Having the Same Issue?
+                </h3>
+              </div>
+
+              <CtaBanner
+                title={`Need Help with ${getCategoryTitle(post.category)}?`}
+                description="Book one of our verified experts today. Professional tools, transparent pricing, and quality guarantee."
+                showShell={false}
+              />
+            </div>
           </div>
-          <CtaBanner
-            title={`Need Help with ${getCategoryTitle(post.category)}?`}
-            description="Book one of our verified experts today. Professional tools, transparent pricing, and quality guarantee."
-            showShell={false}
-          />
+
         </div>
 
         <section style={{ borderTop: '1px solid #E2E8F0', paddingTop: '60px' }} aria-labelledby="related-guides-heading">
@@ -378,7 +594,7 @@ const BlogPost = () => {
                 }}
                 aria-label="Dismiss booking prompt"
               >
-                <X size={16} />
+                <X size={15} />
               </button>
             </div>
           </motion.div>
@@ -394,7 +610,7 @@ const styles = {
     color: '#1E293B',
     minHeight: '100vh',
     fontFamily: "'Plus Jakarta Sans', sans-serif",
-    overflowX: 'hidden',
+    overflowX: 'clip',
     width: '100%',
     paddingTop: 'clamp(32px, 6vw, 64px)',
     paddingBottom: 'clamp(60px, 10vw, 100px)',
