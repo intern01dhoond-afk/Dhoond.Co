@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { Mail, Check, ArrowRight, Search } from 'lucide-react';
+import { Mail, Check, ArrowRight, Search, ChevronDown, ChevronUp } from 'lucide-react';
 import gsap from 'gsap';
 
 import { BLOG_POSTS, BLOG_CATEGORIES as CATEGORIES } from '../data/blogPosts';
@@ -8,7 +8,6 @@ import CtaBanner from '../components/blog/CtaBanner';
 import CategoryFilterBar from '../components/blog/CategoryFilterBar';
 import BlogCard from '../components/blog/BlogCard';
 import FeaturedBlogCard from '../components/blog/FeaturedBlogCard';
-import ToolkitCard from '../components/blog/ToolkitCard';
 import '../styles/blog.css';
 
 const SERVICE_COLLECTIONS = [
@@ -29,7 +28,7 @@ const SERVICE_COLLECTIONS = [
   {
     title: 'Trusted Home Solutions',
     desc: 'Reliable service with verified experts you can trust',
-    image: '/blog/dhoond_technician_ac.jpg',
+    image: '/blog/trusted_home_new.jpg',
     alt: 'Dhoond technician servicing an air conditioner',
     className: 'img-trusted-solutions',
   },
@@ -40,6 +39,7 @@ const Blog = () => {
   const heroRef = useRef(null);
 
   const [selectedCategory, setSelectedCategory] = useState('All');
+  const [showAllCards, setShowAllCards] = useState(false);
   const [isNewsletterSubscribed, setIsNewsletterSubscribed] = useState(false);
   const [emailInput, setEmailInput] = useState('');
 
@@ -100,7 +100,6 @@ const Blog = () => {
   }, []);
 
   const featuredPost = useMemo(() => BLOG_POSTS.find((post) => post.featured), []);
-  const toolkitPost = useMemo(() => BLOG_POSTS.find((post) => post.slug === 'inside-professional-technician-toolkit'), []);
 
   const filteredPosts = useMemo(() => {
     return BLOG_POSTS.filter((post) => {
@@ -109,8 +108,18 @@ const Blog = () => {
   }, [selectedCategory]);
 
   const gridPosts = useMemo(() => {
-    return filteredPosts.filter((post) => !post.featured && post.slug !== 'inside-professional-technician-toolkit');
+    const filtered = filteredPosts.filter((post) => !post.featured);
+    // Sort toolkit post to the front so it appears as the first card
+    return filtered.sort((a, b) => {
+      const aIsToolkit = a.slug === 'inside-professional-technician-toolkit' ? 1 : 0;
+      const bIsToolkit = b.slug === 'inside-professional-technician-toolkit' ? 1 : 0;
+      return bIsToolkit - aIsToolkit;
+    });
   }, [filteredPosts]);
+
+  const INITIAL_CARD_COUNT = 3;
+  const visiblePosts = showAllCards ? gridPosts : gridPosts.slice(0, INITIAL_CARD_COUNT);
+  const hasMoreCards = gridPosts.length > INITIAL_CARD_COUNT;
 
   const openPost = useCallback((post) => navigate(`/blog/${post.slug}`), [navigate]);
   const scrollToArticles = useCallback(
@@ -118,6 +127,16 @@ const Blog = () => {
     []
   );
   const goHome = useCallback(() => navigate('/'), [navigate]);
+
+  const handleToggleViewMore = useCallback(() => {
+    setShowAllCards((prev) => {
+      const nextState = !prev;
+      if (!nextState) {
+        document.getElementById('articles-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+      return nextState;
+    });
+  }, []);
 
   const handleSubscribe = useCallback(
     (e) => {
@@ -136,7 +155,7 @@ const Blog = () => {
       <div className="blog-hero" ref={heroRef}>
         <div className="hero-bg-image" />
         <div className="hero-bg-overlay" />
-        <div className="blog-section" style={{ position: 'relative', zIndex: 2, display: 'flex', justifyContent: 'flex-start' }}>
+        <div className="blog-section" style={{ position: 'relative', zIndex: 2, display: 'flex', justifyContent: 'flex-start', maxWidth: '1400px' }}>
           <div className="blog-hero-content">
             <h1 className="hero-title on-dark">
               <span className="hero-title-line">
@@ -148,7 +167,10 @@ const Blog = () => {
                 <span className="hero-title-word">Services</span>
               </span>{' '}
               <span className="hero-title-line">
-                <span className="hero-title-word hero-accent-text">Right at</span>{' '}
+              <span className="hero-title-word hero-accent-text">Right&nbsp;at
+</span>
+
+
                 <span className="hero-title-word hero-accent-text">Your Spot</span>
               </span>
             </h1>
@@ -169,7 +191,7 @@ const Blog = () => {
         </div>
       </div>
 
-      {/* ─── FEATURED ARTICLE + TOOLKIT ─── */}
+      {/* ─── FEATURED ARTICLE ─── */}
       {featuredPost && (
         <div className="blog-section featured-carousel-section" style={{ marginTop: 'clamp(-30px, -3vw, -16px)', marginBottom: 'clamp(20px, 4vw, 40px)', zIndex: 10, position: 'relative' }}>
           <div
@@ -182,9 +204,6 @@ const Blog = () => {
                 <FeaturedBlogCard post={featuredPost} onOpen={openPost} />
               </div>
             </div>
-            <div className={`featured-carousel-item ${activeSlideIndex === 1 ? 'is-active' : ''}`}>
-              <ToolkitCard onOpen={() => toolkitPost && openPost(toolkitPost)} />
-            </div>
           </div>
         </div>
       )}
@@ -194,7 +213,7 @@ const Blog = () => {
         <CategoryFilterBar
           categories={CATEGORIES}
           selectedCategory={selectedCategory}
-          onSelectCategory={setSelectedCategory}
+          onSelectCategory={(cat) => { setSelectedCategory(cat); setShowAllCards(false); }}
         />
 
         {gridPosts.length === 0 ? (
@@ -204,16 +223,34 @@ const Blog = () => {
             <p style={{ color: '#64748B', fontSize: '14.5px' }}>Try adjusting your keyword search or category filters.</p>
           </div>
         ) : (
-          <div className="blog-cards-grid">
-            {gridPosts.map((post, index) => (
-              <BlogCard
-                key={post.id}
-                post={post}
-                animationDelay={index * 0.05}
-                onOpen={openPost}
-              />
-            ))}
-          </div>
+          <>
+            <div className="blog-cards-grid">
+              {visiblePosts.map((post, index) => (
+                <BlogCard
+                  key={post.id}
+                  post={post}
+                  animationDelay={index * 0.05}
+                  onOpen={openPost}
+                />
+              ))}
+            </div>
+            {hasMoreCards && (
+              <div className="view-more-wrapper">
+                <button
+                  type="button"
+                  className="view-more-btn"
+                  onClick={handleToggleViewMore}
+                >
+                  {showAllCards ? 'View Less' : 'View More'}
+                  {showAllCards ? (
+                    <ChevronUp size={16} className="view-more-icon" aria-hidden="true" />
+                  ) : (
+                    <ChevronDown size={16} className="view-more-icon" aria-hidden="true" />
+                  )}
+                </button>
+              </div>
+            )}
+          </>
         )}
       </div>
 
@@ -270,10 +307,10 @@ const Blog = () => {
       <div className="newsletter-band">
         <div className="newsletter-inner">
           <div style={{ flex: '1 1 500px' }}>
-            <h2 style={{ fontSize: 'clamp(22px, 3vw, 28px)', fontWeight: 900, color: '#0F172A', letterSpacing: '-0.02em', marginBottom: '8px' }}>
+            <h2 style={{ fontSize: 'clamp(22px, 3vw, 28px)', fontWeight: 900, color: '#0F172A', letterSpacing: '-0.02em', marginTop: 0, marginBottom: '8px' }}>
               The Expert Weekly
             </h2>
-            <p style={{ fontSize: '14.5px', color: '#475569', fontWeight: 500, lineHeight: 1.6, maxWidth: '580px' }}>
+            <p style={{ fontSize: '14.5px', color: '#475569', fontWeight: 500, lineHeight: 1.6, maxWidth: '580px', margin: 0 }}>
               Join 10,000+ homeowners receiving exclusive home care tips, design trends, and priority service offers.
             </p>
           </div>
