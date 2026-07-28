@@ -79,7 +79,7 @@ export default function BlogCard({ post, animationDelay = 0, readText, onOpen })
           <hr className="card-divider-new" />
           
           <div className="read-link-new">
-            <span className="read-link-text-new">{readText || 'Read Guide'}</span>
+            <span className="read-link-text-new">{readText || 'READ GUIDE'}</span>
             <ArrowRight size={14} className="card-arrow-icon-new" aria-hidden="true" />
           </div>
         </div>
