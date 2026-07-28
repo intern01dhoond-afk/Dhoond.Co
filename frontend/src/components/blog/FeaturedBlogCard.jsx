@@ -44,10 +44,16 @@ export default function FeaturedBlogCard({ post, onOpen }) {
         <h3 className="featured-card-title-horizontal">{post.title}</h3>
         <p className="featured-card-desc-horizontal">{post.description}</p>
 
-        {/* Read Time */}
-        <div className="featured-card-read-time">
-          <Clock size={13} className="clock-icon" />
-          <span>{post.readTime}</span>
+        {/* Author + Read Time */}
+        <div className="featured-card-meta-row">
+          <div className="card-author-new">
+            <div className="card-avatar-initials">DT</div>
+            <span className="card-author-name">Dhoond Team</span>
+          </div>
+          <div className="featured-card-read-time">
+            <Clock size={13} className="clock-icon" />
+            <span>{post.readTime}</span>
+          </div>
         </div>
 
         {/* Footer info pinned to bottom */}
@@ -57,7 +63,7 @@ export default function FeaturedBlogCard({ post, onOpen }) {
 
           {/* Primary CTA */}
           <span className="featured-card-read-link">
-            <span className="featured-card-read-link-text">READ BLOG</span>
+            <span className="featured-card-read-link-text">READ GUIDE</span>
             <ArrowRight size={15} className="featured-card-arrow-icon" aria-hidden="true" />
           </span>
         </div>
