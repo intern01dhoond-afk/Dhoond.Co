@@ -102,18 +102,25 @@ const Blog = () => {
   const featuredPost = useMemo(() => BLOG_POSTS.find((post) => post.featured), []);
 
   const filteredPosts = useMemo(() => {
-    return BLOG_POSTS.filter((post) => {
-      return selectedCategory === 'All' || post.category === selectedCategory;
+    const toolkitPost = BLOG_POSTS.find((post) => post.slug === 'inside-professional-technician-toolkit');
+    const matched = BLOG_POSTS.filter((post) => {
+      if (selectedCategory === 'All') return true;
+      return post.category === selectedCategory;
     });
+
+    if (toolkitPost && !matched.some((p) => p.id === toolkitPost.id)) {
+      return [...matched, toolkitPost];
+    }
+    return matched;
   }, [selectedCategory]);
 
   const gridPosts = useMemo(() => {
     const filtered = filteredPosts.filter((post) => !post.featured);
-    // Sort toolkit post to the front so it appears as the first card
+    // Sort toolkit post to the end so it appears as the last card
     return filtered.sort((a, b) => {
       const aIsToolkit = a.slug === 'inside-professional-technician-toolkit' ? 1 : 0;
       const bIsToolkit = b.slug === 'inside-professional-technician-toolkit' ? 1 : 0;
-      return bIsToolkit - aIsToolkit;
+      return aIsToolkit - bIsToolkit;
     });
   }, [filteredPosts]);
 
@@ -263,13 +270,13 @@ const Blog = () => {
               alignItems: 'center',
               gap: '6px',
               background: 'rgba(37, 99, 235, 0.08)',
-              border: '1px solid rgba(37, 99, 235, 0.15)',
+              border: '1px solid #1E99FE',
               borderRadius: '99px',
               padding: '6px 14px',
               marginBottom: '16px',
             }}
           >
-            <span style={{ fontSize: '11px', fontWeight: 800, color: '#2563EB', textTransform: 'uppercase', letterSpacing: '0.08em' }}>What We Do</span>
+            <span style={{ fontSize: '11px', fontWeight: 800, color: '#1E99FE', textTransform: 'uppercase', letterSpacing: '0.08em' }}>What We Do</span>
           </div>
           <h2 style={{ fontSize: 'clamp(24px, 4vw, 32px)', fontWeight: 900, color: '#0F172A', letterSpacing: '-0.02em', marginBottom: '12px' }}>
             A Comprehensive Range of Services

@@ -172,7 +172,9 @@ const BlogPost = () => {
         .blog-content-body h4 { color: #334155; font-weight: 600; font-size: 16px; margin: 18px 0 8px; }
         .blog-content-body p { color: #475569; line-height: 1.8; font-size: 16px; margin-bottom: 20px; }
         .blog-content-body blockquote { border-left: 4px solid #2563EB; background: rgba(37, 99, 235, 0.05); padding: 16px 24px; border-radius: 8px; color: #2563EB; font-style: italic; margin: 28px 0; font-weight: 500; font-size: 16.5px; }
-        .blog-content-body ul, .blog-content-body ol { color: #475569; padding-left: 24px; margin-bottom: 20px; }
+        .blog-content-body ul { color: #475569; padding-left: 0; list-style: none; margin-bottom: 20px; }
+        .blog-content-body ol { color: #475569; padding-left: 24px; margin-bottom: 20px; }
+        .blog-content-body ul li { list-style: none; list-style-type: none; }
         .blog-content-body li { margin-bottom: 10px; line-height: 1.7; font-size: 16px; }
         .blog-content-body strong { color: #0F172A; }
 
@@ -241,7 +243,7 @@ const BlogPost = () => {
         }
 
         .sticky-btn-hover:hover {
-          background-color: #1D4ED8 !important;
+          background-color: #1E99FE !important;
         }
 
         .sticky-cta-bar {
@@ -470,7 +472,7 @@ const BlogPost = () => {
                     width: '6px',
                     height: '6px',
                     borderRadius: '50%',
-                    background: '#2563EB'
+                    background: '#1E99FE'
                   }}
                   aria-hidden="true"
                 />
@@ -479,7 +481,7 @@ const BlogPost = () => {
                   style={{
                     fontSize: '12px',
                     fontWeight: 800,
-                    color: '#2563EB',
+                    color: '#1E99FE',
                     textTransform: 'uppercase',
                     letterSpacing: '0.08em',
                     margin: 0
@@ -583,10 +585,10 @@ const styles = {
   },
   avatar: {
     width: '40px', height: '40px', borderRadius: '50%',
-    background: 'linear-gradient(135deg, #3B82F6 0%, #2563EB 100%)',
+    background: '#1E99FE',
     display: 'flex', alignItems: 'center', justifyContent: 'center',
     fontWeight: 800, fontSize: '13px', color: '#FFF', flexShrink: 0,
-    boxShadow: '0 4px 10px rgba(37,99,235,0.15)',
+    boxShadow: '0 4px 10px rgba(30,153,254,0.15)',
   },
   heroImgWrap: {
     width: '100%', height: 'clamp(240px, 45vw, 400px)', borderRadius: '20px', overflow: 'hidden',

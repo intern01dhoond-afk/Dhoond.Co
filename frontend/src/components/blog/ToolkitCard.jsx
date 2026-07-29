@@ -65,7 +65,7 @@ export default function ToolkitCard({ onOpen }) {
           {/* CTA Link */}
           <div className="toolkit-card-cta-row">
             <span className="toolkit-card-read-link">
-              <span className="toolkit-card-read-text">READ BLOG</span>
+              <span className="toolkit-card-read-text">READ GUIDE</span>
               <ArrowRight size={15} className="toolkit-card-arrow-icon" aria-hidden="true" />
             </span>
           </div>
