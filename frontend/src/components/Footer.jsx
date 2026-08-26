@@ -3,6 +3,8 @@ import { Link, useLocation } from 'react-router-dom';
 import * as Lucide from 'lucide-react';
 import { useUI } from '../context/UIContext';
 import { isInsideGeofence } from '../utils/location';
+import playStoreBadge from '../assets/App Store Logo/android.svg';
+import appStoreBadge from '../assets/App Store Logo/apple.svg';
 
 const Footer = () => {
   const { openComingSoon, locationLabel, locationSubtext, userLat, userLng } = useUI();
@@ -59,21 +61,37 @@ const Footer = () => {
               align-items: flex-start !important;
               text-align: left !important;
             }
-            .footer-brand-col a {
+            .footer-brand-col .footer-brand-logo {
               display: flex !important;
               justify-content: flex-start !important;
               align-self: flex-start !important;
               margin-left: 0 !important;
               margin-right: auto !important;
             }
-            .footer-brand-col img {
+            .footer-brand-col .footer-brand-logo img {
               margin-left: 0 !important;
               margin-right: auto !important;
+            }
+            .footer-app-badges {
+              display: flex !important;
+              flex-direction: row !important;
+              align-items: center !important;
+              gap: 12px !important;
+              flex-wrap: wrap !important;
+            }
+            .footer-app-badges a {
+              display: inline-block !important;
+              margin: 0 !important;
+            }
+            .footer-app-badges img {
+              margin: 0 !important;
+              height: 38px !important;
             }
           }
           @media (max-width: 480px) {
             .footer-links-grid { grid-template-columns: repeat(2, 1fr) !important; gap: 1.75rem 1rem !important; }
-            .footer-brand-col img { max-height: 64px !important; }
+            .footer-brand-col .footer-brand-logo img { max-height: 64px !important; }
+            .footer-app-badges img { height: 36px !important; }
           }
         `}</style>
         <div className="mobile-stack" style={{ maxWidth: '1280px', margin: '0 auto', display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', gap: '2rem' }}>
@@ -129,7 +147,7 @@ const Footer = () => {
 
             {/* Brand Column */}
             <div style={{ flex: '1 1 300px', maxWidth: '400px' }} className="footer-brand-col">
-              <Link to="/" style={{ display: 'inline-block', marginBottom: '0.75rem' }}>
+              <Link to="/" className="footer-brand-logo" style={{ display: 'inline-block', marginBottom: '0.75rem' }}>
                 <img src="/images/cart%20nav.webp" alt="Dhoond" style={{ height: 'auto', maxHeight: '80px', width: 'auto', objectFit: 'contain', transition: 'transform 0.3s' }}
                   onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.05)'}
                   onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'}
@@ -138,17 +156,33 @@ const Footer = () => {
               <p style={{ color: '#94a3b8', fontSize: '0.9rem', lineHeight: 1.7, fontWeight: 500, margin: '0 0 1.5rem 0' }}>
                 India's fastest growing premium Home and Commercial services marketplace. Quality craftsmanship delivered to your spot.
               </p>
-              <div style={{ display: 'flex', gap: '10px', marginTop: '1.25rem', marginBottom: '1.5rem' }}>
+              <div className="footer-app-badges" style={{ display: 'flex', gap: '12px', marginTop: '1.25rem', marginBottom: '1.5rem', flexWrap: 'wrap', alignItems: 'center' }}>
                 <a 
                   href="https://play.google.com/store/apps/details?id=com.ameccodex.dhoond.co&pcampaignid=web_share" 
                   target="_blank" 
                   rel="noopener noreferrer" 
                   style={{ display: 'inline-block', textDecoration: 'none' }}
+                  aria-label="Get it on Google Play"
                 >
                   <img 
-                    src="/icons/playstore.png" 
+                    src={playStoreBadge} 
                     alt="Get it on Google Play" 
-                    style={{ height: '40px', width: 'auto', borderRadius: '6px', transition: 'transform 0.2s ease' }}
+                    style={{ height: '40px', width: 'auto', transition: 'transform 0.2s ease' }}
+                    onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.05)'}
+                    onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'}
+                  />
+                </a>
+                <a 
+                  href="https://apps.apple.com/in/app/dhoond-experts-in-minutes/id6790735044" 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  style={{ display: 'inline-block', textDecoration: 'none' }}
+                  aria-label="Download on the App Store"
+                >
+                  <img 
+                    src={appStoreBadge} 
+                    alt="Download on the App Store" 
+                    style={{ height: '40px', width: 'auto', transition: 'transform 0.2s ease' }}
                     onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.05)'}
                     onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'}
                   />
