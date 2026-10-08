@@ -892,6 +892,13 @@ const ScrollToTop = () => {
   return null;
 };
 
+const QuotationRedirect = () => {
+  React.useEffect(() => {
+    window.location.replace('/quotation/');
+  }, []);
+  return null;
+};
+
 function App() {
   return (
     <UIProvider>
@@ -902,6 +909,10 @@ function App() {
             <React.Suspense fallback={<div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', width: '100vw' }}><div style={{ color: '#0A57D0', fontWeight: '600', fontFamily: 'sans-serif' }}>Loading...</div></div>}>
               <Routes>
                 <Route path="/admin/*" element={<Admin />} />
+                <Route path="/quotation" element={<QuotationRedirect />} />
+                <Route path="/quotation/*" element={<QuotationRedirect />} />
+                <Route path="/Quotation" element={<QuotationRedirect />} />
+                <Route path="/Quotation/*" element={<QuotationRedirect />} />
                 <Route element={<MainLayout />}>
                   <Route path="/" element={<Home />} />
                   <Route path="/index.html" element={<Navigate to="/" replace />} />
